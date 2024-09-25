@@ -3,12 +3,15 @@ import "../css/RentForm.css";
 import { useNavigate } from 'react-router-dom';
 const RentForm = () => {
     const [formData, setFormData] = useState({
-        productType: '',productName: '',locationName: '',fromDate: '',toDate: '',price: ''});
+        productType: '', productName: '', locationName: '', fromDate: '', toDate: '', price: ''
+    });
     const [images, setImages] = useState([]); // Store images as File objects
     const [message, setmessage] = useState('');
     const [Error, setError] = useState(false);
     const fileInputRef = useRef(null); // Ref for the file input
     const navigate = useNavigate();
+    const [locations, setLocations] = useState([]);
+
     const maxPriceMap = {
         "bikes": 100,
         "cars": 200,
@@ -23,6 +26,15 @@ const RentForm = () => {
     const [minToDate, setMinToDate] = useState('');
 
     useEffect(() => {
+        fetch('http://localhost:3000/locations')
+            .then((response) => response.json())
+            .then((data) => setLocations(data.locations))
+            .catch((error) => console.error('Error fetching locations:', error));
+
+        console.log(locations);
+    }, []);
+
+    useEffect(() => {
         const now = new Date();
         const roundedNow = roundUpToNextHalfHour(now);
         const minFrom = new Date(roundedNow.getTime() + 30 * 60000); // Add 30 minutes
@@ -34,18 +46,18 @@ const RentForm = () => {
             const from = new Date(formData.fromDate);
             const minTo = new Date(from.getTime() + 24 * 60 * 60000); // Add 1 day
             setMinToDate(formatDateTimeLocal(minTo));
-          if (formData.toDate && new Date(formData.toDate) < minTo) {
+            if (formData.toDate && new Date(formData.toDate) < minTo) {
                 setFormData(prev => ({ ...prev, toDate: '' }));
             }
         } else {
             setMinToDate('');
         }
     }, [formData.fromDate]);
-   const roundUpToNextHalfHour = (date) => {
+    const roundUpToNextHalfHour = (date) => {
         const ms = 1000 * 60 * 30; // 30 minutes in milliseconds
         return new Date(Math.ceil(date.getTime() / ms) * ms);
     };
-   const formatDateTimeLocal = (date) => {
+    const formatDateTimeLocal = (date) => {
         const pad = (num) => String(num).padStart(2, '0');
         const year = date.getFullYear();
         const month = pad(date.getMonth() + 1);
@@ -57,7 +69,7 @@ const RentForm = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-      if (name === 'productType') {
+        if (name === 'productType') {
             setCurrentMaxPrice(maxPriceMap[value] || null);
             if (formData.price && maxPriceMap[value] && Number(formData.price) > maxPriceMap[value]) {
                 setFormData(prev => ({ ...prev, price: '' }));
@@ -69,7 +81,7 @@ const RentForm = () => {
                 setError(false);
             }
         }
-      if (name === 'price') {
+        if (name === 'price') {
             const priceValue = Number(value);
             if (currentMaxPrice && priceValue > currentMaxPrice) {
                 setError(true);
@@ -97,7 +109,7 @@ const RentForm = () => {
         const toDate = new Date(to);
         const nowPlus30 = new Date();
         nowPlus30.setMinutes(nowPlus30.getMinutes() + 30);
-      const roundedNow = roundUpToNextHalfHour(nowPlus30);
+        const roundedNow = roundUpToNextHalfHour(nowPlus30);
 
         if (fromDate < roundedNow) {
             setError(true);
@@ -123,7 +135,7 @@ const RentForm = () => {
     const handleSubmit = async (e) => {
 
         const userid = getCookieValue('user_id');
-        if (!userid) {   
+        if (!userid) {
             sessionStorage.setItem('lastpage', 'bookingpage');
             navigate('/login');
             return;
@@ -186,14 +198,14 @@ const RentForm = () => {
                 }
                 setCurrentMaxPrice(null);
                 setError(false);
-         const now = new Date();
+                const now = new Date();
                 const roundedNow = roundUpToNextHalfHour(now);
                 const minFrom = new Date(roundedNow.getTime() + 30 * 60000); // Add 30 minutes
                 setMinFromDate(formatDateTimeLocal(minFrom));
                 setMinToDate('');
                 setTimeout(() => {
                     navigate('/');
-                  }, 1000);  
+                }, 1000);
             }
         } catch (error) {
             console.log("Error during submission:", error);
@@ -223,6 +235,7 @@ const RentForm = () => {
                     <option value="drones">DRONE</option>
                     <option value="fishingrods">FISHING ROD</option>
                     <option value="speakers">SPEAKER</option>
+                    <option value="cycles">CYCLE</option>
                 </select>
 
                 <label htmlFor="ProductName">ProductName</label>
@@ -239,15 +252,9 @@ const RentForm = () => {
                 <label htmlFor='locationName'>SELECT LOCATION:</label>
                 <select id='locationName' name='locationName' value={formData.locationName} onChange={handleChange} required>
                     <option value="">Select a location</option>
-                    <option value="BHAVANIPURAM">BHAVANIPURAM</option>
-                    <option value="GOLLAPUDI">GOLLAPUDI</option>
-                    <option value="CHITTINAGAR">CHITTINAGAR</option>
-                    <option value="MACHILIPATNAM">MACHILIPATNAM</option>
-                    <option value="ELURU_ROAD">ELURU ROAD</option>
-                    <option value="BECENT_ROAD">BECENT ROAD</option>
-                    <option value="KANKIPADU">KANKIPADU</option>
-                    <option value="PORANKI">PORANKI</option>
-                    <option value="IBRAHIMPATNAM">IBRAHIMPATNAM</option>
+                    {locations.map((location, index) => (
+                        <option key={index} value={location}>{location}</option>
+                    ))}
                 </select>
 
                 <label htmlFor='fromDate'>RENT FROM:</label>

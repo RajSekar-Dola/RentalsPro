@@ -1,0 +1,23 @@
+.chart-wrapper-c {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+}
+
+.chart-section-c {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.chart-container-c {
+    width: 60%;
+    height: 400px; /* Adjust height as needed */
+}
+
+.cat {
+    margin-bottom: 20px;
+}

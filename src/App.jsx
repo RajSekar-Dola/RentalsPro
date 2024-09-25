@@ -10,16 +10,29 @@ import NotFound from '../frontend/components/NotFoundPage.jsx';
 import ProductPage from '../frontend/components/ProductPage.jsx';
 import AdminPage from '../frontend/components/AdminPage.jsx';
 import Adminusers from '../frontend/components/Admindashboard/Users';
+import AdminBookings from '../frontend/components/Admindashboard/AdminBookings.jsx';
+import AdminRevenue from '../frontend/components/Admindashboard/AdminRevenue.jsx';
+import AdminUploads from '../frontend/components/Admindashboard/AdminUploads.jsx';
+import AdminCategory from '../frontend/components/Admindashboard/AdminCategory.jsx';
+import WelcomeAdmin from "../frontend/components/Admindashboard/AdminWelcome.jsx"
 
 import AccountProfile from '../frontend/components/Userdashboard/AccountProfile.jsx';
 import AccountDetails from '../frontend/components/Userdashboard/AccountDetails.jsx';
 import YourBookings from '../frontend/components/Userdashboard/YourBookings.jsx';
 import YourRentals from "../frontend/components/Userdashboard/YourRentals.jsx";
 import AccountSettings from '../frontend/components/Userdashboard/AccountSettings.jsx';
+import ManagerForm from '../frontend/components/Admindashboard/ManagersForm.jsx';
+import Managers from "../frontend/components/Admindashboard/ManagersList.jsx"
+
+import ManagerPage from "../frontend/components/ManagerPage.jsx"
+import ManagerBookings from "../frontend/components/Managerdashboard/ManagerBookings.jsx";
+import ManagerCategory from "../frontend/components/Managerdashboard/ManagerCategory.jsx";
+import ManagerRevenue from "../frontend/components/Managerdashboard/ManagerRevenue.jsx";
+import ManagerUploads from "../frontend/components/Managerdashboard/ManagerUploads.jsx";
 
 
 import '../frontend/css/App.css';
-const allowedCategories = ['bikes', 'cars', 'cameras', 'drones','speakers','fishingrods'];
+const allowedCategories = ['bikes', 'cars', 'cameras', 'drones','speakers','fishingrods','cycles'];
 
 const CategoryWrapper = () => {
   const { category } = useParams();
@@ -86,8 +99,55 @@ function App() {
     element:<AdminPage/>,
     children:[
       {
+        path:"/adminpage",
+        element:<WelcomeAdmin/>
+      },
+      {
         path:'users',
         element:<Adminusers/>,
+      },
+      {
+        path:"/adminpage/bookings",
+        element:<AdminBookings/>
+      },
+      {
+        path:"/adminpage/revenue",
+        element:<AdminRevenue/>
+      },
+      {
+        path:"/adminpage/uploads",
+        element:<AdminUploads/>
+      },
+      {
+        path:"/adminpage/availCategories",
+        element:<AdminCategory/>
+      },
+      {
+        path:"/adminpage/managers",
+        element:<Managers/>
+      },
+      
+    ],
+  },
+  {
+    path:'/managerPage',
+    element:<ManagerPage/>,
+    children:[
+      {
+        path:"/managerPage/bookings",
+        element:<ManagerBookings/>
+      },
+      {
+        path:"/managerPage/revenue",
+        element:<ManagerRevenue/>
+      },
+      {
+        path:"/managerPage/uploads",
+        element:<ManagerUploads/>
+      },
+      {
+        path:"/managerPage/availCategories",
+        element:<ManagerCategory/>
       },
     ],
   },

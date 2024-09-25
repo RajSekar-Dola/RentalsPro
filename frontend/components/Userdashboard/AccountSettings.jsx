@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import "../../css/Userdashboardcss/AccountSettings.css";
+import "../../css/Userdashboardcss/AccountSettings.css"
 
 const AccountSettings = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +10,13 @@ const AccountSettings = () => {
   const [message, setMessage] = useState('ACCOUNT SETTINGS');
   const [updateMessage, setUpdateMessage] = useState(''); // For user feedback
   const [error, setError] = useState('');
+  const [passwordError, setPasswordError] = useState(''); // To display password validation errors
+
+  // Password validation function
+  const validPassword = (password) => {
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    return passwordPattern.test(password);
+  };
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -42,6 +49,16 @@ const AccountSettings = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // If the password field is changed, validate the password
+    if (name === 'password') {
+      if (!validPassword(value)) {
+        setPasswordError('Password must be at least 8 characters long, include uppercase, lowercase, a number, and a special character.');
+      } else {
+        setPasswordError('');
+      }
+    }
+
     setFormData({
       ...formData,
       [name]: value,
@@ -50,6 +67,13 @@ const AccountSettings = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Prevent submission if the password is invalid
+    if (passwordError) {
+      setError('Please correct the errors before submitting.');
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:3000/settings", {
         method: 'POST',
@@ -104,7 +128,7 @@ const AccountSettings = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit} className="settings-container">
         <div className="settings-field">
-          <label htmlFor="username">Username</label>
+          <label htmlFor="username">SET USERNAME</label>
           <input
             type="text"
             id="username"
@@ -115,7 +139,7 @@ const AccountSettings = () => {
         </div>
 
         <div className="settings-field">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">SET EMAIL</label>
           <input
             type="email"
             id="email"
@@ -126,7 +150,7 @@ const AccountSettings = () => {
         </div>
 
         <div className="settings-field">
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">SET PASSWORD</label>
           <input
             type="password"
             id="password"
@@ -134,9 +158,12 @@ const AccountSettings = () => {
             value={formData.password}
             onChange={handleInputChange}
           />
+          {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>} {/* Show password error */}
         </div>
 
-        <button type="submit" className="save-button">Save Changes</button>
+        <button type="submit" className="save-button" disabled={!!passwordError}>
+          Save Changes
+        </button> {/* Disable button if password is invalid */}
       </form>
       {updateMessage && <p>{updateMessage}</p>} {/* Display feedback */}
     </div>

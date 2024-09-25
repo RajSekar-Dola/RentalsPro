@@ -15,7 +15,7 @@ const ProductSchema= new mongoose.Schema({
     price: {type:Number,required:true,},
     photo:{type:[String],required:true},
     uploadDate:{type:Date,required:true},
-    bookingdates:{type:[String]},
+    bookingdates:{type:[[Date,Date]]},
     bookingIds:{type:[String]},
     expired:{type:Boolean,require:true,}
 });

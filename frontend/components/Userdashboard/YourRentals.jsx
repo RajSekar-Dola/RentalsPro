@@ -5,6 +5,7 @@ const YourRentals = () => {
   const [rentals, setRentals] = useState([]);
   const [message, setMessage] = useState("YOUR RENTALS");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAccountDetails = async () => {
@@ -29,6 +30,8 @@ const YourRentals = () => {
         }
       } catch (err) {
         setError("An error occurred while fetching account details");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -38,24 +41,27 @@ const YourRentals = () => {
   return (
     <div className="your-rentals-page">
       {/* <h2>{message}</h2> */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <div className="rentals-container">
-        {rentals.length > 0 ? (
-          rentals.map((rental, index) => (
-            <div key={index} className="rental-card">
-              <h3>{rental.productName}</h3>
-              <p><strong>Type:</strong> {rental.productType.toUpperCase()}</p>
-              <p><strong>Location:</strong> {rental.locationName}</p>
-              <p><strong>From:</strong> {new Date(rental.fromDateTime).toLocaleString()}</p>
-              <p><strong>To:</strong> {new Date(rental.toDateTime).toLocaleString()}</p>
-              <p><strong>Price:</strong> Rs.{rental.price} /hr</p>
-              <img src={rental.photo[0]} alt={rental.productName} style={{ width: "200px" }} />
-            </div>
-          ))
-        ) : (
-          <p>No rentals found</p>
-        )}
-      </div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div className="rentals-container">
+          {rentals.length > 0 ? (
+            rentals.map((rental, index) => (
+              <div key={index} className="rental-card">
+                <h3>{rental.productName}</h3>
+                <p><strong>Type:</strong> {rental.productType.toUpperCase()}</p>
+                <p><strong>Location:</strong> {rental.locationName}</p>
+                <p><strong>From:</strong> {new Date(rental.fromDateTime).toLocaleString()}</p>
+                <p><strong>To:</strong> {new Date(rental.toDateTime).toLocaleString()}</p>
+                <p><strong>Price:</strong> Rs.{rental.price} /hr</p>
+                <img src={rental.photo[0]} alt={rental.productName} style={{ width: "200px" }} />
+              </div>
+            ))
+          ) : (
+            <p>No rentals found</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

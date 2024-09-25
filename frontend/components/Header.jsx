@@ -51,6 +51,7 @@ useEffect(() => {
                 <li><NavLink to="/category/drones">Drones</NavLink></li>
                 <li><NavLink to="/category/speakers">Speakers</NavLink></li>
                 <li><NavLink to="/category/fishingrods">Fishing Rods</NavLink></li>
+                <li><NavLink to="/category/cycles">cycle</NavLink></li>
               </ul>
             </li>
             <li><NavLink to="/help">FAQs</NavLink></li>

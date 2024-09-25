@@ -17,7 +17,7 @@ const filterProducts = (
       const matchesminPrice = !minprice ||product.price>=minprice;
       const matchesName = !productName || product.productName.toLowerCase().includes(productName.toLowerCase());
   
-      return matchesType && matchesLocation && matchesFromDate && matchesToDate && matchesmaxPrice && matchesminPrice&& matchesName;
+      return (!product.expired) && matchesType && matchesLocation && matchesFromDate && matchesToDate && matchesmaxPrice && matchesminPrice&& matchesName;
     });
   };
 

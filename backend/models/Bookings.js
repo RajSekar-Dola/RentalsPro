@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 
 const BookingSchema = new mongoose.Schema({
@@ -23,4 +22,4 @@ const BookingSchema = new mongoose.Schema({
 });
 
 const Booking = mongoose.model("bookings", BookingSchema);
-export { Booking }
+export { Booking };
