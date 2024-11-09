@@ -65,6 +65,7 @@ const YourBookings = () => {
                 <p>{booking.productName}</p>
                 <p><strong>Location:</strong>{booking.locationName}</p>
                 <p><strong>Owner Name:</strong> {booking.username || "N/A"}</p> 
+                <p><strong>Owner Email:</strong> {booking.email || "N/A"}</p> 
                 <p><strong>From:</strong> {new Date(booking.fromDateTime).toLocaleString()}</p>
                 <p><strong>To:</strong> {new Date(booking.toDateTime).toLocaleString()}</p>
                 <p><strong>Price:</strong> Rs.{booking.price}</p>

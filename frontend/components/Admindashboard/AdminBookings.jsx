@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Line, Bar, Pie } from 'react-chartjs-2';
+import { Line, Bar} from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import "../../css/Admindashboardcss/AdminBookings.css"
 

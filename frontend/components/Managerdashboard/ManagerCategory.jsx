@@ -7,11 +7,45 @@ const ManagerCategory = () => {
         labels: [],
         datasets: [],
     });
+    const [loading, setLoading] = useState(true);
+    const [location, setLocation] = useState("");
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const fetchLocation = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/grabBranch", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include" // Include cookies with the request
+                });
+
+                if (response.ok) {
+                    const branch = await response.json();
+                    setLocation(branch); // Set the branch location state
+                } else {
+                    setError("Failed to fetch Branch"); // Handle server errors
+                }
+            } catch (err) {
+                setError("An error occurred while fetching account details"); // Handle network errors
+            }
+        };
+
+        fetchLocation();
+    }, []);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const categoriesRes = await fetch('http://localhost:3000/api/dashboard/categories-cat');
+                const categoriesRes = await fetch('http://localhost:3000/api/dashboard/categories-cat', {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include"
+                });
                 if (!categoriesRes.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -34,6 +68,8 @@ const ManagerCategory = () => {
                 });
             } catch (err) {
                 console.error("Error fetching dashboard data", err);
+            } finally {
+                setLoading(false);  // Set loading to false after the fetch process
             }
         }
 
@@ -61,17 +97,23 @@ const ManagerCategory = () => {
     };
 
     return (
-        <div className="chart-wrapper">
-            <div className="chart-section">
-                <h2 className='cat' >Products by Category</h2>
-                <div className="chart-container">
-                    {categoryData.labels.length > 0 ? (
-                        <Pie data={categoryData} options={chartOptions} />
-                    ) : (
-                        <p>No data available for categories</p>
-                    )}
-                </div>
-            </div>
+        <div className="chart-wrapper" style={{ textAlign: "center" }} >
+            {
+                loading ? (
+                    <p>Loading...</p>
+                ) : (
+                    <div className="chart-section">
+                        <h2 className='cat' >Products by Category</h2>
+                        <div className="chart-container">
+                            {categoryData.labels.length > 0 ? (
+                                <Pie data={categoryData} options={chartOptions} />
+                            ) : (
+                                <p>No data available for categories</p>
+                            )}
+                        </div>
+                    </div>
+                )
+            }
         </div>
     )
 }

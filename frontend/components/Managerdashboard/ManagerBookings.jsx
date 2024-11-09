@@ -8,12 +8,53 @@ Chart.register(...registerables);
 const ManagerBookings = () => {
   const [dailyBookingsData, setDailyBookingsData] = useState([]);
   const [monthlyBookingsData, setMonthlyBookingsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [location, setLocation] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchLocation = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/grabBranch", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include" // Include cookies with the request
+        });
+
+        if (response.ok) {
+          const branch = await response.json();
+          setLocation(branch); // Set the branch location state
+        } else {
+          setError("Failed to fetch Branch"); // Handle server errors
+        }
+      } catch (err) {
+        setError("An error occurred while fetching account details"); // Handle network errors
+      }
+    };
+
+    fetchLocation();
+  }, []);
+
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const dailyBookingsRes = await fetch('http://localhost:3000/api/dashboard/daily-bookings-cat');
-        const monthlyBookingsRes = await fetch('http://localhost:3000/api/dashboard/monthly-bookings-cat');
+        const dailyBookingsRes = await fetch('http://localhost:3000/api/dashboard/daily-bookings-cat', {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include"
+        });
+        const monthlyBookingsRes = await fetch('http://localhost:3000/api/dashboard/monthly-bookings-cat', {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include"
+        });
 
         if (!dailyBookingsRes.ok || !monthlyBookingsRes.ok) {
           throw new Error('Network response was not ok');
@@ -26,6 +67,8 @@ const ManagerBookings = () => {
 
       } catch (err) {
         console.error("Error fetching dashboard data", err);
+      } finally {
+        setLoading(false);  // Set loading to false after the fetch process
       }
     }
     fetchDashboardData();
@@ -64,26 +107,32 @@ const ManagerBookings = () => {
   };
 
   return (
-    <div>
-       <div className="chart-section-2">
-                <div className="chart-container">
-                <h2>Daily Bookings</h2>
-                    {dailyBookingsData.length > 0 ? (
-                        <Line data={dailyBookingsChartData} />
-                    ) : (
-                        <p>No daily bookings data available</p>
-                    )}
-                </div>
-               
-                <div className="chart-container">
-                <h2>Monthly Bookings</h2>
-                    {monthlyBookingsData.length > 0 ? (
-                        <Bar data={monthlyBookingsChartData} />
-                    ) : (
-                        <p>No monthly bookings data available</p>
-                    )}
-                </div>
-            </div>
+    <div style={{ textAlign: "center" }} >
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div className="chart-section-2">
+          <div className="location-m">{location}</div>
+          <div className="chart-container">
+            <h2>Daily Bookings(Previous 7 days)</h2>
+            {dailyBookingsData.length > 0 ? (
+              <Line data={dailyBookingsChartData} />
+            ) : (
+              <p>No daily bookings data available</p>
+            )}
+          </div>
+
+          <div className="chart-container">
+            <h2>Monthly Bookings</h2>
+            {monthlyBookingsData.length > 0 ? (
+              <Bar data={monthlyBookingsChartData} />
+            ) : (
+              <p>No monthly bookings data available</p>
+            )}
+          </div>
+        </div>
+      )
+      }
     </div>
   )
 }

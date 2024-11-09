@@ -42,3 +42,19 @@
         width: 100%;
     }
 }
+
+.location-m {
+    writing-mode: vertical-rl; /* Makes the text vertical */
+    text-align: center; /* Center the text */
+    transform: rotate(180deg); /* Flip the text to face right */
+    position: absolute; /* Position it on the left */
+    left: 30%; /* Align to the left edge */
+    top: 50%; /* Center it vertically */
+    transform: translateY(-50%) rotate(180deg); /* Adjust position */
+    font-size: 24px; /* Increase font size */
+    white-space: nowrap; /* Prevent text wrapping */
+    background-color: #f1ebfd;
+    padding: 25px;
+    border-radius: 10px;
+  }
+  

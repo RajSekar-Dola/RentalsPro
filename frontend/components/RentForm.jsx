@@ -31,7 +31,6 @@ const RentForm = () => {
             .then((data) => setLocations(data.locations))
             .catch((error) => console.error('Error fetching locations:', error));
 
-        console.log(locations);
     }, []);
 
     useEffect(() => {
@@ -133,7 +132,6 @@ const RentForm = () => {
         if (parts.length === 2) return parts.pop().split(';').shift();
     };
     const handleSubmit = async (e) => {
-
         const userid = getCookieValue('user_id');
         if (!userid) {
             sessionStorage.setItem('lastpage', 'bookingpage');
@@ -209,7 +207,7 @@ const RentForm = () => {
             }
         } catch (error) {
             console.log("Error during submission:", error);
-            setError(true);
+            setError(true)
             setmessage("An error occurred during submission. Please try again.");
         }
     };

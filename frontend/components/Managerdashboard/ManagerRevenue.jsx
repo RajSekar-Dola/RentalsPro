@@ -7,12 +7,52 @@ Chart.register(...registerables);
 const ManagerRevenue = () => {
     const [dailyRevenueData, setDailyRevenueData] = useState([]);
     const [monthlyRevenueData, setMonthlyRevenueData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [location, setLocation] = useState("");
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const fetchLocation = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/grabBranch", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include" // Include cookies with the request
+                });
+
+                if (response.ok) {
+                    const branch = await response.json();
+                    setLocation(branch); // Set the branch location state
+                } else {
+                    setError("Failed to fetch Branch"); // Handle server errors
+                }
+            } catch (err) {
+                setError("An error occurred while fetching account details"); // Handle network errors
+            }
+        };
+
+        fetchLocation();
+    }, []);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const dailyRevenueRes = await fetch('http://localhost:3000/api/dashboard/daily-revenue-cat');
-                const monthlyRevenueRes = await fetch('http://localhost:3000/api/dashboard/monthly-revenue-cat');
+                const dailyRevenueRes = await fetch('http://localhost:3000/api/dashboard/daily-revenue-cat', {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include"
+                });
+                const monthlyRevenueRes = await fetch('http://localhost:3000/api/dashboard/monthly-revenue-cat', {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include"
+                });
 
                 if (!dailyRevenueRes.ok || !monthlyRevenueRes.ok) {
                     throw new Error('Network response was not ok');
@@ -25,16 +65,18 @@ const ManagerRevenue = () => {
                 setMonthlyRevenueData(monthlyRevenueData);
             } catch (err) {
                 console.error("Error fetching dashboard data", err);
+            } finally {
+                setLoading(false);  // Set loading to false after the fetch process
             }
         }
         fetchDashboardData()
     }, [])
 
     const dailyRevenueLabels = dailyRevenueData.map(item => item._id);
-    const dailyRevenueCounts = dailyRevenueData.map(item => item.totalRevenue); 
+    const dailyRevenueCounts = dailyRevenueData.map(item => item.totalRevenue);
 
     const monthlyRevenueLabels = monthlyRevenueData.map(item => `${item._id.year}-${item._id.month}`);
-    const monthlyRevenueCounts = monthlyRevenueData.map(item => item.totalRevenue); 
+    const monthlyRevenueCounts = monthlyRevenueData.map(item => item.totalRevenue);
 
     const dailyRevenueChartData = {
         labels: dailyRevenueLabels,
@@ -63,26 +105,31 @@ const ManagerRevenue = () => {
     };
 
     return (
-        <div>
-            <div className="chart-section-2">
-                <div className="chart-container">
-                    <h2>Daily Revenue</h2>
-                    {dailyRevenueData.length > 0 ? (
-                        <Line data={dailyRevenueChartData} />
-                    ) : (
-                        <p>No daily revenue data available</p>
-                    )}
-                </div>
+        <div style={{ textAlign: "center" }} >
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                <div className="chart-section-2">
+                    <div className="location-m">{location}</div>
+                    <div className="chart-container">
+                        <h2>Daily Revenue(Previous 7 days)</h2>
+                        {dailyRevenueData.length > 0 ? (
+                            <Line data={dailyRevenueChartData} />
+                        ) : (
+                            <p>No daily revenue data available</p>
+                        )}
+                    </div>
 
-                <div className="chart-container">
-                    <h2>Monthly Revenue</h2>
-                    {monthlyRevenueData.length > 0 ? (
-                        <Bar data={monthlyRevenueChartData} />
-                    ) : (
-                        <p>No monthly revenue data available</p>
-                    )}
+                    <div className="chart-container">
+                        <h2>Monthly Revenue</h2>
+                        {monthlyRevenueData.length > 0 ? (
+                            <Bar data={monthlyRevenueChartData} />
+                        ) : (
+                            <p>No monthly revenue data available</p>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     )
 }

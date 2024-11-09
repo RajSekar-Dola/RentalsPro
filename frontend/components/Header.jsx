@@ -7,7 +7,6 @@ export default function Header() {
   const [islogin,setislogin]=useState(false);
 
 
-
 useEffect(() => {
   const checkLoginStatus = () => {
     const usernameCookie = document.cookie
@@ -20,7 +19,6 @@ useEffect(() => {
   };
   checkLoginStatus();
 }, []);
-
 
 
   return (

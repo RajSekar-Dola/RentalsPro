@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { response } from 'express';
 import bcrypt from 'bcryptjs';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -9,6 +9,8 @@ import { Product } from './backend/models/ProductSchema.js';
 import { Booking } from './backend/models/Bookings.js';
 import { Location } from "./backend/models/Locations.js";
 import { Manager } from './backend/models/ManagerSchema.js';
+import { Admin } from './backend/models/Admin.js';
+
 import mongoose from 'mongoose';
 const url = 'mongodb://localhost:27017/Rentals';
 const app = express();
@@ -25,9 +27,6 @@ connecttomongodb(url)
   .catch(err => {
     console.error('Failed to connect to MongoDB', err);
   });
-
-
-//Signup
 
 app.post('/signup', async (req, res) => {
   const { username, email, dateofbirth, password } = req.body;
@@ -63,44 +62,73 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-
-
-
-//Login
-
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, role } = req.body;
 
   if (!username || !password) {
     return res.status(400).json({ errormessage: 'All fields are required' });
   }
 
   try {
-    const existingUser = await User.findOne({ username });
-    if (!existingUser) {
-      return res.status(401).json({ errormessage: 'Username not Found !' });
-    }
-    else {
-      const checkpassword = await bcrypt.compare(password, existingUser.password)
-      if (!checkpassword) {
-        return res.status(401).json({ errormessage: 'Password is incorrect !' });
+    let user_id;
+
+    if (role === "Manager") {
+      const existingManager = await Manager.findOne({ username });
+      if (existingManager) {
+        const checkManagerPassword = await bcrypt.compare(password, existingManager.password);
+        if (!checkManagerPassword) {
+          return res.status(401).json({ errormessage: 'Password is incorrect for Manager!' });
+        }
+        user_id = existingManager._id.toString(); // Set user_id for Manager
+      } else {
+        return res.status(401).json({ errormessage: 'Manager not found!' });
       }
+    } else if (role === "User") {
+      const existingUser = await User.findOne({ username });
+      if (!existingUser) {
+        return res.status(401).json({ errormessage: 'Username not found!' });
+      }
+
+      const checkpassword = await bcrypt.compare(password, existingUser.password);
+      if (!checkpassword) {
+        return res.status(401).json({ errormessage: 'Password is incorrect!' });
+      }
+      user_id = existingUser._id.toString(); // Set user_id for User
+    } else {
+      const existingUser = await Admin.findOne({ username });
+      if (!existingUser) {
+        return res.status(401).json({ errormessage: 'Username not found!' });
+      }
+      const checkpassword = password === existingUser.password;
+      if (!checkpassword) {
+        return res.status(401).json({ errormessage: 'Password is incorrect!' });
+      }
+      user_id = existingUser._id.toString();
     }
 
-    //storing in cookies
+    // Set cookie for user (either Manager or User)
+    res.cookie('user_id', user_id, {
+      httpOnly: false,
+      secure: false,
+      sameSite: 'lax',
+      path: '/',
+      // expires:(24*60*60*1000 + new Date()),
+    });
 
-    // res.cookie('username',username, { httpOnly: false, secure: false, sameSite: 'lax',path:'/' });
-    res.cookie('user_id', existingUser._id.toString(), { httpOnly: false, secure: false, sameSite: 'lax', path: '/' });
-    res.status(200).json({ errormessage: 'User Login successfully' });
+    res.cookie('role', role, {
+      httpOnly: false,
+      secure: false,
+      sameSite: 'lax',
+      path: '/'
+      // expires:(24*60*60*1000 + new Date()),
+    });
+
+    res.status(200).json({ successmessage: `${role} Login successfully` });
   } catch (error) {
-    console.error('Error occured while logging in :', error);
-    res.status(500).json({ errormessage: 'Error while user logging in !' });
+    console.error('Error occurred while logging in:', error);
+    res.status(500).json({ errormessage: 'Error while user logging in!' });
   }
 });
-
-
-
-//RentForm
 
 app.post('/RentForm', async (req, res) => {
   const { productType,
@@ -124,11 +152,11 @@ app.post('/RentForm', async (req, res) => {
     const exist_user = await User.findOne({ _id: cookieuserid });
 
     const newProduct = new Product({
-      userid: cookieuserid, // Use 'username' to match schema
+      userid: cookieuserid,
       productType,
       productName,
       locationName,
-      fromDateTime: new Date(fromDate), // Convert to Date object
+      fromDateTime: new Date(fromDate),
       toDateTime: new Date(toDate),     // Convert to Date object
       price,
       photo: image, // Use 'photo' to match schema
@@ -149,7 +177,6 @@ app.post('/RentForm', async (req, res) => {
   }
 });
 
-
 app.post('/products', async (req, res) => {
   try {
     const { productType, locationName, fromDateTime, toDateTime, price } = await req.body;
@@ -160,14 +187,13 @@ app.post('/products', async (req, res) => {
     if (toDateTime) query.toDateTime = { $lte: new Date(toDateTime) };
     if (price) query.price = { $lte: price };
     const products = await Product.find(query);
+
     res.status(200).json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).json({ errormessage: 'Failed to fetch products' });
   }
 });
-
-
 
 app.post('/product/:product_id', async (req, res) => {
   const { product_id } = req.params;
@@ -232,7 +258,6 @@ app.post('/booking', async (req, res) => {
   }
 });
 
-
 app.get('/admindashboard/registeredusers', async (req, res) => {
   try {
     const users = await User.find({});
@@ -273,8 +298,6 @@ app.post('/admindashboard/deleteusers', async (req, res) => {
   }
 });
 
-
-
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -283,46 +306,46 @@ app.listen(PORT, () => {
 
 app.get("/grabBookings", async (req, res) => {
   try {
-    if (req.cookies.user_id) {
-      const userid = req.cookies.user_id;
-
-      // Find the user by their user_id
-      const exist_user = await User.findOne({ _id: userid });
-
-      if (exist_user) {
-        // Get all booking IDs from the user's bookings field
-        const bookingIds = exist_user.bookings;
-
-        // Fetch all bookings for the user based on their booking IDs
-        const bookings = await Booking.find({ _id: { $in: bookingIds } });
-
-        if (bookings.length > 0) {
-          // Extract all product IDs from the bookings
-          const productIds = bookings.map(booking => booking.product_id);
-
-          // Fetch all products associated with those product IDs
-          const products = await Product.find({ _id: { $in: productIds } });
-
-          // Return the booking details along with the related product details
-          res.json({
-            BookingDetails: bookings,
-            ProductDetails: products,
-          });
-        } else {
-          res.status(404).json({ message: "No booking details found for this user" });
-        }
-      } else {
-        res.status(404).json({ message: "User not found" });
-      }
-    } else {
-      res.status(400).json({ message: "No userid cookie found" });
+    const userid = req.cookies.user_id;
+    if (!userid) {
+      return res.status(400).json({ message: "No userid cookie found" });
     }
+
+    const exist_user = await User.findById(userid);
+    if (!exist_user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Get all booking IDs from the user's bookings field
+    const bookingIds = exist_user.bookings;
+    const bookings = await Booking.find({ _id: { $in: bookingIds } });
+
+    if (bookings.length === 0) {
+      return res.status(404).json({ message: "No booking details found for this user" });
+    }
+
+    // Extract product IDs from bookings
+    const productIds = bookings.map(booking => booking.product_id);
+    const newproducts = await Product.find({ _id: { $in: productIds } });
+
+    // Fetch user data for all products concurrently
+    const userPromises = newproducts.map(async (product) => {
+      const user = await User.findById(product.userid);
+      return { ...product.toObject(), ...user }; // Merge product and user data
+    });
+
+    const products = await Promise.all(userPromises);
+
+    // Return the booking details along with the related product details
+    res.json({
+      BookingDetails: bookings,
+      ProductDetails: products,
+    });
   } catch (err) {
-    res.status(500).json({ message: "An error occurred", error: err.message });
+    console.error("Error fetching bookings:", err); // Log error for debugging
+    res.status(500).json({ message: "An error occurred", error: "Internal Server Error" });
   }
-
 });
-
 
 app.post("/settings", async (req, res) => {
   try {
@@ -370,20 +393,12 @@ app.post("/settings", async (req, res) => {
     await existingUser.save();
     console.log(existingUser)
 
-    // If username is changed, update the cookie
-    // if (editUsername && editUsername !== currentUserid) {
-    //   res.clearCookie('user_id');
-    //   res.cookie('user_id', editUsername, { httpOnly: false, secure: false, sameSite: 'lax' });
-    // }
-
     res.status(200).json({ message: "User details updated successfully" });
   } catch (err) {
     console.error("Error updating user details:", err);
     res.status(500).json({ message: "An error occurred while updating user details" });
   }
 });
-
-
 
 app.get("/grabDetails", async (req, res) => {
   try {
@@ -432,7 +447,6 @@ app.get("/grabRentals", async (req, res) => {
   }
 });
 
-
 app.post('/signOut', async (req, res) => {
   try {
     const userid = req.cookies.user_id;
@@ -447,6 +461,12 @@ app.post('/signOut', async (req, res) => {
       path: '/'
     });
 
+    res.clearCookie('role', {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/'
+    });
+
     res.status(200).json({ message: 'Successfully signed out' });
   } catch (err) {
     console.error('Error during sign out:', err);
@@ -454,7 +474,6 @@ app.post('/signOut', async (req, res) => {
   }
 });
 
-// API for daily bookings (last 7 days)
 app.get("/api/dashboard/daily-bookings", async (req, res) => {
   try {
     const today = new Date();
@@ -476,14 +495,12 @@ app.get("/api/dashboard/daily-bookings", async (req, res) => {
       },
       { $sort: { _id: 1 } } // Sort by date ascending
     ]);
-
     res.json(bookings);
   } catch (err) {
     res.status(500).json({ message: "Error fetching daily bookings", error: err.message });
   }
 });
 
-// API for monthly bookings
 app.get("/api/dashboard/monthly-bookings", async (req, res) => {
   try {
     const bookings = await Booking.aggregate([
@@ -532,7 +549,6 @@ app.get("/api/dashboard/daily-revenue", async (req, res) => {
     res.status(500).json({ message: "Error fetching daily revenue", error: err.message });
   }
 });
-
 
 app.get("/api/dashboard/monthly-revenue", async (req, res) => {
   try {
@@ -584,7 +600,6 @@ app.get("/api/dashboard/daily-uploads", async (req, res) => {
   }
 });
 
-// API for monthly uploads
 app.get("/api/dashboard/monthly-uploads", async (req, res) => {
   try {
     const uploads = await Product.aggregate([
@@ -620,52 +635,164 @@ app.get("/api/dashboard/categories", async (req, res) => {
   }
 });
 
+app.post('/admindashboard/createmanager', async (req, res) => {
+  console.log(req.body);
+  const { username, email, password, branch } = req.body;
+  if (!username || !email || !branch || !password) {
+    return res.status(409).json({ errormessage: 'All fields are required' });
+  }
+
+  try {
+    const existingUser = await Manager.findOne({ username });
+    const existingEmail = await Manager.findOne({ email });
+    const existingbranch = await Manager.findOne({ branch });
+    if (existingbranch) {
+      return res.status(409).json({ errormessage: 'Manager for branch already exists !' });
+    }
+    if (existingEmail) {
+      return res.status(409).json({ errormessage: 'Email already exists' });
+    }
+    if (existingUser) {
+      return res.status(409).json({ errormessage: 'Username already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newManager = new Manager({
+      username,
+      email,
+      password: hashedPassword,
+      branch: branch,
+      notifications: [],
+    });
+
+    await newManager.save();
+    res.status(201).json({ errormessage: 'Manager created successfully !' });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ errormessage: 'Error creating Manager' });
+  }
+
+})
+
+app.get('/admindashboard/registeredmanagers', async (req, res) => {
+  try {
+    const users = await Manager.find({});
+    const usercount = await Manager.countDocuments({});
+    if (users.length === 0) {
+      return res.status(200).json({ error: 'No managers found!' });
+    }
+    return res.status(200).json({ registercount: usercount, managers: users });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Server error!' });
+  }
+});
+
+app.post('/admindashboard/deletemanagers', async (req, res) => {
+
+  const { manager_id, forceDelete } = req.body;
+
+  try {
+    if (!forceDelete) {
+      return res.status(200).json({ alert: true, });
+    }
+    const deletedUser = await Manager.findByIdAndDelete(manager_id);
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'Manager not found in database!' });
+    }
+    return res.status(200).json({ message: 'Manager deleted successfully!' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error!' });
+  }
+
+})
+
 app.get('/locations', async (req, res) => {
   try {
     const locations = await Location.find({});
-    res.json({ locations: locations[0].locations }); // Assuming there's only one document
+    res.json({ locations: locations[0].locations });
   } catch (error) {
     console.error('Error fetching locations:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
-const branch = "BHAVANIPURAM";
+const findBranch = async (userId) => {
+  let branch;
+  try {
+    const manager = await Manager.findById(userId);
+    branch = manager.branch
+    branch = manager ? manager.branch : null;
+  } catch (err) {
+    return "Error fetching Details";
+  }
+  return branch;
+}
+
+app.get("/grabBranch", async (req, res) => {
+  try {
+    const branch = await findBranch(req.cookies.user_id);
+    if (req.cookies.role === 'Manager') {
+      res.json(branch); // Use res instead of response
+    } else {
+      res.json({ message: "Unable to fetch branch" })
+    }
+
+  } catch (err) {
+    console.error("Error fetching branch:", err); // Log the error for debugging
+    res.status(500).json({ message: "Error fetching branch", error: err.message }); // Send error response
+  }
+});
+
+app.get("/grabManager", async (req, res) => {
+  const userId = req.cookies.user_id;
+  console.log("User ID from cookie:", userId); // Log user ID
+
+  if (!userId) {
+    return res.status(400).json({ message: "No user ID found in cookies" });
+  }
+
+  try {
+    const manager = await Manager.findById(userId);
+    if (!manager) {
+      console.log("No manager found for user ID:", userId); // Log if no manager found
+      return res.status(404).json({ message: "Manager not found" });
+    }
+    const name = manager.username;
+    res.json(name);
+  } catch (err) {
+    console.error("Error fetching Name", err);
+    res.status(500).json({ message: "Error fetching Name", error: err.message });
+  }
+});
+
 app.get("/api/dashboard/daily-bookings-cat", async (req, res) => {
   try {
     const today = new Date();
-    
-    // Step 1: Fetch product IDs from Booking in the last 7 days
+    const branch = await findBranch(req.cookies.user_id)
     const bookings = await Booking.find({
       bookingDate: { $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6) }
     }).select("product_id");
 
-    console.log("Bookings:", bookings); // Log bookings retrieved
-
     const productIds = bookings.map(booking => booking.product_id);
 
-    // Check if we found any product IDs
     if (productIds.length === 0) {
-      return res.json([]); // No bookings found
+      return res.json([]);
     }
 
-    // Step 2: Fetch products that match the collected productIds and filter by location
     const products = await Product.find({
-      _id: { $in: productIds.map(id => new mongoose.Types.ObjectId(id)) }, // Use 'new' to instantiate ObjectId
-      locationName: branch // Assuming 'branch' is passed properly as a query param or constant
+      _id: { $in: productIds.map(id => new mongoose.Types.ObjectId(id)) },
+      locationName: branch
     });
 
-    console.log("Products:", products); // Log products retrieved
-
-    // Check if we found any products
     if (products.length === 0) {
-      return res.json([]); // No products found for the location
+      return res.json([]);
     }
 
-    // Step 3: Collect the filtered product IDs
     const filteredProductIds = products.map(product => product._id.toString());
 
-    // Step 4: Aggregate bookings using the filtered product IDs
     const aggregatedBookings = await Booking.aggregate([
       {
         $match: {
@@ -684,8 +811,6 @@ app.get("/api/dashboard/daily-bookings-cat", async (req, res) => {
       { $sort: { _id: 1 } }
     ]);
 
-    console.log("Aggregated Bookings:", aggregatedBookings); // Log aggregated bookings
-
     res.json(aggregatedBookings);
   } catch (err) {
     console.error("Error fetching daily bookings:", err); // Log the error for debugging
@@ -693,97 +818,203 @@ app.get("/api/dashboard/daily-bookings-cat", async (req, res) => {
   }
 });
 
-
-
-// Monthly Bookings by Location
 app.get("/api/dashboard/monthly-bookings-cat", async (req, res) => {
   try {
-    const bookings = await Booking.aggregate([
+    const today = new Date();
+    const lastYearStart = new Date(today.getFullYear(), today.getMonth() - 11, 1); // Start from 12 months ago
+    const branch = await findBranch(req.cookies.user_id)
+    if (!branch) {
+      return res.status(400).json({ message: "Branch is required" });
+    }
+
+    // Step 2: Fetch bookings from the last 12 months
+    const bookings = await Booking.find({
+      bookingDate: { $gte: lastYearStart } // Only include bookings in the last 12 months
+    }).select("product_id");
+
+    const productIds = bookings.map(booking => booking.product_id);
+
+    // Check if we found any product IDs
+    if (productIds.length === 0) {
+      return res.json([]); // No bookings found
+    }
+
+    // Step 3: Fetch products by matching product IDs and filtering by location (branch)
+    const products = await Product.find({
+      _id: { $in: productIds.map(id => new mongoose.Types.ObjectId(id)) }, // Use 'new' to instantiate ObjectId
+      locationName: branch // Filter by branch
+    });
+
+    // Check if we found any products
+    if (products.length === 0) {
+      return res.json([]); // No products found for the location
+    }
+
+    // Step 4: Collect the filtered product IDs
+    const filteredProductIds = products.map(product => product._id.toString());
+
+    // Step 5: Aggregate bookings by month and year using the filtered product IDs
+    const aggregatedBookings = await Booking.aggregate([
       {
         $match: {
-          ...(branch && { locationName: branch }) // Match locationName if branch is provided
+          product_id: { $in: filteredProductIds }, // Match product_id to filtered product IDs
+          bookingDate: { $gte: lastYearStart } // Filter bookings from the last 12 months
         }
       },
       {
         $group: {
           _id: {
             year: { $year: "$bookingDate" },
-            month: { $month: "$bookingDate" }
+            month: { $month: "$bookingDate" },
+            branch: branch // Add branch to grouping
           },
-          count: { $sum: 1 }
+          count: { $sum: 1 } // Count the number of bookings per month per branch
         }
       },
-      { $sort: { "_id.year": 1, "_id.month": 1 } }
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 } // Sort by year and month
+      }
     ]);
 
-    res.json(bookings);
+    res.json(aggregatedBookings);
   } catch (err) {
+    console.error("Error fetching monthly bookings:", err); // Log the error for debugging
     res.status(500).json({ message: "Error fetching monthly bookings", error: err.message });
   }
 });
 
-// Daily Revenue by Location
 app.get("/api/dashboard/daily-revenue-cat", async (req, res) => {
   try {
     const today = new Date();
-    const startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6);
+    const lastWeekStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6); // Start from 7 days ago
+    const branch = await findBranch(req.cookies.user_id)
 
-    const dailyRevenue = await Booking.aggregate([
+    if (!branch) {
+      return res.status(400).json({ message: "Branch is required" });
+    }
+
+    // Step 2: Fetch bookings from the last 7 days
+    const bookings = await Booking.find({
+      bookingDate: { $gte: lastWeekStart } // Only include bookings from the last 7 days
+    }).select("product_id"); // Assume price is the revenue field
+
+    const productIds = bookings.map(booking => booking.product_id);
+
+    // Check if we found any product IDs
+    if (productIds.length === 0) {
+      return res.json([]); // No bookings found
+    }
+
+    // Step 3: Fetch products by matching product IDs and filtering by location (branch)
+    const products = await Product.find({
+      _id: { $in: productIds.map(id => new mongoose.Types.ObjectId(id)) }, // Use 'new' to instantiate ObjectId
+      locationName: branch // Filter by branch
+    });
+
+    // Check if we found any products
+    if (products.length === 0) {
+      return res.json([]); // No products found for the location
+    }
+
+    // Step 4: Collect the filtered product IDs
+    const filteredProductIds = products.map(product => product._id.toString());
+
+    // Step 5: Aggregate revenue by day using the filtered product IDs
+    const aggregatedRevenue = await Booking.aggregate([
       {
         $match: {
-          bookingDate: { $gte: startOfWeek },
-          ...(branch && { locationName: branch }) // Match locationName if branch is provided
+          product_id: { $in: filteredProductIds }, // Match product_id to filtered product IDs
+          bookingDate: { $gte: lastWeekStart } // Filter bookings from the last 7 days
         }
       },
       {
         $group: {
           _id: {
-            $dateToString: { format: "%Y-%m-%d", date: "$bookingDate" }
+            $dateToString: { format: "%Y-%m-%d", date: "$bookingDate" },
           },
-          totalRevenue: { $sum: "$price" }
+          totalRevenue: { $sum: "$price" } // Correctly reference the price field with $price
         }
       },
-      { $sort: { _id: 1 } }
+      {
+        $sort: { _id: 1 } // Sort by date in ascending order
+      }
     ]);
 
-    res.json(dailyRevenue);
+    res.json(aggregatedRevenue);
   } catch (err) {
+    console.error("Error fetching daily revenue:", err); // Log the error for debugging
     res.status(500).json({ message: "Error fetching daily revenue", error: err.message });
   }
 });
 
-// Monthly Revenue by Location
 app.get("/api/dashboard/monthly-revenue-cat", async (req, res) => {
   try {
-    const monthlyRevenue = await Booking.aggregate([
+    const today = new Date();
+    const lastYearStart = new Date(today.getFullYear(), today.getMonth() - 11, 1); // Start from 12 months ago
+    const branch = await findBranch(req.cookies.user_id)
+    if (!branch) {
+      return res.status(400).json({ message: "Branch is required" });
+    }
+
+    // Step 1: Fetch bookings from the last 12 months
+    const bookings = await Booking.find({
+      bookingDate: { $gte: lastYearStart } // Only include bookings in the last 12 months
+    }).select("product_id price bookingDate");
+
+    const productIds = bookings.map(booking => booking.product_id);
+
+    // Check if we found any product IDs
+    if (productIds.length === 0) {
+      return res.json([]); // No bookings found
+    }
+
+    // Step 2: Fetch products by matching product IDs and filtering by location (branch)
+    const products = await Product.find({
+      _id: { $in: productIds.map(id => new mongoose.Types.ObjectId(id)) }, // Use 'new' to instantiate ObjectId
+      locationName: branch // Filter by branch
+    });
+
+    // Check if we found any products
+    if (products.length === 0) {
+      return res.json([]); // No products found for the location
+    }
+
+    // Step 3: Collect the filtered product IDs
+    const filteredProductIds = products.map(product => product._id.toString());
+
+    // Step 4: Aggregate revenue by month and year using the filtered product IDs
+    const aggregatedRevenue = await Booking.aggregate([
       {
         $match: {
-          ...(branch && { locationName: branch }) // Match locationName if branch is provided
+          product_id: { $in: filteredProductIds }, // Match product_id to filtered product IDs
+          bookingDate: { $gte: lastYearStart } // Filter bookings from the last 12 months
         }
       },
       {
         $group: {
           _id: {
-            year: { $year: "$bookingDate" },
-            month: { $month: "$bookingDate" }
+            year: { $year: "$bookingDate" }, // Group by year
+            month: { $month: "$bookingDate" } // Group by month
           },
-          totalRevenue: { $sum: "$price" }
+          totalRevenue: { $sum: "$price" } // Sum the price for total revenue
         }
       },
-      { $sort: { "_id.year": 1, "_id.month": 1 } }
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 } // Sort by year and month
+      }
     ]);
 
-    res.json(monthlyRevenue);
+    res.json(aggregatedRevenue);
   } catch (err) {
+    console.error("Error fetching monthly revenue:", err); // Log the error for debugging
     res.status(500).json({ message: "Error fetching monthly revenue", error: err.message });
   }
 });
 
-// Daily Uploads by Location
 app.get("/api/dashboard/daily-uploads-cat", async (req, res) => {
   try {
     const today = new Date();
-
+    const branch = await findBranch(req.cookies.user_id)
     const uploads = await Product.aggregate([
       {
         $match: {
@@ -808,9 +1039,9 @@ app.get("/api/dashboard/daily-uploads-cat", async (req, res) => {
   }
 });
 
-// Monthly Uploads by Location
 app.get("/api/dashboard/monthly-uploads-cat", async (req, res) => {
   try {
+    const branch = await findBranch(req.cookies.user_id)
     const uploads = await Product.aggregate([
       {
         $match: {
@@ -835,11 +1066,10 @@ app.get("/api/dashboard/monthly-uploads-cat", async (req, res) => {
   }
 });
 
-// Categories by Location
 app.get("/api/dashboard/categories-cat", async (req, res) => {
   try {
     const today = new Date();
-
+    const branch = await findBranch(req.cookies.user_id)
     const categories = await Product.aggregate([
       {
         $match: {
@@ -858,80 +1088,49 @@ app.get("/api/dashboard/categories-cat", async (req, res) => {
   }
 });
 
+app.get("/grabAdmin", async (req, res) => {
+  const userId = req.cookies.user_id;
+  console.log("User ID from cookie:", userId); // Log user ID
 
-app.post('/admindashboard/createmanager',async(req,res)=>{
-  console.log(req.body);
-  const { username, email,password ,branch} = req.body;
-  if (!username || !email || !branch || !password) {
-    return res.status(409).json({ errormessage: 'All fields are required' });
+  if (!userId) {
+    return res.status(400).json({ message: "No user ID found in cookies" });
   }
 
   try {
-    const existingUser = await Manager.findOne({ username });
-    const existingEmail = await Manager.findOne({ email });
-    const existingbranch= await Manager.findOne({branch});
-    if(existingbranch)
-    {
-      return res.status(409).json({ errormessage: 'Manager for branch already exists !'});
+    const admin = await Admin.findById(userId);
+    console.log("admin", admin);
+    if (!admin) {
+      console.log("No Admin found for user ID:", userId); // Log if no admin found
+      return res.status(404).json({ message: "Admin not found" });
     }
-    if (existingEmail) {
-      return res.status(409).json({ errormessage: 'Email already exists' });
-    }
-    if (existingUser) {
-      return res.status(409).json({ errormessage: 'Username already exists' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newManager = new Manager({
-      username,
-      email,
-      password: hashedPassword,
-      branch:branch,
-      notifications:[],
-    });
-
-    await newManager.save();
-    res.status(201).json({ errormessage: 'Manager created successfully !' });
-  } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).json({ errormessage: 'Error creating Manager' });
-  }
-
-})
-
-
-app.get('/admindashboard/registeredmanagers', async (req, res) => {
-  try {
-    const users = await Manager.find({});
-    const usercount = await Manager.countDocuments({});
-    if (users.length === 0) {
-      return res.status(200).json({ error: 'No managers found!' });
-    }
-    return res.status(200).json({ registercount: usercount, managers: users });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Server error!' });
+    const name = admin.username;
+    res.json({ name }); // Return the name inside an object
+  } catch (err) {
+    console.error("Error fetching Name", err);
+    res.status(500).json({ message: "Error fetching Name", error: err.message });
   }
 });
 
-
-app.post('/admindashboard/deletemanagers',async(req,res)=>{
-
-  const { manager_id, forceDelete } = req.body;
+app.post('/api/addBranch', async (req, res) => {
+  const { name } = req.body;
 
   try {
-    if (!forceDelete) {
-      return res.status(200).json({ alert: true, });
-    }
-    const deletedUser = await Manager.findByIdAndDelete(manager_id);
-    if (!deletedUser) {
-      return res.status(404).json({ message: 'Manager not found in database!' });
-    }
-    return res.status(200).json({ message: 'Manager deleted successfully!' });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error!' });
-  }
+    let locationDoc = await Location.findOne();
 
-})
+    if (locationDoc) {
+      if (locationDoc.locations.includes(name)) {
+        return res.status(400).json({ message: 'Branch is already in existence' });
+      }
+
+      locationDoc.locations.push(name);
+      await locationDoc.save();
+    } else {
+      locationDoc = new Location({ locations: [name] });
+      await locationDoc.save();
+    }
+
+    res.status(201).json({ message: 'Location added successfully', locations: locationDoc.locations });
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding location', error });
+  }
+});

@@ -8,7 +8,6 @@
     background-color: #f4f4f4; /* Background color for menu */
     padding: 20px; /* Padding around the menu */
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Shadow effect */
-    
 }
 
 .dashboard-menu h2 {
@@ -25,15 +24,16 @@
     margin-bottom: 15px; /* Space between options */
 }
 
-.dashboard-menu li a {
+.dashboard-menu li a,.out{
     text-decoration: none; /* Remove underline from links */
     color: #333; /* Link color */
     font-weight: bold; /* Bold text */
     transition: color 0.3s; /* Smooth color transition */
 }
 
-.dashboard-menu li a:hover {
+.dashboard-menu li :hover,.out:hover {
     color: #007bff; /* Change color on hover */
+    cursor: pointer;
 }
 
 .dashboard-content {

@@ -15,6 +15,7 @@ import AdminRevenue from '../frontend/components/Admindashboard/AdminRevenue.jsx
 import AdminUploads from '../frontend/components/Admindashboard/AdminUploads.jsx';
 import AdminCategory from '../frontend/components/Admindashboard/AdminCategory.jsx';
 import WelcomeAdmin from "../frontend/components/Admindashboard/AdminWelcome.jsx"
+import AddLocation from '../frontend/components/Admindashboard/AddBranch.jsx';
 
 import AccountProfile from '../frontend/components/Userdashboard/AccountProfile.jsx';
 import AccountDetails from '../frontend/components/Userdashboard/AccountDetails.jsx';
@@ -23,13 +24,14 @@ import YourRentals from "../frontend/components/Userdashboard/YourRentals.jsx";
 import AccountSettings from '../frontend/components/Userdashboard/AccountSettings.jsx';
 import ManagerForm from '../frontend/components/Admindashboard/ManagersForm.jsx';
 import Managers from "../frontend/components/Admindashboard/ManagersList.jsx"
+import ManagerDefault from '../frontend/components/Managerdashboard/ManagerDefault.jsx';
 
 import ManagerPage from "../frontend/components/ManagerPage.jsx"
 import ManagerBookings from "../frontend/components/Managerdashboard/ManagerBookings.jsx";
 import ManagerCategory from "../frontend/components/Managerdashboard/ManagerCategory.jsx";
 import ManagerRevenue from "../frontend/components/Managerdashboard/ManagerRevenue.jsx";
 import ManagerUploads from "../frontend/components/Managerdashboard/ManagerUploads.jsx";
-
+import ProtectedRoute from '../frontend/components/ProtectedRoute.jsx';
 
 import '../frontend/css/App.css';
 const allowedCategories = ['bikes', 'cars', 'cameras', 'drones','speakers','fishingrods','cycles'];
@@ -103,6 +105,10 @@ function App() {
         element:<WelcomeAdmin/>
       },
       {
+        path:"/adminpage/addLocation",
+        element:<AddLocation/>
+      },
+      {
         path:'users',
         element:<Adminusers/>,
       },
@@ -133,6 +139,10 @@ function App() {
     path:'/managerPage',
     element:<ManagerPage/>,
     children:[
+      {
+        path:"/managerPage",
+        element:<ManagerDefault/>
+      },
       {
         path:"/managerPage/bookings",
         element:<ManagerBookings/>
