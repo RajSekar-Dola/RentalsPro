@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../css/SignupLogin.css';
 
 const SignupForm = () => {
-  sessionStorage.setItem('lastpage', "signup");
+  sessionStorage.setItem('lastpage',"signup");
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -12,35 +12,32 @@ const SignupForm = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState(false);
   const [emailError, setEmailError] = useState(false);
-  const [usernameError, setUsernameError] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
   const [dateofbirth, setdateofbirth] = useState('');
   const [passwordStrength, setPasswordStrength] = useState('');
 
-  // Extended email validation for common domains
-  const validEmail = (email) => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|mil|int|info|biz|co|in|us|uk|io|ai|tech|me|dev|xyz|live|store|tv)$/i;
-    return emailPattern.test(email);
-  };
 
-  // Username validation function
-  const validateUsername = (username) => {
-    const regex = /^[a-z]{5,}$/; // Adjust regex as necessary
-    return regex.test(username);
-  };
-
-  useEffect(() => {
-    if (username) {
-      setUsernameError(!validateUsername(username));
+  function validateUsername(username) {
+    // Regular expression to match the criteria
+    const regex = /^[a-z]{5,}$/;
+    
+    // Test the username against the regex
+    if (regex.test(username)) {
+        return true; // Valid username
+    } else {
+        return false; // Invalid username
     }
-  }, [username]);
+}
+
 
   useEffect(() => {
     if (!isFocused && email !== '') {
-      setEmailError(!validEmail(email));
+      const emailPattern = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|mil|int|info|biz|co|in|us|uk|io|ai|tech|me|dev|xyz|live|store|tv)$/i;
+      setEmailError(!emailPattern.test(email));
     }
   }, [isFocused, email]);
+
 
   useEffect(() => {
     setConfirmPasswordError(password !== confirmpassword);
@@ -79,38 +76,40 @@ const SignupForm = () => {
   const validPassword = (password) => {
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     return passwordPattern.test(password);
-  };
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
     setError(false);
-
-    if (usernameError) {
+    
+    if(!validateUsername(username))
+    {
       setError(true);
-      setMessage("Username must be at least 5 lowercase letters.");
-      return;
+      setMessage("username must be 5 letters of lowercase letters !")
     }
+
 
     if (!validPassword(password)) {
       setError(true);
-      setMessage("Password must be valid!");
+      // setMessage("Password must be 8 characters with upper, lower, digit, and special character.");
+      setMessage("Password must be valid !");
       return;
     }
-
+  
     if (password !== confirmpassword) {
       setError(true);
       setMessage("Password and confirm password must be equal!");
       return;
     }
-
+  
     if (!validAge(dateofbirth)) {
       setError(true);
       setMessage("You must be at least 18 years old to sign up.");
       return;
     }
-
-    if (emailError) {
+  
+    if (emailError) { 
       setError(true);
       setMessage("Please enter a valid email!");
       return;
@@ -124,6 +123,7 @@ const SignupForm = () => {
       });
       if (!response.ok) {
         const errorResponse = await response.json();
+        console.log(errorResponse.errormessage);
         setError(true);
         setMessage(errorResponse.errormessage || "Error occurred!");
       } else {
@@ -136,95 +136,107 @@ const SignupForm = () => {
         setMessage('Signup successful!');
         sessionStorage.setItem('lastpage', 'signup');
         setTimeout(() => {
+          console.log('Navigating to login');
           navigate('/login');
-        }, 1000);
+        }, 1000);   
       }
     } catch (error) {
       setError(true);
       setMessage('An unexpected error occurred.');
-      console.error(error);
+      console.log(error);
     }
   };
 
   return (
     <div id="signin-login-page">
+      {/* <div><img id="leftimage" src={leftimage}></img></div> */}
+      <div>
       <div className="auth-toggle">
-        <button className="activebutton" onClick={() => navigate('/Signup')}>
-          Signup
-        </button>
-        <button className='inactivebutton' onClick={() => navigate('/login')}>
-          Login
-        </button>
-      </div>
-      <div className="signup-login-container signin-animate">
-        <h2 className="signup-login-title">Signup</h2>
-        <form id="signupForm" className="signup-login" onSubmit={handleSubmit}>
-          <label htmlFor="username" className="form-label">Username</label>
-          <input 
-            type="text" 
-            id="username" 
-            className="form-input" 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
-            style={{ border: usernameError ? "2px solid red" : "" }} 
-            required 
-            autoComplete='on'
-          />
 
-          <label htmlFor="email" className="form-label">Email ID</label>
-          <input 
-            type="email" 
-            id="email" 
-            className="form-input" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            onFocus={handleFocus} 
-            onBlur={handleBlur}
-            style={{ border: emailError ? "2px solid red" : "" }} 
-            required 
-            autoComplete='on'
-          />
+      <button
+            className="activebutton"
+            onClick={() => navigate('/Signup')}
+          >
+            Signup
+          </button>
 
-          <label htmlFor='dateofbirth' className="form-label">Date of Birth</label>
-          <input
-            type="date"
-            id="dateofbirth"
-            className="form-input"
-            value={dateofbirth}
-            onChange={(e) => setdateofbirth(e.target.value)}
-            required
-          />
+          <button className='inactivebutton'
+            onClick={() => navigate('/login')}
+          >
+            Login
+          </button>
 
-          <label htmlFor="password" className="form-label">Password</label>
-          <input 
-            type="password" 
-            id="password" 
-            className="form-input" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
-          />
+        </div>
+    <div className="signup-login-container signin-animate">
+      <div>
+      <h2 className="signup-login-title">Signup</h2>
 
-          <label htmlFor="confirmpassword" className="form-label">Confirm Password</label>
-          <input 
-            type="password" 
-            id="confirmpassword" 
-            className="form-input" 
-            value={confirmpassword} 
-            onChange={(e) => setConfirmPassword(e.target.value)} 
-            style={{ border: confirmPasswordError ? "2px solid red" : "" }} 
-            required 
-          />
+      <form id="signupForm" className="signup-login" onSubmit={handleSubmit}>
+        <label htmlFor="username" className="form-label">Username</label>
+        <input 
+          type="text" 
+          id="username" 
+          className="form-input" 
+          value={username} 
+          onChange={(e) => setUsername(e.target.value)} 
+          required 
+          autoComplete='on'
+        />
 
-          <label className="form-password-strength">Password Strength: {passwordStrength}</label>
-          <button type="submit" className="form-button">Sign Up</button>
+        <label htmlFor="email" className="form-label">Email ID</label>
+        <input 
+          type="email" 
+          id="email" 
+          className="form-input" 
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)} 
+          onFocus={handleFocus} 
+          onBlur={handleBlur}
+          style={{ border: emailError ? "2px solid red" : "" }} 
+          required 
+          autoComplete='on'
+        />
 
-          <div id="message" className={`form-message ${error ? 'error-message' : 'success-message'}`}>
-            {message}
-          </div>
-        </form>
-      </div>
+        <label htmlFor='dateofbirth' className="form-label">Date of Birth</label>
+        <input
+          type="date"
+          id="dateofbirth"
+          className="form-input"
+          value={dateofbirth}
+          onChange={(e) => setdateofbirth(e.target.value)}
+          required
+        />
+
+        <label htmlFor="password" className="form-label">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          className="form-input" 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)} 
+          required 
+        />
+
+        <label htmlFor="confirmpassword" className="form-label">Confirm Password</label>
+        <input 
+          type="password" 
+          id="confirmpassword" 
+          className="form-input" 
+          value={confirmpassword} 
+          onChange={(e) => setConfirmPassword(e.target.value)} 
+          style={{ border: confirmPasswordError ? "2px solid red" : "" }} 
+          required 
+        />
+        <label className="form-password-strength">Password Strength: {passwordStrength}</label>
+        <button type="submit" className="form-button">Sign Up</button>
+        <div id="message" className={`form-message ${error ? 'error-message' : 'success-message'}`}>
+          {message}
+        </div>
+      </form>
     </div>
+    </div>
+    </div>
+</div>
   );
 };
 

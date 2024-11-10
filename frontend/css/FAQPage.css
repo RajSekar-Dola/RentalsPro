@@ -1,0 +1,76 @@
+/* FAQPage.css */
+.faq-container {
+    position: relative;
+    padding: 2rem;
+    margin: 0 auto;
+    max-width: 800px;
+  }
+  
+  .faq-header {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #1C1678;
+  }
+  
+  .accordion {
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .accordion-item {
+    background-color: #E9F5FF;
+    margin-bottom: 10px;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #DADADA;
+    transition: background-color 0.3s ease;
+  }
+  
+  .accordion-item.active {
+    background-color: #A3FFD6;
+  }
+  
+  .accordion-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.5rem 0;
+    transition: color 0.3s ease;
+  }
+  
+  .accordion-title:hover {
+    color: #0056b3;
+  }
+  
+  .accordion-content {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+  }
+  
+  .answer {
+    padding: 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #333;
+  }
+  
+  .arrow {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+  }
+  
+  @media (max-width: 600px) {
+    .faq-header {
+      font-size: 2rem;
+    }
+    .accordion-title {
+      font-size: 1.1rem;
+    }
+  }

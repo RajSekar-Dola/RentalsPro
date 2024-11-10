@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import "../../css/Userdashboardcss/AccountProfile.css";
 import { FaUser, FaClipboardList, FaShoppingCart, FaCog, FaSignOutAlt } from 'react-icons/fa';
-
+import { IoNotificationsCircleSharp } from "react-icons/io5"
 const AccountProfile = () => {
   const navigate = useNavigate();
 
@@ -51,6 +51,11 @@ const AccountProfile = () => {
               <li>
                 <NavLink to="/accountProfile/settings" className={({ isActive }) => (isActive ? "active-li" : "")}>
                   <FaCog /> Account Settings
+                </NavLink>
+              </li>
+              <li>
+              <NavLink to="/accountProfile/notifications" className={({ isActive }) => (isActive ? "active-li" : "")}>
+              <IoNotificationsCircleSharp /> Account Earnings
                 </NavLink>
               </li>
               <li>

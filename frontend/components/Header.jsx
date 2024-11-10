@@ -52,7 +52,9 @@ useEffect(() => {
                 <li><NavLink to="/category/cycles">cycle</NavLink></li>
               </ul>
             </li>
-            <li><NavLink to="/help">FAQs</NavLink></li>
+            <li><NavLink to="/faq">FAQs</NavLink></li>
+            <li><NavLink to='/about'>About</NavLink></li>
+            <li><NavLink to="/Rentform">RentForm</NavLink></li>
           </ul>
         </nav>
       </div>

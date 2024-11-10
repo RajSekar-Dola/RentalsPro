@@ -5,13 +5,11 @@ const AccountSettings = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    password: '',
+    password: '', // Initially empty for security
   });
   const [message, setMessage] = useState('ACCOUNT SETTINGS');
+  const [updateMessage, setUpdateMessage] = useState(''); // For user feedback
   const [error, setError] = useState('');
-  const [passwordStrength, setPasswordStrength] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [emailError, setEmailError] = useState('');
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -29,7 +27,7 @@ const AccountSettings = () => {
           setFormData({
             username: data.username,
             email: data.email,
-            password: '', // Do not pre-fill password
+            password: '', // Keep password hidden
           });
         } else {
           setError("Failed to fetch account details");
@@ -48,68 +46,53 @@ const AccountSettings = () => {
       ...formData,
       [name]: value,
     });
-
-    // Validate password if it's the password input
-    if (name === "password") {
-      validatePassword(value);
-    }
-
-    // Validate email if it's the email input
-    if (name === "email") {
-      validateEmail(value);
-    }
-  };
-
-  const validatePassword = (password) => {
-    // Password validation pattern
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-
-    if (passwordPattern.test(password)) {
-      setPasswordError('');
-      setPasswordStrength(password.length >= 8 ? 'Strong' : 'Medium');
-    } else {
-      setPasswordError('Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character.');
-      setPasswordStrength('');
-    }
-  };
-
-  const validateEmail = (email) => {
-    // Email validation pattern
-    const emailPattern = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|mil|int|info|biz|co|in|us|uk|io|ai|tech|me|dev|xyz|live|store|tv)$/i;
-
-    if (emailPattern.test(email)) {
-      setEmailError('');
-    } else {
-      setEmailError('Invalid email format. Please enter a valid email address.');
-    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
-    // Check if password or email validation has failed before submitting
-    if (passwordError || emailError) {
-      setError('Please fix the errors before submitting.');
-      return;
-    }
-
     try {
       const response = await fetch("http://localhost:3000/settings", {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          editUsername: formData.username,
+          email: formData.email,
+          password: formData.password,
+        }),
       });
 
       if (response.ok) {
-        setMessage('Details updated successfully!');
-        setTimeout(() => {
-          setMessage("");
-        }, 3000);
+        setUpdateMessage('Details updated successfully!');
+        setMessage('ACCOUNT SETTINGS');
       } else {
         setError('Failed to update details');
       }
+
+      setTimeout(() => {
+        setUpdateMessage('');
+      }, 3000);
+
+      // Refetch the latest details after the update
+      const updatedResponse = await fetch("http://localhost:3000/grabDetails", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include"
+      });
+
+      if (updatedResponse.ok) {
+        const updatedData = await updatedResponse.json();
+        setFormData({
+          username: updatedData.username,
+          email: updatedData.email,
+          password: '', // Keep password hidden again
+        });
+      } else {
+        throw new Error('Failed to fetch updated details');
+      }
+
     } catch (err) {
       setError('An error occurred while updating details');
     }
@@ -139,9 +122,7 @@ const AccountSettings = () => {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            style={{ border: emailError ? '2px solid red' : '' }}
           />
-          {emailError && <p style={{ color: 'red' }}>{emailError}</p>}
         </div>
 
         <div className="settings-field">
@@ -152,14 +133,12 @@ const AccountSettings = () => {
             name="password"
             value={formData.password}
             onChange={handleInputChange}
-            style={{ border: passwordError ? '2px solid red' : '' }}
           />
-          {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>}
-          <label className="password-strength">Password Strength: {passwordStrength}</label>
         </div>
 
         <button type="submit" className="save-button">Save Changes</button>
       </form>
+      {updateMessage && <p>{updateMessage}</p>} {/* Display feedback */}
     </div>
   );
 };

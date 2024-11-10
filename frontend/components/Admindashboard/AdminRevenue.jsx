@@ -31,10 +31,10 @@ const AdminRevenue = () => {
     }, [])
 
     const dailyRevenueLabels = dailyRevenueData.map(item => item._id);
-    const dailyRevenueCounts = dailyRevenueData.map(item => item.totalRevenue); // Assuming your API returns total revenue per day
+    const dailyRevenueCounts = dailyRevenueData.map(item => item.totalRevenue*(1/11)); // Assuming your API returns total revenue per day
 
     const monthlyRevenueLabels = monthlyRevenueData.map(item => `${item._id.year}-${item._id.month}`);
-    const monthlyRevenueCounts = monthlyRevenueData.map(item => item.totalRevenue); // Assuming your API returns total revenue per month
+    const monthlyRevenueCounts = monthlyRevenueData.map(item => item.totalRevenue*(1/11)); // Assuming your API returns total revenue per month
 
     const dailyRevenueChartData = {
         labels: dailyRevenueLabels,

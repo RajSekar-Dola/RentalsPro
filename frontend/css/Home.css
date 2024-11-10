@@ -10,75 +10,31 @@ html, body {
 .home-container {
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Full viewport height */
-    width: 100vw;  /* Full viewport width */
-}
-
-/* Header styling */
-.header {
-    background-color: #002D72;
-    color: white;
-    padding: 1rem;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.header .logo h1 {
-    margin: 0;
-    font-size: 2rem;
-}
-
-.navbar {
-    background-color: #004B87;
-}
-
-.navbar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-}
-
-.navbar li {
-    margin: 0 1rem;
-}
-
-.navbar a {
-    color: white;
-    text-decoration: none;
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    display: inline-block;
-}
-
-.navbar a:hover {
-    background-color: #0066CC;
-    border-radius: 5px;
-}
-
-/* Main content styling */
-.main-content {
-    flex: 1;
-    background-color: #F5F5F5;
-    padding: 2rem;
+    min-height: 100vh; /* Full viewport height, ensuring the footer stays at the bottom */
 }
 
 /* Hero section styling */
 .hero {
-    background: url('https://via.placeholder.com/1500x500') center center/cover no-repeat;
-    padding: 4rem 1rem;
-    color: white;
-    text-align: center;
-    border-radius: 10px;
-    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width: 100vw; /* Full viewport width */
+    min-height: 200px; /* Set a minimum height based on the text size */
+    padding: 2rem; /* Padding to ensure spacing around the text */
+    position: relative;
+    background-image: url('https://4kwallpapers.com/images/wallpapers/night-city-city-5120x2880-9753.jpg'); /* Placeholder image */
+    background-size: cover; /* Ensure the background image covers the whole section */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Ensure the background image doesn't repeat */
 }
 
 .hero-content {
     max-width: 600px;
     margin: 0 auto;
+    text-align: center;
+    z-index: 1; /* Ensure content is above the background image */
+    color: white; /* Ensure text is visible on the background */
 }
 
 .hero h2 {
@@ -91,91 +47,120 @@ html, body {
     margin-bottom: 2rem;
 }
 
-.search-form {
-    display: flex;
-    justify-content: center;
-}
 
-.search-form input {
-    padding: 0.75rem;
-    border: none;
-    border-radius: 5px 0 0 5px;
-    font-size: 1rem;
-    width: 300px;
-}
 
-.search-form button {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    background-color: #004B87;
-    color: white;
-    font-size: 1rem;
-    border-radius: 0 5px 5px 0;
-    cursor: pointer;
-}
-
-.search-form button:hover {
-    background-color: #0066CC;
-}
-
-/* Featured Listings */
-.featured-listings {
+/* How It Works Section - No boxes around steps */
+.how-it-works {
     padding: 2rem 0;
+    text-align: center;
+    background-color: #F0F4F8;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin: 2rem 0;
+}
+
+.how-it-works h2 {
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+.step {
+    display: inline-block;
+    width: auto; /* Adjusted width to avoid box appearance */
+    padding: 1rem;
+    background-color: transparent; /* No background color */
+    border: none; /* Removed border */
+    margin: 1rem;
     text-align: center;
 }
 
-.featured-listings h2 {
-    margin-bottom: 2rem;
+.step-icon {
+    background-color: #002D72;
+    color: white;
+    font-size: 2rem;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    line-height: 50px;
+    margin-bottom: 1rem;
 }
 
-.listing-card {
+.step h3 {
+    margin: 1rem 0;
+    font-size: 1.2rem;
+}
+
+.step p {
+    font-size: 1rem;
+}
+
+/* Modify the third step to have a similar round shape */
+.third-step .step-icon {
+    background-color: #002D72; /* Same color for the third step */
+    border-radius: 50%; /* Changed to round */
+}
+
+/* Popular Rentals Section */
+.popular-rentals {
+    padding: 2rem 0;
+    text-align: center;
+    background-color: #F0F4F8;
+    margin-top: 2rem; /* Added gap between sections */
+}
+
+.popular-rentals h2 {
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+.rental-cards {
+    display: flex;
+    justify-content: center; /* Center the rental cards in a row */
+    gap: 1rem; /* Optional: Add space between cards */
+}
+
+.rental-card {
+    display: inline-block;
+    width: 220px;
+    margin: 1rem;
     background-color: white;
     border: 1px solid #ddd;
     border-radius: 10px;
     padding: 1rem;
-    width: 300px;
-    display: inline-block;
-    margin: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    vertical-align: top;
+    text-align: center;
 }
 
-.listing-card img {
+.rental-card img {
     width: 100%;
-    border-radius: 10px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd; /* Thin border around the image */
+    object-fit: contain; /* Maintain aspect ratio */
 }
 
-.listing-card h3 {
-    margin: 1rem 0 0.5rem;
+.rental-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
 }
 
-.listing-card p {
-    font-size: 1.1rem;
-    margin: 0 0 1rem;
-}
-
-.btn-primary {
-    background-color: #002D72;
-    color: white;
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 5px;
+.rental-card p {
     font-size: 1rem;
 }
 
-.btn-primary:hover {
-    background-color: #004B87;
-}
-
-/* Testimonials */
+/* Testimonials Section */
 .testimonials {
-    background-color: #E8F0F2;
+    background-color: #F0F4F8;
     padding: 2rem;
     text-align: center;
+    margin-top: 2rem; /* Added gap between sections */
 }
 
 .testimonials h2 {
     margin-bottom: 2rem;
+    font-size: 2rem;
 }
 
 .testimonial-card {
@@ -183,7 +168,8 @@ html, body {
     border: 1px solid #ddd;
     border-radius: 10px;
     padding: 1rem;
-    margin: 1rem auto;
+    margin: 1rem;
+    display: inline-block; /* Arranges cards horizontally */
     max-width: 600px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -198,64 +184,46 @@ html, body {
     color: #002D72;
 }
 
-/* Footer styling */
-.footer {
-    background-color: #004B87;
-    color: white;
+
+/* Contact Us Section */
+.contact-us {
+    padding: 2rem;
     text-align: center;
-    padding: 2rem 1rem;
+    background-color: #F0F4F8;
+    margin-top: 2rem; /* Added gap between sections */
 }
 
-.footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
+.contact-us h2 {
+    margin-bottom: 1rem;
+    font-size: 2rem;
 }
 
-.footer-logo h1 {
-    margin: 0;
-}
-
-.footer-links {
-    margin: 1rem 0;
-}
-
-.footer-links ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.contact-us form {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
-.footer-links li {
-    margin: 0 1rem;
-}
-
-.footer-links a {
-    color: white;
-    text-decoration: none;
+.contact-us input, .contact-us textarea {
+    width: 100%;
+    max-width: 500px;
+    padding: 0.8rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
     font-size: 1rem;
 }
 
-.footer-links a:hover {
-    text-decoration: underline;
-}
-
-.footer-contact p {
-    margin: 0.5rem 0;
-}
-
-.footer-social {
-    margin-top: 1rem;
-}
-
-.footer-social .social-icon {
+.contact-us button {
+    background-color: #002D72;
     color: white;
-    text-decoration: none;
-    margin: 0 0.5rem;
-    font-size: 1.5rem;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
 }
 
-.footer-social .social-icon:hover {
-    color: #0066CC;
+.contact-us button:hover {
+    background-color: #FF6347;
 }

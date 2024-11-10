@@ -42,7 +42,6 @@ export default function Category() {
 
 useEffect(()=>{
   if (originalItems.length > 0){
-  
   const fp=filterProducts(originalItems,undefined,searchinput,location,fromdatetime,todatetime,minprice,maxprice);
   setItems(fp);
   }

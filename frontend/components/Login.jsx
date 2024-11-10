@@ -10,55 +10,107 @@ const LoginForm = () => {
   const [Error, setError] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setMessage('');
+  //   setError(false);
+
+  //   try {
+  //     const response = await fetch('http://localhost:3000/login', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ username, password, role }),  // Send role in request
+  //       credentials: 'include'
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (!response.ok) {
+  //       console.log(data.errormessage);
+  //       setError(true);
+  //       setMessage(data.errormessage || "Error occurred!");
+  //     } else {
+  //       setUsername('');
+  //       setPassword('');
+  //       setError(false);
+  //       setMessage('Sign In successful!');
+
+  //       // Navigate based on role
+  //       if (role === 'Manager') {
+  //         navigate('/managerPage');
+  //       }else if(role === 'Admin'){
+  //         navigate("/adminpage")
+  //       }else {
+  //         const sessionvalue = sessionStorage.getItem('lastpage');
+  //         if (sessionvalue === "NotFound" || sessionvalue === "signup") {
+  //           sessionStorage.setItem('lastpage', 'login');
+  //           navigate('/');
+  //           return;
+  //         } else {
+  //           sessionStorage.setItem('lastpage', 'login');
+  //           navigate(-1);
+  //           return;
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {
+  //     setError(true);
+  //     setMessage('An unexpected error occurred.');
+  //     console.log(error);
+  //   }
+  // };
+  const handleSubmit = (e) => {
     e.preventDefault();
     setMessage('');
     setError(false);
-
-    try {
-      const response = await fetch('http://localhost:3000/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, role }),  // Send role in request
-        credentials: 'include'
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.log(data.errormessage);
-        setError(true);
-        setMessage(data.errormessage || "Error occurred!");
-      } else {
-        setUsername('');
-        setPassword('');
-        setError(false);
-        setMessage('Sign In successful!');
-
-        // Navigate based on role
-        if (role === 'Manager') {
-          navigate('/managerPage');
-        }else if(role === 'Admin'){
-          navigate("/adminpage")
-        }else {
-          const sessionvalue = sessionStorage.getItem('lastpage');
-          if (sessionvalue === "NotFound" || sessionvalue === "signup") {
-            sessionStorage.setItem('lastpage', 'login');
-            navigate('/');
-            return;
+  
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://localhost:3000/login', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.withCredentials = true;
+  
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.status >= 200 && xhr.status < 300) {
+          setUsername('');
+          setPassword('');
+          setError(false);
+          setMessage('Sign In successful!');
+  
+          if (role === 'Manager') {
+            navigate('/managerPage');
+          } else if (role === 'Admin') {
+            navigate("/adminpage");
           } else {
-            sessionStorage.setItem('lastpage', 'login');
-            navigate(-1);
-            return;
+            const sessionvalue = sessionStorage.getItem('lastpage');
+            if (sessionvalue === "NotFound" || sessionvalue === "signup") {
+              sessionStorage.setItem('lastpage', 'login');
+              navigate('/');
+              return;
+            } else {
+              sessionStorage.setItem('lastpage', 'login');
+              navigate(-1);
+              return;
+            }
           }
+        } else {
+          console.log(data.errormessage);
+          setError(true);
+          setMessage(data.errormessage || "Error occurred!");
         }
       }
-    } catch (error) {
+    };
+  
+    xhr.onerror = function() {
       setError(true);
       setMessage('An unexpected error occurred.');
-      console.log(error);
-    }
+      console.log(xhr.statusText);
+    };
+  
+    xhr.send(JSON.stringify({ username, password, role }));
   };
+  
 
   return (
     <div id="signin-login-page">

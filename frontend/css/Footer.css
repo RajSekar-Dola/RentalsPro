@@ -2,24 +2,24 @@
     background-color: #004B87;
     color: white;
     text-align: center;
-    width: 100%; /* Ensure footer takes full width */
-    padding: 2rem 0; /* Increased padding for better spacing */
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); 
-    position:relative;
-    bottom:0;
+    width: 100%;
+    padding: 2rem 0;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    bottom: 0;
     flex-shrink: 0;
 }
 
 .footer-logo h1 {
     margin: 0;
-    font-size: 1.5rem; /* Adjusted font size for better fit */
+    font-size: 1.5rem;
 }
 
 .footer-content {
-    display: flex; /* Use flexbox for layout */
-    flex-direction: column; /* Align items vertically on smaller screens */
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 1.5rem; /* Added gap for spacing */
+    gap: 1.5rem;
 }
 
 .footer-links {
@@ -31,8 +31,8 @@
     padding: 0;
     margin: 0;
     display: flex;
-    justify-content: center; /* Center items horizontally */
-    gap: 1rem; /* Added gap for spacing */
+    justify-content: center;
+    gap: 1rem;
 }
 
 .footer-links li {
@@ -46,7 +46,7 @@
 }
 
 .footer-links a:hover {
-    text-decoration: underline; /* Hover effect */
+    text-decoration: underline;
 }
 
 .footer-contact p {
@@ -57,13 +57,31 @@
     margin-top: 1rem;
 }
 
-.footer-social .social-icon {
-    color: white;
-    text-decoration: none;
-    margin: 0 0.5rem;
-    font-size: 1.5rem;
+.footer-social p {
+    margin: 0; /* Keep "Follow us on" text styling */
 }
 
-.footer-social .social-icon:hover {
+.social-icons {
+    display: flex; /* Use flexbox to arrange icons horizontally */
+    justify-content: center; /* Center icons */
+    gap: 1.5rem; /* Space between icons */
+    margin-top: 0.5rem; /* Space between text and icons */
+}
+
+.social-icon {
+    color: white;
+    text-decoration: none;
+    font-size: 2rem; /* Icon size */
+    display: flex; /* Flex for icon and text alignment */
+    flex-direction: column; /* Stack icon above text */
+    align-items: center; /* Center text below icon */
+}
+
+.social-icon:hover {
     color: #0066CC; /* Hover effect */
+}
+
+.social-text {
+    font-size: 0.75rem; /* Smaller text size for social media labels */
+    margin-top: 0.3rem; /* Space between icon and text */
 }

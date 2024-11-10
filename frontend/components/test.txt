@@ -1,0 +1,242 @@
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import { connecttomongodb } from './backend/models/connect.js';
+import { User } from './backend/models/UserSchema.js';
+import {Product} from './backend/models/ProductSchema.js';
+import {Booking} from './backend/models/Bookings.js';
+const url='mongodb://localhost:27017/Rentals'
+const app = express();
+app.use(cookieParser());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}));
+
+connecttomongodb(url)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => {
+    console.error('Failed to connect to MongoDB', err);
+  });
+
+
+//Signup
+
+app.post('/signup', async (req, res) => {
+  const { username, email, dateofbirth,password } = req.body;
+  if (!username || !email || !dateofbirth || !password) {
+    return res.status(409).json({ errormessage: 'All fields are required' });
+  }
+
+  try {
+    const existingUser = await User.findOne({ username });
+    const existingEmail = await User.findOne({ email });
+
+    if (existingEmail) {
+      return res.status(409).json({ errormessage: 'Email already exists' });
+    }
+    if (existingUser) {
+      return res.status(409).json({ errormessage: 'Username already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      username,
+      email,
+      dateofbirth,
+      password: hashedPassword,
+    });
+
+    await newUser.save();
+    res.status(201).json({ errormessage: 'User registered successfully' });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ errormessage: 'Error registering user' });
+  }
+});
+
+
+
+
+//Login
+
+app.post('/login', async (req, res) => {
+  const { username,password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ errormessage: 'All fields are required' });
+  }
+
+  try {
+    const existingUser = await User.findOne({ username });
+    if (!existingUser) {
+      return res.status(401).json({ errormessage: 'Username not Found !' });
+    }
+    else{
+      const checkpassword=await bcrypt.compare(password,existingUser.password)
+    if (!checkpassword) {
+      return res.status(401).json({ errormessage: 'Password is incorrect !' });
+    }
+    }
+
+    //storing in cookies
+
+    res.cookie('username',username, { httpOnly: false, secure: false, sameSite: 'lax',path:'/' });
+    res.status(200).json({ errormessage: 'User Login successfully' });
+  } catch (error) {
+    console.error('Error occured while logging in :', error);
+    res.status(500).json({ errormessage: 'Error while user logging in !' });
+  }
+});
+
+
+
+//RentForm
+
+app.post('/RentForm', async (req, res) => {
+  const {      productType,
+    productName,
+    locationName,
+    fromDate,
+    toDate,
+    price,
+    image,} = req.body;
+  if (!productType||!productName||!locationName||!fromDate||!toDate||!price||!image) {
+    return res.status(409).json({ errormessage: 'All fields are required' });
+  }
+
+  try {
+    const cookieusername = req.cookies.username;
+    if (!cookieusername) {
+      return res.status(401).json({ errormessage: 'Unauthorized: No username cookie found' });
+    }
+    const newProduct = new Product({
+      username: cookieusername, // Use 'username' to match schema
+      productType,
+      productName,
+      locationName,
+      fromDateTime: new Date(fromDate), // Convert to Date object
+      toDateTime: new Date(toDate),     // Convert to Date object
+      price,
+      photo: image, // Use 'photo' to match schema
+      uploadDate:new Date(),
+      bookingdates:[],
+    });
+
+    await newProduct.save();
+    res.status(201).json({ errormessage: 'Uploaded successfully'});
+  } catch (error) {
+    console.error('Error occured :', error);
+    res.status(500).json({ errormessage: 'Upload failed' });
+  }
+});
+
+
+app.post('/products', async (req, res) => {
+  try {
+    const {productType, locationName, fromDateTime, toDateTime, price}=await req.body;
+    const query={};
+    if(productType) query.productType=productType;
+    if(locationName) query.locationName=locationName;
+    if(fromDateTime) query.fromDateTime={ $gte: new Date(fromDateTime) };
+    if(toDateTime) query.toDateTime= { $lte: new Date(toDateTime) };
+    if(price) query.price={$lte : price};
+    const products = await Product.find(query);
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ errormessage: 'Failed to fetch products'});
+  }
+});
+
+
+
+app.post('/product/:product_id',async(req,res)=>{
+    const {product_id}=req.params;
+    try{
+      const reqproduct=await Product.findById(product_id);
+      if(!reqproduct)
+      {
+        return res.status(404).json({error :'product not found !'});
+      }
+      return res.status(200).json(reqproduct);
+      
+    }catch(error)
+    {
+      res.status(500).json({error:"server error !"});
+    }
+})
+
+app.post('/booking',async (req,res)=>{
+  try{
+  const {product_id,buyername,fromDateTime,toDateTime,price}=await req.body;
+  const bookingDate=new Date();
+  const newbooking = new Booking({
+    product_id,
+    buyername,
+    fromDateTime,
+    toDateTime,
+    price,
+    bookingDate,
+  });
+  const y=await newbooking.save();
+  const newbookingid=newbooking._id.toString();
+  const x=await User.findOneAndUpdate({username:buyername},{$push:{bookings:newbookingid}});
+  if(!y)
+  {console.log("booking ot successful")
+    return res.status(401).json({message:"booking not successful !"})
+  }
+  else if(!x)
+  { console.log("couldnt update booking")
+    return res.status(401).json({ message: "Couldn't update the booking!" });
+  }
+  res.status(200).json({message:"Booking successful !"});
+  console.log("booking successful !");
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({message:"server error !"});
+  }
+})
+
+app.get('/admindashboard/registeredusers',async(req,res)=>{
+  try{
+    const users=await User.find({});
+    if(!users)
+    {
+      return res.status(404).json({error :'Users not found !'});
+    }
+    return res.status(200).json(users);
+    
+  }catch(error)
+  {
+    res.status(500).json({error:"server error !"});
+  }
+})
+
+app.post('/admindashboard/deleteusers',async(req,res)=>{
+  try{
+    const user_id=req.body;
+
+    const users=await User.findByIdAndDelete(user_id);
+    if(!users)
+    {
+      return res.status(404).json({error :'User not found in database!'});
+    }
+    return res.status(200).json(users);
+    
+  }catch(error)
+  {
+    res.status(500).json({error:"server error !"});
+  }
+})
+
+const PORT =3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

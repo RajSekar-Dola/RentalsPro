@@ -9,21 +9,12 @@ const ManagerForm = () => {
     });
     const [message, setMessage] = useState('');
     const [error, setError] = useState(false);
-    const [locations, setLocations] = useState([]);
 
     const validateEmail = (email) => {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailPattern.test(email);
     };
 
-    useEffect(() => {
-        fetch('http://localhost:3000/locations')
-            .then((response) => response.json())
-            .then((data) => setLocations(data.locations))
-            .catch((error) => console.error('Error fetching locations:', error));
-
-            console.log(locations);
-    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -117,10 +108,16 @@ const ManagerForm = () => {
 
                 <label htmlFor='branch'>Branch:</label>
                 <select id='branch' name='branch' value={formData.branch} onChange={handleChange} required>
-                    <option value="">Select a location</option>
-                    {locations.map((location, index) => (
-                        <option key={index} value={location}>{location}</option>
-                    ))}
+                    <option value="">Select a branch</option>
+                    <option value="BHAVANIPURAM">BHAVANIPURAM</option>
+                    <option value="GOLLAPUDI">GOLLAPUDI</option>
+                    <option value="CHITTINAGAR">CHITTINAGAR</option>
+                    <option value="MACHILIPATNAM">MACHILIPATNAM</option>
+                    <option value="ELURU_ROAD">ELURU ROAD</option>
+                    <option value="BECENT_ROAD">BECENT ROAD</option>
+                    <option value="KANKIPADU">KANKIPADU</option>
+                    <option value="PORANKI">PORANKI</option>
+                    <option value="IBRAHIMPATNAM">IBRAHIMPATNAM</option>
                 </select>
 
                 <button type='submit'>SUBMIT</button>

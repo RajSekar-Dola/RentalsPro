@@ -30,7 +30,6 @@ const RentForm = () => {
             .then((response) => response.json())
             .then((data) => setLocations(data.locations))
             .catch((error) => console.error('Error fetching locations:', error));
-
     }, []);
 
     useEffect(() => {
@@ -107,7 +106,6 @@ const RentForm = () => {
         const fromDate = new Date(from);
         const toDate = new Date(to);
         const nowPlus30 = new Date();
-        nowPlus30.setMinutes(nowPlus30.getMinutes() + 30);
         const roundedNow = roundUpToNextHalfHour(nowPlus30);
 
         if (fromDate < roundedNow) {
@@ -127,11 +125,14 @@ const RentForm = () => {
     };
 
     const getCookieValue = (name) => {
-        const value = `; ${document.cookie}`;
+        const value =` ; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     };
     const handleSubmit = async (e) => {
+        e.preventDefault();
+        setmessage("");
+        setError(false);
         const userid = getCookieValue('user_id');
         if (!userid) {
             sessionStorage.setItem('lastpage', 'bookingpage');
@@ -173,7 +174,7 @@ const RentForm = () => {
                 }),
                 credentials: 'include',
             });
-
+            console.log(response);
             if (!response.ok) {
                 const errorResponse = await response.json();
                 console.log(errorResponse.errormessage);
@@ -207,7 +208,7 @@ const RentForm = () => {
             }
         } catch (error) {
             console.log("Error during submission:", error);
-            setError(true)
+            setError(true);
             setmessage("An error occurred during submission. Please try again.");
         }
     };
