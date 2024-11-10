@@ -23,6 +23,14 @@ const UserSchema = new mongoose.Schema({
   },
   rentals:{
     type: [String],
+  },
+  notifications:{
+    type:[{
+      message: { type: String, required: true },
+      seen: { type: Boolean, default: false },
+    },
+  ],
+  default:[],
   }
 });
 
