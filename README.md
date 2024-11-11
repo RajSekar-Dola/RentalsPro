@@ -29,15 +29,7 @@ To set up the development environment for RentalsPro, follow these steps:
    ```bash
    npm install
    ```
-
-3. **Set Up Environment Variables**  
-   - Create a `.env` file in the `RentalsPro-main` directory with the required environment variables:
-     ```bash
-     MONGODB_URI=your_mongodb_uri
-     JWT_SECRET=your_jwt_secret
-     ```
-
-4. **Run the Application**
+3. **Run the Application**
    - In one terminal, start the backend server:
      ```bash
      npm start
@@ -47,7 +39,7 @@ To set up the development environment for RentalsPro, follow these steps:
      npm run dev
      ```
 
-5. **Access the Application**  
+4. **Access the Application**  
    Open your browser and go to `http://localhost:3000` to view the site.
 
 ## Usage
