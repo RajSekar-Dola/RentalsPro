@@ -22,7 +22,7 @@ To set up the development environment for RentalsPro, follow these steps:
 1. **Clone the Repository**
    ```bash
    git clone https://github.com/your-username/RentalsPro.git
-   cd RentalsPro-main
+   cd Rentals
    ```
 
 2. **Install Project Dependencies**
