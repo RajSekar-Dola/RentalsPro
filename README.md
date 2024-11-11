@@ -58,8 +58,6 @@ To set up the development environment for RentalsPro, follow these steps:
 4. **Rent Products**: Users can book rentals directly from product pages.
 5. **Manage Bookings**: Users have access to manage their past and active rentals.
 
-For screenshots, navigate to the `assets/images` folder where key sections of the project are illustrated.
-
 ## Features
 
 - **Multi-user Support**: Separate roles for customers, Managers, and administrators, each with unique permissions.
@@ -68,9 +66,6 @@ For screenshots, navigate to the `assets/images` folder where key sections of th
 
 ## Credits
 
-- **Contributors**: List your collaborators with links to their GitHub profiles.
+- **Contributors**: - This project was created and maintained by [RajSekar-Dola] (https://github.com/RajSekar-Dola).
 - **Third-Party Libraries**: Some of the libraries used include [React](https://reactjs.org/), [Express](https://expressjs.com/), and [MongoDB](https://www.mongodb.com/).
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
