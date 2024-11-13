@@ -11,7 +11,9 @@ import {Booking} from './backend/models/Bookings.js';
 import { Manager } from './backend/models/ManagerSchema.js';
 import {Location} from './backend/models/Location.js';
 import { Admin } from './backend/models/Admin.js';
-const url='mongodb://localhost:27017/Rentals';
+import dotenv from 'dotenv';
+dotenv.config();
+
 const app = express();
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -21,7 +23,8 @@ app.use(cors({
   credentials: true,
 }));
 
-connecttomongodb(url)
+// connecttomongodb(process.env.url)
+connecttomongodb("mongodb://localhost:27017/Rentals")
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => {
     console.error('Failed to connect to MongoDB', err);

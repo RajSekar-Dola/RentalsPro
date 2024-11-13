@@ -14,7 +14,8 @@
     box-shadow: 3px 0 8px rgba(0, 0, 0, 0.2); /* Slightly larger shadow */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-between; /* Space between elements */
+    height: 100%; /* Ensure it stretches the full height */
 }
 
 .dashboard-menu h2 {
@@ -31,6 +32,10 @@
     list-style-type: none;
     padding: 0;
     margin: 0;
+    flex-grow: 1; /* Allow the menu items to take up the remaining space */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Equal space between menu items */
 }
 
 .dashboard-menu li {
@@ -48,6 +53,7 @@
     display: block;
     transition: all 0.3s ease; /* Smooth transition for color and background */
     border-radius: 6px;
+    text-align: center;
 }
 
 .dashboard-menu li a:hover, .out:hover {
