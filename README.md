@@ -32,7 +32,7 @@ To set up the development environment for RentalsPro, follow these steps:
 3. **Run the Application**
    - In one terminal, start the backend server:
      ```bash
-     npm start
+     node server
      ```
    - In another terminal, start the frontend development server:
      ```bash
@@ -40,7 +40,7 @@ To set up the development environment for RentalsPro, follow these steps:
      ```
 
 4. **Access the Application**  
-   Open your browser and go to `http://localhost:3000` to view the site.
+   Open your browser and go to `http://localhost:5173` to view the site.
 
 ## Usage
 
@@ -50,6 +50,9 @@ To set up the development environment for RentalsPro, follow these steps:
 4. **Rent Products**: Users can book rentals directly from product pages.
 5. **Manage Bookings**: Users have access to manage their past and active rentals.
 
+## Admin Login Credentials
+- **Admin Name**: Raj Sekar
+- **Password**: 0065
 ## Features
 
 - **Multi-user Support**: Separate roles for customers, Managers, and administrators, each with unique permissions.
