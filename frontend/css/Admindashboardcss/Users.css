@@ -13,7 +13,7 @@
   
   h1 {
     text-align: center;
-    color: #4a90e2;
+    color: #102542;
   }
   
   .error {
@@ -36,13 +36,13 @@
   }
   
   .user-table th {
-    background-color: #4a90e2;
+    background-color: #102542;
     color: white;
     transition: background-color 0.3s;
   }
   
   .user-table th:hover {
-    background-color: #357ab8;
+    background-color: #102542;
   }
   
   .user-row {
@@ -75,7 +75,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     width:150px;
     height:150px;
-    background-color: #357ab8;
+    background-color: #102542;
   }
   .countboard p{
       color:white;
@@ -141,7 +141,7 @@
 
 /* Cancel Button */
 .cancel-button {
-  background-color: #5bc0de; /* Blue */
+  background-color: #102542; /* Blue */
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -151,7 +151,7 @@
 }
 
 .cancel-button:hover {
-  background-color: #31b0d5;
+  background-color: #102542;
 }
 
 /* Optional: Success Message Styling */
@@ -171,7 +171,7 @@
 /* Optional Spinner Styling */
 .spinner {
   border: 4px solid #f3f3f3; /* Light gray */
-  border-top: 4px solid #3498db; /* Blue */
+  border-top: 4px solid #102542; /* Blue */
   border-radius: 50%;
   width: 20px;
   height: 20px;

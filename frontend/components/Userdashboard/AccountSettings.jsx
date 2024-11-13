@@ -7,7 +7,7 @@ const AccountSettings = () => {
     email: '',
     password: '', // Initially empty for security
   });
-  const [message, setMessage] = useState('ACCOUNT SETTINGS');
+  const [message, setMessage] = useState();
   const [updateMessage, setUpdateMessage] = useState(''); // For user feedback
   const [error, setError] = useState('');
 
@@ -99,12 +99,13 @@ const AccountSettings = () => {
   };
 
   return (
-    <div className="account-settings-page">
+    <>
       <h2>{message}</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit} className="settings-container">
+      <form onSubmit={handleSubmit} className="account-settings-page">
+        <h2>ACCOUNT SETTINGS</h2>
         <div className="settings-field">
-          <label htmlFor="username">Username</label>
+          <label htmlFor="username">USERNAME</label>
           <input
             type="text"
             id="username"
@@ -115,7 +116,7 @@ const AccountSettings = () => {
         </div>
 
         <div className="settings-field">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">EMAIL</label>
           <input
             type="email"
             id="email"
@@ -126,7 +127,7 @@ const AccountSettings = () => {
         </div>
 
         <div className="settings-field">
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">PASSWORD</label>
           <input
             type="password"
             id="password"
@@ -136,10 +137,10 @@ const AccountSettings = () => {
           />
         </div>
 
-        <button type="submit" className="save-button">Save Changes</button>
+        <button type="submit" className="save-button">SAVE CHANGES</button>
       </form>
       {updateMessage && <p>{updateMessage}</p>} {/* Display feedback */}
-    </div>
+    </>
   );
 };
 

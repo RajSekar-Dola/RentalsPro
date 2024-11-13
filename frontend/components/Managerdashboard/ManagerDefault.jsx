@@ -31,9 +31,13 @@ const ManagerDefault = () => {
     }, []);
 
     return (
-        <div>
-            Welcome {name || "Guest"}
-            {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error if exists */}
+        <div className="welcome-container">
+            {error ? (
+                <h1 className="error-text">{error}</h1>
+            ) : (
+                <h1 className="welcome-text">WELCOME MANAGER</h1>
+            )}
+            {!error && <p className='adminName'>{name}</p>}
         </div>
     );
 };

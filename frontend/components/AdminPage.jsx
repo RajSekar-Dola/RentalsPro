@@ -25,7 +25,7 @@ const AdminPage = () => {
   return (
     <div className='dashboard-container'>
       <div className='dashboard-menu'>
-        <h2>Menu</h2>
+        <h2>MENU</h2>
         <ul>
           <li className="options"><NavLink to='/adminpage/addLocation'>ADD BRANCH</NavLink></li>
           <li className="options"><NavLink to='/adminpage/managers'>MANAGERS</NavLink></li>

@@ -23,10 +23,10 @@ const Managers = () => {
 
   useEffect(() => {
     fetch('http://localhost:3000/locations')
-        .then((response) => response.json())
-        .then((data) => setLocations(data.locations))
-        .catch((error) => console.error('Error fetching locations:', error));
-}, []);
+      .then((response) => response.json())
+      .then((data) => setLocations(data.locations))
+      .catch((error) => console.error('Error fetching locations:', error));
+  }, []);
 
   const fetchManagers = async () => {
     try {
@@ -207,51 +207,58 @@ const Managers = () => {
         )}
       </div>
 
-      <div>
+      <div className="account-settings-page">
         <h2>Create New Manager</h2>
-        <form id='ManagerForm' style={{ display: 'flex', flexDirection: "column" }} onSubmit={handleSubmit}>
-          <label htmlFor='username'>USERNAME:</label>
-          <input
-            type='text'
-            id='username'
-            name='username'
-            value={formData.username}
-            onChange={handleChange}
-            required
-            autoComplete='on'
-          />
+        <form id='ManagerForm' onSubmit={handleSubmit}>
+          <div className="settings-field">
+            <label htmlFor='username'>USERNAME:</label>
+            <input
+              type='text'
+              id='username'
+              name='username'
+              value={formData.username}
+              onChange={handleChange}
+              required
+              autoComplete='on'
+            />
+          </div>
 
-          <label htmlFor='email'>EMAIL:</label>
-          <input
-            type='email'
-            id='email'
-            name='email'
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+          <div className="settings-field">
+            <label htmlFor='email'>EMAIL:</label>
+            <input
+              type='email'
+              id='email'
+              name='email'
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <label htmlFor='password'>PASSWORD:</label>
-          <input
-            type='password'
-            id='password'
-            name='password'
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
+          <div className="settings-field">
+            <label htmlFor='password'>PASSWORD:</label>
+            <input
+              type='password'
+              id='password'
+              name='password'
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <label htmlFor='branch'>Branch:</label>
-          <select id='branch' name='branch' value={formData.branch} onChange={handleChange} required>
-            <option value="">Select a branch</option>
-            {locations.map((location, index) => (
-              <option key={index} value={location}>{location}</option>
-            ))}
-          </select>
+          <div className="settings-field">
+            <label htmlFor='branch'>Branch:</label>
+            <select id='branch' name='branch' value={formData.branch} onChange={handleChange} required>
+              <option value="">Select a branch</option>
+              {locations.map((location, index) => (
+                <option key={index} value={location}>{location}</option>
+              ))}
+            </select>
+          </div>
 
-          <button type='submit'>SUBMIT</button>
+          <button type='submit' className="save-button">SUBMIT</button>
 
-          <br />
           <div id="message" className={`message ${error ? 'error-message' : 'success-message'}`}>
             {message}
           </div>

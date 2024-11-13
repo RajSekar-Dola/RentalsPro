@@ -1,67 +1,107 @@
+/* Dashboard container styling */
 .dashboard-container {
     display: flex;
-    height: 100vh; /* Full height of the viewport */
+    height: 100vh; /* Full viewport height */
+    font-family: 'Poppins', sans-serif;
+    color: #333;
 }
 
+/* Dashboard menu styling */
 .dashboard-menu {
-    width: 250px; /* Fixed width for the menu */
-    background-color: #f4f4f4; /* Background color for menu */
-    padding: 20px; /* Padding around the menu */
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Shadow effect */
+    width: 250px;
+    background-color: #1a2d4b; /* Darker blue background */
+    padding: 30px 20px;
+    box-shadow: 3px 0 8px rgba(0, 0, 0, 0.2); /* Slightly larger shadow */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .dashboard-menu h2 {
-    font-size: 1.5rem; /* Heading size */
-    margin-bottom: 20px; /* Space below heading */
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    color: #ff6b6b; /* Vibrant heading color */
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
 }
 
+/* Menu list styling */
 .dashboard-menu ul {
-    list-style-type: none; /* No bullet points */
-    padding: 0; /* Remove padding */
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
 
 .dashboard-menu li {
-    margin-bottom: 15px; /* Space between options */
+    margin-bottom: 20px; /* Increased spacing for clarity */
 }
 
-.dashboard-menu li a,.out{
-    text-decoration: none; /* Remove underline from links */
-    color: #333; /* Link color */
-    font-weight: bold; /* Bold text */
-    transition: color 0.3s; /* Smooth color transition */
+/* Menu links styling */
+.dashboard-menu li a, .out {
+    text-decoration: none;
+    color: #a3ffd6; /* Light green color for links */
+    font-weight: bold;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    padding: 10px 15px;
+    display: block;
+    transition: all 0.3s ease; /* Smooth transition for color and background */
+    border-radius: 6px;
 }
 
-.dashboard-menu li :hover,.out:hover {
-    color: #007bff; /* Change color on hover */
+.dashboard-menu li a:hover, .out:hover {
+    color: #ffffff; /* Change text color on hover */
+    background-color: #007bff; /* Background color on hover */
     cursor: pointer;
 }
 
-.dashboard-content {
-    flex-grow: 1; /* Allow content to take remaining space */
-    padding: 20px; /* Padding for content */
-    background-color: #ffffff; /* Background color for content */
+/* Active link styling */
+.dashboard-menu li .active {
+    color: #ffffff;
+    background-color: #007bff;
 }
 
+/* Sign out button styling */
+.out {
+    color: #ff6b6b; /* Unique color for sign-out */
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+/* Dashboard content area */
+.dashboard-content {
+    flex-grow: 1;
+    padding: 30px;
+    background-color: #f9f9f9; /* Light background for readability */
+    overflow-y: auto;
+}
+
+/* Select component styling */
 .select-component {
-    margin-top: 20px; /* Space above select component */
+    margin-top: 20px;
 }
 
 .select-component label {
-    display: block; /* Block display for labels */
-    margin-bottom: 10px; /* Space below labels */
-    font-weight: bold; /* Bold text for labels */
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
 }
 
 .select-component select {
-    width: 100%; /* Full width */
-    padding: 10px; /* Padding inside the select */
-    border: 1px solid #ccc; /* Border styling */
-    border-radius: 4px; /* Rounded corners */
-    font-size: 1rem; /* Font size */
-    transition: border-color 0.3s; /* Smooth border transition */
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #ffffff;
+    color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .select-component select:focus {
-    border-color: #007bff; /* Border color on focus */
-    outline: none; /* Remove outline */
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); /* Light glow effect */
+    outline: none;
 }

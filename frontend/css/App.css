@@ -1,18 +1,3 @@
-/* #root {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    user-select: none;
-  } */
-   /* src/css/App.css */
-
-/* Example global styles */
-
 body {
   margin: 0;
   font-family: Arial, sans-serif;

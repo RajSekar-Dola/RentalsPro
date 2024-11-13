@@ -1,0 +1,104 @@
+/* Root class to scope styles to ManagerForm component */
+.account-settings-page {
+    background-color: #181818; /* Page background */
+    color: #f1f1f1;
+    font-family: 'Poppins', sans-serif;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Title styling */
+.account-settings-page h2 {
+    color: #A3FFD6; /* Consistent title color */
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+/* Form container */
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Space between fields */
+    padding: 20px;
+    background-color: #2c2c2c;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    width: 100%; /* Ensure it takes 100% of its container */
+    max-width: 400px; /* Restrict the max width */
+    margin: 0 auto; /* Center the form */
+}
+
+/* Each settings field */
+.settings-field {
+    width: 100%; /* Ensure fields take up full width */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Label styling */
+.settings-field label {
+    color: #f39c12; /* Label color */
+    font-size: 18px;
+}
+
+/* Input and select field styling */
+.settings-field input,
+.settings-field select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #bfbfbf;
+    background-color: #3a3a3a;
+    color: #f1f1f1;
+    transition: border-color 0.3s ease;
+    width: 100%; /* Full width */
+    box-sizing: border-box;
+}
+
+/* Input field focus effect */
+.settings-field input:focus,
+.settings-field select:focus {
+    border-color: #f39c12;
+    outline: none;
+}
+
+/* Button styling */
+.save-button {
+    background-color: #e74c3c; /* Button background */
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.save-button:hover {
+    background-color: #c0392b; /* Darken button on hover */
+}
+
+/* Message styling */
+.message {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.success-message {
+    background-color: #e6ffed;
+    color: #1d7a1a;
+    border: 1px solid #1d7a1a;
+}
+
+.error-message {
+    background-color: #ffe6e6;
+    color: #d00000;
+    border: 1px solid #d00000;
+}

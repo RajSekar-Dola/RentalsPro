@@ -1,6 +1,62 @@
-.welcome-container{
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-  }
+/* Container styling */
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100vh; /* Full viewport height */
+  background-color: #1a1a1d; /* Dark background for contrast */
+  color: #f1f1f1;
+  font-family: 'Poppins', sans-serif;
+  padding: 20px;
+}
+
+/* Welcome text styling */
+.welcome-text {
+  font-size: 36px;
+  color: #A3FFD6; /* Light green color for a welcoming feel */
+  margin-bottom: 10px;
+  letter-spacing: 1.5px; /* Slight spacing for a modern look */
+  text-transform: uppercase;
+  animation: fadeIn 1.5s ease; /* Fade-in effect */
+}
+
+/* Error text styling */
+.error-text {
+  font-size: 30px;
+  color: #ff4d4d; /* Red color for error message */
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  animation: shake 0.5s ease-in-out; /* Shake animation for attention */
+}
+
+/* Admin name styling */
+.adminName {
+  font-size: 24px;
+  color: #f39c12; /* Warm orange color */
+  margin-top: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  animation: slideIn 1.2s ease; /* Slide-in effect */
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Shake animation for error */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+/* Slide-in animation */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
