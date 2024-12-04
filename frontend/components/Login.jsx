@@ -9,56 +9,6 @@ const LoginForm = () => {
   const [message, setMessage] = useState('');
   const [Error, setError] = useState(false);
   const navigate = useNavigate();
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setMessage('');
-  //   setError(false);
-
-  //   try {
-  //     const response = await fetch('http://localhost:3000/login', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ username, password, role }),  // Send role in request
-  //       credentials: 'include'
-  //     });
-
-  //     const data = await response.json();
-
-  //     if (!response.ok) {
-  //       console.log(data.errormessage);
-  //       setError(true);
-  //       setMessage(data.errormessage || "Error occurred!");
-  //     } else {
-  //       setUsername('');
-  //       setPassword('');
-  //       setError(false);
-  //       setMessage('Sign In successful!');
-
-  //       // Navigate based on role
-  //       if (role === 'Manager') {
-  //         navigate('/managerPage');
-  //       }else if(role === 'Admin'){
-  //         navigate("/adminpage")
-  //       }else {
-  //         const sessionvalue = sessionStorage.getItem('lastpage');
-  //         if (sessionvalue === "NotFound" || sessionvalue === "signup") {
-  //           sessionStorage.setItem('lastpage', 'login');
-  //           navigate('/');
-  //           return;
-  //         } else {
-  //           sessionStorage.setItem('lastpage', 'login');
-  //           navigate(-1);
-  //           return;
-  //         }
-  //       }
-  //     }
-  //   } catch (error) {
-  //     setError(true);
-  //     setMessage('An unexpected error occurred.');
-  //     console.log(error);
-  //   }
-  // };
   const handleSubmit = (e) => {
     e.preventDefault();
     setMessage('');

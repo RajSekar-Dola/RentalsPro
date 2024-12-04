@@ -1,13 +1,21 @@
-import React from "react";
-import "../css/home.css"; // Correct import for the CSS file
-
+import React,{useState} from "react";
+import "../css/Home.css"; // Correct import for the CSS file
+import {Testimonal} from "./Home/Testimonal.jsx"
+import { ReviewForm } from "./Home/ReviewForm.jsx";
 function Home() {
+
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleReviewSubmit = () => {
+    setRefreshKey((prevKey) => prevKey + 1); // Increment to notify Testimonials to refresh
+  };
+
   return (
     <div className="home-container">
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
-          <h2>Welcome to Our Rentals</h2>
+          <h2 className="poiret-one-regular">WELCOME TO OUR Rentals PRO</h2>
           <p className="hero-description">Find the best products to rent for your needs</p>
         </div>
       </section>
@@ -69,38 +77,10 @@ function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="testimonials">
-        <h2>What Our Customers Say</h2>
-        <div className="testimonial-card">
-          <p>"Great service and high-quality products!"</p>
-          <h4>- John Doe</h4>
-        </div>
-        <div className="testimonial-card">
-          <p>"Very easy process to rent, highly recommend."</p>
-          <h4>- Jane Smith</h4>
-        </div>
-        {/* Additional Reviews */}
-        <div className="testimonial-card">
-          <p>"Smooth booking process and great customer service. Highly recommend!"</p>
-          <h4>- Mark Evans</h4>
-        </div>
-        <div className="testimonial-card">
-          <p>"Affordable and convenient. The delivery service was top-notch."</p>
-          <h4>- Linda Brown</h4>
-        </div>
-      </section>
-
+      
+      <Testimonal refreshKey={refreshKey}/>
+      <ReviewForm onSubmitSuccess={handleReviewSubmit}/>
       {/* Contact Us Section */}
-      <section className="contact-us">
-        <h2>Contact Us</h2>
-        <p>Have any questions? Reach out to us!</p>
-        <form>
-          <input type="text" placeholder="Your Name" />
-          <input type="email" placeholder="Your Email" />
-          <textarea placeholder="Your Message"></textarea>
-          <button type="submit">Send Message</button>
-        </form>
-      </section>
     </div>
   );
 }

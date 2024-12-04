@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Carousel from '../Carousel.jsx';
 import '../../css/Admindashboardcss/ManagerNotifications.css';
-const ManagerNotifications = () => {
+const ManagerUploadNotifications = () => {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -16,7 +16,7 @@ const ManagerNotifications = () => {
 
     const fetchUnseenNotifications = async () => {
         try {
-            const response = await fetch('http://localhost:3000/manager/notifications', {
+            const response = await fetch('http://localhost:3000/manager/uploadnotifications', {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include', // Assuming you're using cookies for session handling
@@ -59,7 +59,7 @@ const ManagerNotifications = () => {
 
     const markAsSeen = async (id, selectedProductId, isRejected) => {
         try {
-            const response = await fetch(`http://localhost:3000/manager/notifications/markAsSeen`, {
+            const response = await fetch(`http://localhost:3000/manager/uploadnotifications/markAsSeen`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -128,4 +128,4 @@ const ManagerNotifications = () => {
     );
 };
 
-export default ManagerNotifications;
+export default ManagerUploadNotifications;

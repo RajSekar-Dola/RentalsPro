@@ -3,10 +3,10 @@
     flex-wrap: wrap;
     gap: 20px;
     justify-content: space-around;
-    align-items: flex-start; /* Align items to the top */
+    align-items: flex-start;
     padding: 20px;
-    max-height: calc(100vh - 40px); /* Adjust the height to prevent overflow */
-    overflow-y: auto; /* Add vertical scroll if needed */
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
     box-sizing: border-box;
 }
 

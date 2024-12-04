@@ -11,9 +11,9 @@ import {Booking} from './backend/models/Bookings.js';
 import { Manager } from './backend/models/ManagerSchema.js';
 import {Location} from './backend/models/Location.js';
 import { Admin } from './backend/models/Admin.js';
-import dotenv from 'dotenv';
-dotenv.config();
-
+import {Review} from './backend/models/ReviewSchema.js';
+import nodemailer from "nodemailer";
+const url='mongodb://localhost:27017/Rentals';
 const app = express();
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -23,8 +23,7 @@ app.use(cors({
   credentials: true,
 }));
 
-// connecttomongodb(process.env.url)
-connecttomongodb("mongodb://localhost:27017/Rentals")
+connecttomongodb(url)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => {
     console.error('Failed to connect to MongoDB', err);
@@ -39,8 +38,8 @@ app.get('/locations', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
-//Signup
 
+//Signup
 app.post('/signup', async (req, res) => {
   const { username, email, dateofbirth,password } = req.body;
   if (!username || !email || !dateofbirth || !password) {
@@ -65,6 +64,7 @@ app.post('/signup', async (req, res) => {
       email,
       dateofbirth,
       password: hashedPassword,
+      expired:false,
     });
 
     await newUser.save();
@@ -74,10 +74,6 @@ app.post('/signup', async (req, res) => {
     res.status(500).json({ errormessage: 'Error registering user' });
   }
 });
-
-
-
-
 
 
 app.post('/login', async (req, res) => {
@@ -106,7 +102,10 @@ app.post('/login', async (req, res) => {
       if (!existingUser) {
         return res.status(401).json({ errormessage: 'Username not found!' });
       }
-
+      if(role=='User' && existingUser.expired)
+        {
+          return res.status(401).json({errormessage: "Account not found !"})
+        }
       const checkpassword = await bcrypt.compare(password, existingUser.password);
       if (!checkpassword) {
         return res.status(401).json({ errormessage: 'Password is incorrect!' });
@@ -147,7 +146,6 @@ app.post('/login', async (req, res) => {
 });
 
 //RentForm
-
 app.post('/RentForm', async (req, res) => {
   const {      productType,
     productName,
@@ -182,7 +180,7 @@ app.post('/RentForm', async (req, res) => {
       uploadDate:new Date(),
       bookingdates:[],
       bookingids:[],
-      expired:true,
+      expired:false,
     });
 
     const savedProduct = await newProduct.save();
@@ -216,6 +214,36 @@ app.post('/products', async (req, res) => {
   }
 });
 
+app.post('/checkconflict', async (req, res) => {
+  try {
+      const { product_id, fromDateTime, toDateTime } = req.body;
+      const product = await Product.findById(product_id);
+      if (!product) {
+          return res.status(404).json({ message: 'Product not found' });
+      }
+      const from = new Date(fromDateTime);
+      const to = new Date(toDateTime);
+    
+      const conflict = await Booking.findOne({
+        product_id,
+        $or: [
+            { fromDateTime: { $lt: to }, toDateTime: { $gt: from } }
+        ],
+    });
+      if (conflict) {
+        console.log("true");
+          return res.status(200).json({ conflict: true });
+      } else {
+        console.log("false");
+          return res.status(200).json({ conflict: false });
+      }
+
+  } catch (error) {
+      console.error("Error checking conflicts:", error);
+      res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 
 
 app.post('/product/:product_id',async(req,res)=>{
@@ -242,6 +270,20 @@ app.post('/booking',async (req,res)=>{
   const buyerid=req.cookies.user_id;
   if (!buyerid || !/^[0-9a-fA-F]{24}$/.test(buyerid)) {
     return res.status(400).json({ message: "Invalid buyer ID format!" });
+  }
+
+  const from = new Date(fromDateTime);
+  const to = new Date(toDateTime);
+
+  const conflict = await Booking.findOne({
+    product_id,
+    $or: [
+        { fromDateTime: { $lt: to }, toDateTime: { $gt: from } }
+    ],
+});
+if(conflict)
+{
+    return res.status(401).json({message:"Not available"});
 }
   const newbooking = new Booking({
     product_id,
@@ -268,6 +310,8 @@ app.post('/booking',async (req,res)=>{
 
   const z=await User.findOneAndUpdate({_id:product.userid},{$push:{notifications:{message:newbookingid,seen:false}}},{new:true})
   await z.save();
+
+  const Managernotify=await Manager.findOneAndUpdate({branch:product.locationName},{$push:{bookingnotifications:{bookingid:y._id}}},{new:true});
   res.status(200).json({message:"Booking successful !"});
   console.log("booking successful !");
   }
@@ -327,8 +371,8 @@ app.post('/api/addBranch', async (req, res) => {
 
 app.get('/admindashboard/registeredusers',async(req,res)=>{
   try{
-    const users=await User.find({});
-    const usercount = await User.countDocuments({});
+    const users=await User.find({expired:false});
+    const usercount = await User.countDocuments({expired:false});
     if(!users)
     {
       return res.status(200).json({error :'Users not found !'});
@@ -354,7 +398,7 @@ app.post('/admindashboard/deleteusers', async (req, res) => {
 
     // If forceDelete is true or there are no bookings, proceed with deletion
     await Product.updateMany({ userid: user_id }, { $set: { expired: true } }, { new: true });
-    const deletedUser = await User.findByIdAndDelete(user_id);
+    const deletedUser = await User.findOneAndUpdate({_id:user_id},{$set:{expired :true}},{new:true});
 
     if (!deletedUser) {
       return res.status(200).json({ message: 'User not found in database!' });
@@ -366,7 +410,6 @@ app.post('/admindashboard/deleteusers', async (req, res) => {
     return res.status(500).json({ message: 'Server error!' });
   }
 });
-
 
 app.post('/admindashboard/createmanager',async(req,res)=>{
   console.log(req.body);
@@ -409,7 +452,6 @@ app.post('/admindashboard/createmanager',async(req,res)=>{
 
 })
 
-
 app.get('/admindashboard/registeredmanagers', async (req, res) => {
   try {
     const users = await Manager.find({});
@@ -423,7 +465,6 @@ app.get('/admindashboard/registeredmanagers', async (req, res) => {
     return res.status(500).json({ error: 'Server error!' });
   }
 });
-
 
 app.post('/admindashboard/deletemanagers',async(req,res)=>{
 
@@ -479,14 +520,10 @@ app.get("/grabBookings", async (req, res) => {
   
 });
 
-
-
 app.post("/settings", async (req, res) => {
   try {
-    const { editUsername, password, email } = req.body;
-
+    const { editUsername,  email,password } = req.body;
     const currentUserid = req.cookies.user_id;
-
     if (!currentUserid) {
       return res.status(401).json({ message: "Unauthorized: No user logged in" });
     }
@@ -504,7 +541,7 @@ app.post("/settings", async (req, res) => {
       }
       existingUser.email = email;
     }
-    if (editUsername && editUsername !== currentUserid) {
+    if (editUsername && editUsername !== existingUser.username) {
       const usernameExists = await User.findOne({ username: editUsername });
       if (usernameExists) {
         return res.status(409).json({ message: "Username already in use" });
@@ -512,14 +549,19 @@ app.post("/settings", async (req, res) => {
       existingUser.username = editUsername;
     }
     if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      existingUser.password = hashedPassword;
+      try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        existingUser.password = hashedPassword;
+      } catch (err) {
+        return res.status(500).json({ message: "Error hashing password" });
+      }
     }
-    await existingUser.save();
-    console.log(existingUser)
-
-
-    res.status(200).json({ message: "User details updated successfully" });
+    const x=await existingUser.save();
+    if (x) {
+      res.status(200).json({ message: "User details updated successfully" });
+    } else {
+      res.status(500).json({ message: "Failed to save user details" });
+    }
   } catch (err) {
     console.error("Error updating user details:", err);
     res.status(500).json({ message: "An error occurred while updating user details" });
@@ -561,7 +603,7 @@ app.get("/grabRentals", async (req, res) => {
           const obj = { rentedProducts: products };
           res.json(obj);
         } else {
-          res.status(404).json({ message: "No rented products found" });
+          res.json({ message: "No rented products found" });
         }
       } else {
         res.status(404).json({ message: "User not found" });
@@ -573,7 +615,6 @@ app.get("/grabRentals", async (req, res) => {
     res.status(500).json({ message: "An error occurred", error: err.message });
   }
 });
-
 
 app.post('/signOut', async (req, res) => {
   try {
@@ -605,7 +646,99 @@ app.post('/signOut', async (req, res) => {
 
 ///Manager Page related ........
 
-app.get('/manager/notifications',async(req,res)=>{
+// Route: Fetch booking notifications
+app.post('/manager/fetchBookingnotifications', async (req, res) => {
+  const { managerid } = req.body;
+
+  if (!managerid) {
+      return res.status(400).json({ message: "Manager ID is required" });
+  }
+
+  try {
+      const manager = await Manager.findById(managerid);
+
+      if (!manager) {
+          return res.status(404).json({ message: "Manager not found" });
+      }
+
+      const notifications = manager.bookingnotifications || [];
+      res.status(200).json({notifications: notifications });
+  } catch (error) {
+      console.error("Error fetching booking notifications:", error);
+      res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Route: Fetch detailed results for bookings
+app.post('/manager/bookingnotifications/results', async (req, res) => {
+  const { bids } = req.body;
+  if (!bids || !Array.isArray(bids) || bids.length === 0) {
+      return res.status(400).json({ message: "Invalid or empty bids array" });
+  }
+
+  try {
+      const results = await Promise.all(
+          bids.map(async (id) => {
+              try {
+                  const booking = await Booking.findById(id);
+                  if (!booking) {
+                      throw new Error(`Booking not found for ID: ${id}`);
+                  }
+
+                  const buyer = await User.findById(booking.buyerid);
+                  const product = await Product.findById(booking.product_id);
+                  const owner = await User.findById(product.userid);
+
+                  return {
+                      ownerid: owner?._id,
+                      ownername: owner?.username,
+                      owneremail: owner?.email,
+                      buyerid: buyer?._id,
+                      buyername: buyer?.username,
+                      buyeremail: buyer?.email,
+                      productid: product?._id,
+                      productname: product?.productName,
+                      productphoto: product?.photo[0],
+                      booking,
+                  };
+              } catch (error) {
+                  console.error("Error fetching booking details:", error);
+                  return null; // Return null for failed items
+              }
+          })
+      );
+
+      // Filter out null entries in the results array
+      const filteredResults = results.filter((result) => result !== null);
+      res.status(200).json({ results: filteredResults });
+  } catch (error) {
+    console.log(error);
+      console.error("Error fetching booking results:", error);
+      res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.post('/manager/bookingnotifications/updatelevel',async(req,res)=>{
+  const {bid,level}=req.body;
+  try{
+    console.log(bid);
+    const booking = await Booking.findByIdAndUpdate(bid,{level:level},{new:true});
+    if(booking)
+    {
+      res.status(200).json({result:true});
+    }
+    else
+    { 
+      res.status(400).json({result:false});
+    }
+  }
+  catch(e)
+  {
+    res.status(400).json({result:false});
+  }
+})
+
+app.get('/manager/uploadnotifications',async(req,res)=>{
   try {
     const managerid = req.cookies.user_id;
     if (managerid) {
@@ -626,7 +759,7 @@ app.get('/manager/notifications',async(req,res)=>{
   }
 })
 
-app.post('/manager/notifications/markAsSeen',async(req,res)=>{
+app.post('/manager/uploadnotifications/markAsSeen',async(req,res)=>{
   try{
       const managerid = req.cookies.user_id;
       const {notificationid,productid,rejected}=req.body;
@@ -653,7 +786,6 @@ app.post('/manager/notifications/markAsSeen',async(req,res)=>{
   }
 })
 
-
 app.get('/manager/products/:product_id',async(req,res)=>{
   const {product_id}=req.params;
   console.log(product_id);
@@ -671,10 +803,73 @@ app.get('/manager/products/:product_id',async(req,res)=>{
   }
 })
 
-const PORT =3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.get('/manager/notifications', async (req, res) => {
+  try {
+    const userid = req.cookies.user_id; // Extract user ID from cookies
+    if (!userid) return res.status(400).json({ message: "No user cookie found" });
+
+    const exist_user = await Manager.findById(userid); // Fetch user details
+    if (!exist_user) return res.status(404).json({ message: "User not found" });
+
+    const notifications = exist_user.notifications; // Get notifications
+    const unseenCount = notifications.filter(notification => !notification.seen).length; // Count unseen notifications
+    const bookingnotifications = exist_user.bookingnotifications;
+    const unseenBooking = bookingnotifications.filter(notification => !notification.seen).length;
+
+    // Respond with notifications, booking IDs, and unseen count
+    res.json({
+      unseenCount: unseenCount,
+      unseenBooking:unseenBooking,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
+
+//Counting unseen notifications
+app.get('/manager/notifications/countUnseen',async(req,res)=>{
+  try {
+    const userid = req.cookies.user_id;
+    if (userid) {
+      const exist_user = await Manager.findById(userid);
+      const notifications=exist_user.notifications;
+      if (exist_user) {
+        res.json({notifications:notifications});
+      } else {
+        res.status(404).json({ message: "booking not found" });
+      }
+    } else {
+      res.status(400).json({ message: "No user cookie found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+})
+
+app.post('/manager/notifications/markallAsSeen', async (req, res) => {
+  try {
+    const userid = req.cookies.user_id;
+
+    // Update all notifications with seen: false to seen: true
+    const updatedUser = await Manager.findOneAndUpdate(
+      { _id: userid, "notifications.seen": false }, // Match notifications with seen: false
+      { $set: { "notifications.$[].seen": true } }, // Update all notifications' seen field
+      { new: true } // Return the updated user
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found or no unseen notifications" });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 app.get("/api/dashboard/daily-bookings", async (req, res) => {
   try {
@@ -1269,12 +1464,7 @@ app.get("/api/dashboard/categories-cat", async (req, res) => {
 });
 
 
-
-
-
 ///userbooking notification
-
-
 app.get('/user/notifications',async(req,res)=>{
   try {
     const userid = req.cookies.user_id;
@@ -1315,21 +1505,170 @@ app.get('/user/notifications/:bookingid',async(req,res)=>{
   }
 })
 
-app.post('/user/notifications/markAsSeen',async(req,res)=>{
-  try{
-      const userid = req.cookies.user_id;
-      const {notificationid}=req.body;
-      const removednotification=await User.findByIdAndUpdate(userid,{ $pull: { notifications: { _id: notificationid } } },{new:true} );
-      if(!removednotification)
-      {
-        return res.status(400).json({message:"notification not removed .error occured !"});
-      }
-      else{
-        return res.status(200).json({message:"notification removed successfully!"});
-      }
-  }
-  catch (error) {
+app.post('/user/notifications/markAsSeen', async (req, res) => {
+  try {
+    const userid = req.cookies.user_id;
+    const { notificationid } = req.body;
+
+    // Update the notification's seen field to true only if it is currently false
+    const updatedNotification = await User.findOneAndUpdate(
+      { _id: userid, "notifications._id": notificationid, "notifications.seen": false },
+      { $set: { "notifications.$.seen": true } },
+      { new: true }
+    );
+
+    // if (!updatedNotification) {
+    //   return res.status(400).json({ message: "Notification was not updated. It may already be marked as seen or not found." });
+    // } else {
+    //   return res.status(200).json({ message: "Notification marked as seen successfully!" });
+    // }
+  } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
+});
+
+
+app.post('/user/notifications/products', async (req, res) => {
+  const { bookingids } = req.body;  // Extract bookingids from the request body
+  try {
+    const products = [];
+
+    for (const bookingid of bookingids) {
+      const reqbooking = await Booking.findById(bookingid);
+      if (!reqbooking) continue;
+
+      const reqproduct = await Product.findById(reqbooking.product_id);
+      if (!reqproduct) continue;
+
+      const reqbuyer = await User.findById(reqbooking.buyerid);
+      if (!reqbuyer) continue;
+
+      products.push({ reqbooking, reqproduct, reqbuyer });
+    }
+    if (products.length === 0) {
+      return res.status(404).json({ error: 'No bookings found!' });
+    }
+
+    return res.status(200).json({ products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error!' });
+  }
+});
+
+
+app.post("/home/postreview",async(req,res)=>{
+  try {
+    const userid = req.cookies.user_id;
+    if (userid) {
+    const {text, rating } = req.body;
+    const x= await User.findById(userid);
+    if (!text || !rating) return res.status(400).send("Missing required fields");
+    const username=x.username;
+    const newReview = new Review({username, text, rating });
+    await newReview.save();
+    res.status(200).json({message:"review suceesfully sent !"});
+    }
+  } catch (err) {
+    res.status(500).json({message:err.message});
+  }
 })
+app.get("/home/getreviews",async(req,res)=>{
+  try {
+    const reviews = await Review.find();
+    res.status(200).json({reviews:reviews});
+  } catch (err) {
+    res.status(500).json({message:err.message});}
+})
+app.post("/send-email", async (req, res) => {
+  const { to, subject, text } = req.body;
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      service: 'false', // Specify your email service provider
+      auth: {
+        user: 'rentalspro001@gmail.com',
+        pass: 'roox edlv kuvh elyo', // Use your app-specific password
+      },
+    });
+
+    const mailOptions = {
+      from: "rentalspro001@gmail.com",
+      to: to,
+      subject: subject,
+      text: text,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).json({ error: "Failed to send email" });
+  }
+});
+app.get("/grabCustomernameProductId", async (req, res) => {
+  try {
+    const { userid, product_id } = req.query; // Use query for GET requests
+
+    // Fetch user and booking details
+    const user = await User.findById(userid);
+    const booking = await Booking.findOne({ product_id });
+
+    if (!user || !booking) {
+      return res.status(404).json({ error: "User or Booking not found" });
+    }
+
+    // Extract buyer details
+    const buyerName = user.username;
+    const buyerEmail = user.email;
+    const bookingDate = booking.bookingDate;
+    const fromDate = booking.fromDateTime;
+    const toDate = booking.toDateTime;
+
+    // Fetch product and owner details
+    const product = await Product.findById(product_id);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const owner = await User.findById(product.userid); // Use product's userid to find owner
+    if (!owner) {
+      return res.status(404).json({ error: "Owner not found" });
+    }
+
+    const ownerName = owner.username;
+    const ownerEmail = owner.email;
+    const productName = product.productName;
+    const productType = product.productType;
+
+    // Respond with all necessary details
+    res.json({
+      buyerName,
+      buyerEmail,
+      bookingDate,
+      fromDate,
+      toDate,
+      ownerName,
+      ownerEmail,
+      productName,
+      productType
+    });
+
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+const PORT =3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

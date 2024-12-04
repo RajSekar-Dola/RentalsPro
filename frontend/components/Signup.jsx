@@ -19,17 +19,8 @@ const SignupForm = () => {
 
 
   function validateUsername(username) {
-    // Regular expression to match the criteria
-    const regex = /^[a-z]{5,}$/;
-    
-    // Test the username against the regex
-    if (regex.test(username)) {
-        return true; // Valid username
-    } else {
-        return false; // Invalid username
-    }
+    return /^[a-z][a-z0-9]{4,}$/.test(username);
 }
-
 
   useEffect(() => {
     if (!isFocused && email !== '') {
@@ -38,6 +29,18 @@ const SignupForm = () => {
     }
   }, [isFocused, email]);
 
+  useEffect(()=>{
+    if (dateofbirth&&!validAge(dateofbirth)) {
+      setError(true);
+      setMessage("You must be at least 18 years old to sign up.");
+      return;
+    }
+    else{
+      setError(false);
+      setMessage('');
+    }
+  
+  },[dateofbirth])
 
   useEffect(() => {
     setConfirmPasswordError(password !== confirmpassword);
@@ -87,13 +90,14 @@ const SignupForm = () => {
     {
       setError(true);
       setMessage("username must be 5 letters of lowercase letters !")
+      return
     }
 
 
     if (!validPassword(password)) {
       setError(true);
       // setMessage("Password must be 8 characters with upper, lower, digit, and special character.");
-      setMessage("Password must be valid !");
+      setMessage("Invalid password. It must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.");
       return;
     }
   
@@ -203,7 +207,7 @@ const SignupForm = () => {
           id="dateofbirth"
           className="form-input"
           value={dateofbirth}
-          onChange={(e) => setdateofbirth(e.target.value)}
+          onChange={(e) => {setdateofbirth(e.target.value)}}
           required
         />
 
@@ -239,5 +243,4 @@ const SignupForm = () => {
 </div>
   );
 };
-
 export default SignupForm;

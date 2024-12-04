@@ -1,4 +1,36 @@
-const filterProducts = (
+async function checkConflict(productId, fromDateTime, toDateTime) {
+  try {
+      const response = await fetch('http://localhost:3000/checkconflict', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              product_id: productId,
+              fromDateTime: fromDateTime,
+              toDateTime: toDateTime,
+          }),
+          credentials:include,
+      });
+      console.log(fromDateTime,toDateTime);
+      if (response.ok) {
+          const data = await response.json();
+          
+          return data.conflict;
+            // Return true or false based on the response
+      } else {
+          return false; // Return false in case of error
+      }
+  } catch (error) {
+      return false; // Return false in case of an exception
+  }
+}
+async function conflict(id,fromDateTime, toDateTime){
+  const hasConflict = await checkConflict(id, fromDateTime, toDateTime);
+  if(hasConflict){return true;}
+    else{return false};
+}
+const filterProducts =(
     products = [],
     productType,
     productName,
@@ -16,7 +48,11 @@ const filterProducts = (
       const matchesmaxPrice = !maxprice ||product.price<=maxprice;
       const matchesminPrice = !minprice ||product.price>=minprice;
       const matchesName = !productName || product.productName.toLowerCase().includes(productName.toLowerCase());
-  
+      // const hasConflict = await checkConflict(product._id, fromDateTime, toDateTime);
+
+      const conflictcheckfrom=new Date(fromDateTime)
+      const conflictcheckto=new Date(toDateTime)
+
       return (!product.expired) && matchesType && matchesLocation && matchesFromDate && matchesToDate && matchesmaxPrice && matchesminPrice&& matchesName;
     });
   };

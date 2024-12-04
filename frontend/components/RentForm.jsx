@@ -125,7 +125,7 @@ const RentForm = () => {
     };
 
     const getCookieValue = (name) => {
-        const value =` ; ${document.cookie}`;
+        const value = ` ; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     };
@@ -224,7 +224,10 @@ const RentForm = () => {
 
     return (
         <div>
-            <form id='productForm' style={{ display: 'flex', flexDirection: "column" }} onSubmit={handleSubmit}>
+            <div class="background-container">
+                <img src="frontend\BgImage.jpg" alt="Background" class="background-image" />
+            </div>
+            <form id='productForm' style={{ display: 'flex', flexDirection: "column", border: "2px green groove" }} onSubmit={handleSubmit}>
                 <label htmlFor='productType'>SELECT PRODUCT TYPE:</label>
                 <select id='productType' name='productType' value={formData.productType} onChange={handleChange} required>
                     <option value="">Select a product</option>

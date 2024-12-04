@@ -31,7 +31,8 @@ const UserSchema = new mongoose.Schema({
     },
   ],
   default:[],
-  }
+  },
+  expired:{type:Boolean,required:true},
 });
 
 const User = mongoose.model("Users", UserSchema);

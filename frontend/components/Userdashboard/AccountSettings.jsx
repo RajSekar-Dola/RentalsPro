@@ -1,15 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import "../../css/Userdashboardcss/AccountSettings.css";
+
+const validateUsername = (username) => /^[a-z][a-z0-9]{4,}$/.test(username);
+const validateEmail = (email) =>
+  /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|mil|int|info|biz|co|in|us|uk|io|ai|tech|me|dev|xyz|live|store|tv)$/i.test(email);
+const validatePassword = (password) =>
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
 
 const AccountSettings = () => {
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '', // Initially empty for security
+    username: "",
+    email: "",
+    password: "", // Initially empty for security
   });
-  const [message, setMessage] = useState();
-  const [updateMessage, setUpdateMessage] = useState(''); // For user feedback
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState("");
+  const [updateMessage, setUpdateMessage] = useState(""); // For user feedback
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -17,9 +23,9 @@ const AccountSettings = () => {
         const response = await fetch("http://localhost:3000/grabDetails", {
           method: "GET",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          credentials: "include"
+          credentials: "include",
         });
 
         if (response.ok) {
@@ -27,7 +33,7 @@ const AccountSettings = () => {
           setFormData({
             username: data.username,
             email: data.email,
-            password: '', // Keep password hidden
+            password: "", // Keep password hidden
           });
         } else {
           setError("Failed to fetch account details");
@@ -50,36 +56,59 @@ const AccountSettings = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Perform validations
+    if (!validateUsername(formData.username)) {
+      setError("Invalid username. It should be at least 5 lowercase letters.");
+      return;
+    }
+    if (!validateEmail(formData.email)) {
+      setError("Invalid email address.");
+      return;
+    }
+    if (formData.password && !validatePassword(formData.password)) {
+      setError(
+        "Invalid password. It must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character."
+      );
+      return;
+    }
+
     try {
+      const body = {
+        editUsername: formData.username,
+        email: formData.email,
+      };
+      if (formData.password) {
+        body.password = formData.password;
+      }
+
       const response = await fetch("http://localhost:3000/settings", {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          editUsername: formData.username,
-          email: formData.email,
-          password: formData.password,
-        }),
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
 
+      const responseData = await response.json(); // Parse server response
+
       if (response.ok) {
-        setUpdateMessage('Details updated successfully!');
-        setMessage('ACCOUNT SETTINGS');
+        setUpdateMessage(responseData.message || "Details updated successfully!");
+        setError("");
       } else {
-        setError('Failed to update details');
+        setError(responseData.message || "Failed to update details");
       }
 
       setTimeout(() => {
-        setUpdateMessage('');
+        setUpdateMessage("");
       }, 3000);
 
       // Refetch the latest details after the update
       const updatedResponse = await fetch("http://localhost:3000/grabDetails", {
         method: "GET",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        credentials: "include"
+        credentials: "include",
       });
 
       if (updatedResponse.ok) {
@@ -87,21 +116,20 @@ const AccountSettings = () => {
         setFormData({
           username: updatedData.username,
           email: updatedData.email,
-          password: '', // Keep password hidden again
+          password: "", // Keep password hidden again
         });
       } else {
-        throw new Error('Failed to fetch updated details');
+        throw new Error("Failed to fetch updated details");
       }
-
     } catch (err) {
-      setError('An error occurred while updating details');
+      setError("An error occurred while updating details");
     }
   };
 
   return (
     <>
       <h2>{message}</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit} className="account-settings-page">
         <h2>ACCOUNT SETTINGS</h2>
         <div className="settings-field">
@@ -137,9 +165,11 @@ const AccountSettings = () => {
           />
         </div>
 
-        <button type="submit" className="save-button">SAVE CHANGES</button>
+        <button type="submit" className="save-button">
+          SAVE CHANGES
+        </button>
       </form>
-      {updateMessage && <p>{updateMessage}</p>} {/* Display feedback */}
+      {updateMessage && <p style={{ color: "green" }}>{updateMessage}</p>}
     </>
   );
 };

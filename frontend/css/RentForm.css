@@ -130,3 +130,17 @@
     opacity: 0;
     transition: opacity 0.5s ease-out; /* Fade-out effect */
 }
+
+.background-container {
+    position: relative; /* For layering content over the image */
+    width: 100%; /* Full width */
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Ensures no overflow issues with large images */
+}
+
+.background-image {
+    width: 100%; /* Stretches the image to the full width */
+    height: 100vh; /* Stretches the image to the full viewport height */
+    object-fit: cover; /* Ensures the image covers the container while maintaining aspect ratio */
+    object-position: center; /* Centers the image */
+}

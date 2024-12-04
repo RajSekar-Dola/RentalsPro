@@ -50,10 +50,10 @@ const AdminCategory = () => {
             legend: {
                 position: 'right',
                 labels: {
-                    usePointStyle: true, // To use square shapes for labels
-                    pointStyle: 'rect',  // Use a rectangular (square) shape for the legend
+                    usePointStyle: true, 
+                    pointStyle: 'rect', 
                     font: {
-                        size: 14 // You can adjust the font size here
+                        size: 14 
                     }
                 }
             }

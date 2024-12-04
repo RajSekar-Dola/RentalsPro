@@ -1,7 +1,9 @@
+
 /* Dashboard container styling */
 .dashboard-container {
     display: flex;
-    height: 100vh; /* Full viewport height */
+    height: 100vh;
+    /* Full viewport height */
     font-family: 'Poppins', sans-serif;
     color: #333;
 }
@@ -9,19 +11,24 @@
 /* Dashboard menu styling */
 .dashboard-menu {
     width: 250px;
-    background-color: #1a2d4b; /* Darker blue background */
+    background-color: #1a2d4b;
+    /* Darker blue background */
     padding: 30px 20px;
-    box-shadow: 3px 0 8px rgba(0, 0, 0, 0.2); /* Slightly larger shadow */
+    box-shadow: 3px 0 8px rgba(0, 0, 0, 0.2);
+    /* Slightly larger shadow */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Space between elements */
-    height: 100%; /* Ensure it stretches the full height */
+    justify-content: space-between;
+    /* Space between elements */
+    height: 100%;
+    /* Ensure it stretches the full height */
 }
 
 .dashboard-menu h2 {
     font-size: 1.8rem;
     margin-bottom: 25px;
-    color: #ff6b6b; /* Vibrant heading color */
+    color: #ff6b6b;
+    /* Vibrant heading color */
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -32,33 +39,42 @@
     list-style-type: none;
     padding: 0;
     margin: 0;
-    flex-grow: 1; /* Allow the menu items to take up the remaining space */
+    flex-grow: 1;
+    /* Allow the menu items to take up the remaining space */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Equal space between menu items */
+    justify-content: space-between;
+    /* Equal space between menu items */
 }
 
 .dashboard-menu li {
-    margin-bottom: 20px; /* Increased spacing for clarity */
+    margin-bottom: 20px;
+    /* Increased spacing for clarity */
 }
 
 /* Menu links styling */
-.dashboard-menu li a, .out {
+.dashboard-menu li a,
+.out {
     text-decoration: none;
-    color: #a3ffd6; /* Light green color for links */
+    color: #a3ffd6;
+    /* Light green color for links */
     font-weight: bold;
     font-size: 1rem;
     letter-spacing: 1px;
     padding: 10px 15px;
     display: block;
-    transition: all 0.3s ease; /* Smooth transition for color and background */
+    transition: all 0.3s ease;
+    /* Smooth transition for color and background */
     border-radius: 6px;
     text-align: center;
 }
 
-.dashboard-menu li a:hover, .out:hover {
-    color: #ffffff; /* Change text color on hover */
-    background-color: #007bff; /* Background color on hover */
+.dashboard-menu li a:hover,
+.out:hover {
+    color: #ffffff;
+    /* Change text color on hover */
+    background-color: #007bff;
+    /* Background color on hover */
     cursor: pointer;
 }
 
@@ -70,7 +86,8 @@
 
 /* Sign out button styling */
 .out {
-    color: #ff6b6b; /* Unique color for sign-out */
+    color: #ff6b6b;
+    /* Unique color for sign-out */
     text-align: center;
     transition: background-color 0.3s;
 }
@@ -79,7 +96,8 @@
 .dashboard-content {
     flex-grow: 1;
     padding: 30px;
-    background-color: #f9f9f9; /* Light background for readability */
+    background-color: #f9f9f9;
+    /* Light background for readability */
     overflow-y: auto;
 }
 
@@ -108,6 +126,7 @@
 
 .select-component select:focus {
     border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); /* Light glow effect */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    /* Light glow effect */
     outline: none;
 }

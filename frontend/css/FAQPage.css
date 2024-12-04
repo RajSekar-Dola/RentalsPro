@@ -1,76 +1,105 @@
-/* FAQPage.css */
+/* Outer Page Container */
+.page-container {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f0f0;
+  background-image: linear-gradient(90deg, #0a0d12 0%, #1e2f43 20%, #0a0d12 95%);
+  height: 100vh;
+  overflow-x: hidden;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* FAQ Container */
 .faq-container {
-    position: relative;
-    padding: 2rem;
-    margin: 0 auto;
-    max-width: 800px;
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-image: linear-gradient(90deg, #0a2647 0%, #144272 25%, #205295 50%, #2c74b3 75%);
+}
+
+.faq-container h1 {
+  text-align: center;
+  color: rgb(226, 211, 211);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.faq-container h2 {
+  color: rgb(171, 165, 165);
+  font-size: 1em;
+  text-align: center;
+  position: relative;
+  bottom: 10px;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.accordion-item {
+  margin-bottom: 10px;
+}
+
+.accordion-title {
+  background-color: #f4f4f4;
+  color: #333;
+  padding: 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  position: relative;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease;
+}
+
+.accordion-item.active .arrow {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.accordion-title:hover {
+  background-color: #e0e0e0;
+}
+
+.accordion-content {
+  overflow: hidden;
+  max-height: 0;
+  padding: 0 10px;
+  transition: max-height 0.3s ease-out;
+  border: 1px solid #ccc;
+  border-top: none;
+  background-color: #f9f9f9;
+  line-height: 1.6;
+  white-space: normal; /* Allow words to wrap naturally */
+  word-spacing: 0.5em; /* Add space between words */
+}
+
+.accordion-item.active .accordion-content {
+  max-height: 500px; /* Adjust based on content */
+  padding: 10px 10px 20px 10px;
+  line-height: 1.6;
+  word-spacing: 0.5em; /* Add space between words */
+  white-space: normal; /* Ensure wrapping */
+}
+
+
+.animate-word {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(4px);
+  animation: fade-in 0.8s forwards cubic-bezier(0.11, 0, 0.5, 0);
+  margin-right: 0.3em; /* Space between animated words */
+}
+
+@keyframes fade-in {
+  100% {
+    opacity: 1;
+    filter: blur(0);
   }
-  
-  .faq-header {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #1C1678;
-  }
-  
-  .accordion {
-    margin-top: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-  
-  .accordion-item {
-    background-color: #E9F5FF;
-    margin-bottom: 10px;
-    padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid #DADADA;
-    transition: background-color 0.3s ease;
-  }
-  
-  .accordion-item.active {
-    background-color: #A3FFD6;
-  }
-  
-  .accordion-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: bold;
-    font-size: 1.25rem;
-    cursor: pointer;
-    padding: 0.5rem 0;
-    transition: color 0.3s ease;
-  }
-  
-  .accordion-title:hover {
-    color: #0056b3;
-  }
-  
-  .accordion-content {
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.3s ease;
-  }
-  
-  .answer {
-    padding: 1rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #333;
-  }
-  
-  .arrow {
-    font-size: 1.5rem;
-    transition: transform 0.3s ease;
-  }
-  
-  @media (max-width: 600px) {
-    .faq-header {
-      font-size: 2rem;
-    }
-    .accordion-title {
-      font-size: 1.1rem;
-    }
-  }
+}

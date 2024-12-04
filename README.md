@@ -32,7 +32,7 @@ To set up the development environment for RentalsPro, follow these steps:
 3. **Run the Application**
    - In one terminal, start the backend server:
      ```bash
-     npm start
+     node server
      ```
    - In another terminal, start the frontend development server:
      ```bash
@@ -40,7 +40,7 @@ To set up the development environment for RentalsPro, follow these steps:
      ```
 
 4. **Access the Application**  
-   Open your browser and go to `http://localhost:3000` to view the site.
+   Open your browser and go to `http://localhost:5173` to view the site.
 
 ## Usage
 
@@ -55,6 +55,9 @@ To set up the development environment for RentalsPro, follow these steps:
 - **Multi-user Support**: Separate roles for customers, Managers, and administrators, each with unique permissions.
 - **Booking Management**: Users can view and manage their bookings.
 - **Dynamic Filters**: Advanced filtering and search options for efficient browsing.
+- **Review System**: User can review the website based on his experience with the product , manager and app interface.
+- **Admin Powers** :  The admin can add new branches, assign managers to specific branches, and remove managers when necessary.Can view detailed reports of daily and monthly revenue.Track daily and monthly uploads as well as bookings through comprehensive reports.
+**Manager Powers** : Each branch is managed by a unique manager responsible for overseeing operations in their designated location.Approve products submitted by users for lending in the branch’s location. Facilitate and manage permissions for product bookings, ensuring smooth transactions between the lending and booking users.
 
 ## Credits
 

@@ -25,6 +25,12 @@ const ManagerSchema = new mongoose.Schema({
     },
   ],
   default:[],
+  },
+  bookingnotifications:{
+    type:[{
+      bookingid: {type: String ,required :true},
+      seen: {type:Boolean,default: false},
+    }]
   }
 });
 

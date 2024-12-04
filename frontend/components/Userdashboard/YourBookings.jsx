@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import "../../css/Userdashboardcss/YourRentals.css";  // Reusing YourRentals.css
+import { BsDisplay } from 'react-icons/bs';
 
 const YourBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -34,7 +35,7 @@ const YourBookings = () => {
             // Merging booking and product details
             const mergedArray = bookings.map((booking) => {
               const product = products.find((prod) => prod._id === booking.product_id) || {};
-              return {...product , ...booking }; // Combine booking and product details
+              return { ...product, ...booking }; // Combine booking and product details
             });
             setBookings(mergedArray);
           }
@@ -61,25 +62,57 @@ const YourBookings = () => {
           {bookings.length > 0 ? (
             bookings.map((booking, index) => (
               <div key={index} className="rental-card">
-                <p>{booking.productType}</p>
-                <p>{booking.productName}</p>
-                {/* <p><strong>Owner Name:</strong> {booking.username || "N/A"}</p>  */}
-                <p><strong>Location Name:</strong>{booking.locationName}</p>
-                <p><strong>From:</strong> {new Date(booking.fromDateTime).toLocaleString()}</p>
-                <p><strong>To:</strong> {new Date(booking.toDateTime).toLocaleString()}</p>
-                <p><strong>Price:</strong> Rs.{booking.price}</p>
                 {booking.photo && booking.photo.length > 0 && (
-                  <img
-                    src={booking.photo[0]}
-                    alt={booking.productName}
-                    style={{ width: "200px" }}
-                  />
+                  <div>
+                    <img
+                      src={booking.photo[0]}
+                      alt={booking.productName}
+                    />
+                  <div
+    className={`mbn-user-bookingstatus ${
+        booking.level === 0
+            ? 'booked'
+            : booking.level === 1
+            ? 'ready'
+            : booking.level === 2
+            ? 'using'
+            : booking.level === 3
+            ? 'completed'
+            : 'unknown'
+    }`}
+>
+    {(() => {
+        switch (booking.level) {
+            case 0:
+                return 'Booked';
+            case 1:
+                return 'Ready to Use';
+            case 2:
+                return 'Using';
+            case 3:
+                return 'Completed';
+            default:
+                return 'Unknown Status';
+        }
+    })()}
+</div>
+
+                  </div>
                 )}
+                <div className="card-content">
+                <p><strong>Type:</strong>{booking.productType}</p>
+                <p><strong>Name:</strong>{booking.productName}</p>
+                  <p><strong>Location:</strong> {booking.locationName}</p>
+                  <p><strong>From:</strong> {new Date(booking.fromDateTime).toLocaleString()}</p>
+                  <p><strong>To:</strong> {new Date(booking.toDateTime).toLocaleString()}</p>
+                  <p><strong>Price:</strong> Rs.{booking.price}</p>
+                </div>
               </div>
             ))
           ) : (
             <p>No Bookings found</p>
           )}
+
         </div>
       )}
     </div>

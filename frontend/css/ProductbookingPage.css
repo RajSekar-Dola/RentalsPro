@@ -1,59 +1,140 @@
+/* Set a white background for the entire page */
 .container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .summary, .checkout {
-    animation: fadeIn 1s ease-in-out;
-  }
-  
-  .summary{
-    display:flex;
-    flex-direction:column;
-    justify-content: space-evenly;
-  }
-  .summary img{
-    width:80%;
-    max-width: 300px;
-    min-height:250px;
-    border-radius: 8px;
-    transition:transform 0.3s ease;
-  }
-  .checkout {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-    margin: 16px;
-    width: 250px;
-    height: 300px;
-    text-align:left;
-    border-top-right-radius: 50px;
-    border-bottom-left-radius: 50px;
-    position: sticky;
-    top:0;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  .payment-button {
-    background: #ffcc00;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s ease;
-  }
-  
-  .payment-button:hover {
-    background: #ff9900;
-  }
-  
+  background-image: linear-gradient(90deg, #0a0d12 0%, #1e2f43 20%, #0a0d12 95%);
+  background-color: white;
+  display: flex;
+  flex-direction: column; /* Stack the title and box vertically */
+  align-items: center; /* Center all items horizontally */
+  min-height: 100vh; /* Ensure the page takes up the full height */
+  justify-content: flex-start; /* Align everything to the top */
+  padding: 20px;
+}
+
+/* Review and Checkout titles */
+.review-checkout-container {
+  width: 100%; /* Full width for the title container */
+  text-align: center;
+  margin-top: 20px; /* Space between top edge and the title */
+}
+
+.review-checkout-container h2 {
+  color: rgb(248, 242, 242);
+  font-size: 36px;
+  font-weight: bold;
+}
+
+/* Box with a 16:7 aspect ratio (TV-like) */
+.box-container {
+  width: 100%;
+  max-width: 1500px; /* Increased width */
+  height: 425px; /* Adjusted height to maintain 16:7 aspect ratio */
+  margin-top: 30px; /* Space between title and box */
+  padding: 40px; /* Increased padding */
+  background-color: white; /* White background */
+  border-radius: 25px; /* Rounded corners to look like a TV */
+  text-align: left;
+  overflow-y: auto; /* Allow scrolling if content overflows */
+  display: flex;
+  flex-direction: row; /* Align boxes horizontally */
+  justify-content: space-between; /* Space between left and right boxes */
+  border: 0.5px solid #1C1678; /* Thin dark blue border (0.5px) */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* More prominent shadow */
+}
+
+/* Styling for the left box (Product Details) */
+.left-box {
+  flex-grow: 1; /* Allow the left box to grow and occupy the remaining space */
+  padding: 20px; /* Increased padding */
+  background-color: white;
+  border-radius: 10px; /* Rounded corners */
+  margin-right: 60px; /* Doubled the space between the left and right boxes */
+  border: 1px solid #010007; /* Thin dark blue border (0.5px) */
+  box-shadow: 0 8px 96px rgba(0, 0, 0, 0.2); /* More prominent shadow */
+}
+
+.summary {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; /* Align image and details on the same line */
+  margin-bottom: 30px;
+}
+
+.summary img {
+  max-width: 525px;
+  max-height: 525px;
+  object-fit: cover;
+  margin-top: 20px;
+  margin-right: 50px; /* Increased space between image and text */
+}
+
+#summarytext {
+  text-align: left;
+}
+
+.summary h3 {
+  font-size: 32px; /* Much larger font size for product name */
+  font-weight: bold;
+  margin-left: 45px;
+  margin-bottom: 15px; /* Added space below the product name */
+}
+
+.summary p {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.summary .rental-note {
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+/* Styling for the right box (Price Details) */
+.right-box {
+  width: 22.5%; /* Reduced width by 7.5% from the previous value */
+  padding: 20px; /* Increased padding */
+  background-color: white;
+  border-radius: 10px; /* Rounded corners */
+  text-align: left; /* Align text to the left */
+  border: 1px solid #000000; /* Thin dark blue border (0.5px) */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* More prominent shadow */
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  height: auto; /* Content determines the height */
+  margin-bottom: 125px; /* Space below to allow the button and the border to fit without overlapping */
+}
+
+.right-box h3 {
+  font-size: 32px; /* Match the size of the left box product name */
+  font-weight: bold;
+  margin-left: 75px;
+  margin-bottom: 15px; /* Match margin for consistency */
+}
+
+.right-box p {
+  font-size: 18px; /* Match font size of the left box details */
+  margin: 10px 0;
+}
+
+/* Payment button */
+.payment-button {
+  background-color: #1C1678; /* Dark blue background */
+  color: white;
+  padding: 12px 25px;
+  border: 0.5px solid #1C1678; /* Thin dark blue border (0.5px) */
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%; /* Make the button span the entire width */
+  position: relative; /* Allow positioning adjustments for text */
+  padding-left: 135px; /* Move the text to the right by 100px */
+  text-align: left; /* Ensure text is aligned to the left */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* More prominent shadow */
+}
+
+/* Payment button hover effect */
+.payment-button:hover {
+  background-color: #0a0d12; /* Darker blue background on hover */
+  border: 0.5px solid #1C1678; /* Keep dark blue border on hover */
+}

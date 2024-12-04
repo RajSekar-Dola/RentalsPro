@@ -1,3 +1,5 @@
+// YourRentals.js
+
 import React, { useEffect, useState } from 'react';
 import "../../css/Userdashboardcss/YourRentals.css";
 
@@ -40,21 +42,30 @@ const YourRentals = () => {
 
   return (
     <div className="your-rentals-page">
-      {/* <h2>{message}</h2> */}
+      <h2>{message}</h2>
       {loading ? (
         <p>Loading...</p>
+      ) : error ? (
+        <p className="error-message">{error}</p>
       ) : (
         <div className="rentals-container">
           {rentals.length > 0 ? (
             rentals.map((rental, index) => (
               <div key={index} className="rental-card">
-                <h3>{rental.productName}</h3>
-                <p><strong>Type:</strong> {rental.productType.toUpperCase()}</p>
-                <p><strong>Location:</strong> {rental.locationName}</p>
-                <p><strong>From:</strong> {new Date(rental.fromDateTime).toLocaleString()}</p>
-                <p><strong>To:</strong> {new Date(rental.toDateTime).toLocaleString()}</p>
-                <p><strong>Price:</strong> Rs.{rental.price} /hr</p>
-                <img src={rental.photo[0]} alt={rental.productName} style={{ width: "200px" }} />
+                {rental.photo && rental.photo.length > 0 && (
+                  <img
+                    src={rental.photo[0]}
+                    alt={rental.productName}
+                  />
+                )}
+                <div className="card-content">
+                  <p><strong>Name:</strong> {rental.productName}</p>
+                  <p><strong>Type:</strong> {rental.productType.toUpperCase()}</p>
+                  <p><strong>Location:</strong> {rental.locationName}</p>
+                  <p><strong>From:</strong> {new Date(rental.fromDateTime).toLocaleString()}</p>
+                  <p><strong>To:</strong> {new Date(rental.toDateTime).toLocaleString()}</p>
+                  <p><strong>Price:</strong> Rs.{rental.price} /hr</p>
+                </div>
               </div>
             ))
           ) : (

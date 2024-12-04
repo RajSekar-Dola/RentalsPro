@@ -1,0 +1,111 @@
+/* General Container */
+.mbn-container {
+    padding: 20px;
+}
+
+/* General Table Styling */
+.mbn-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    text-align: left;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.mbn-thead {
+    background-color: #1a2d4b;
+    color: white;
+}
+
+.mbn-thead th {
+    padding: 15px;
+    text-transform: uppercase;
+}
+
+.mbn-row {
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s ease;
+}
+
+.mbn-row:hover {
+    background-color: #f9f9f9;
+}
+
+.mbn-row td {
+    padding: 12px 15px;
+}
+
+.mbn-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Button Styling */
+.mbn-btn {
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.mbn-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.mbn-btn:not(:disabled):hover {
+    transform: scale(1.05);
+}
+
+.mbn-btn-x {
+    background-color: #007bff;
+}
+
+.mbn-btn-y {
+    background-color: #28a745;
+}
+
+.mbn-btn-z {
+    background-color: #ffc107;
+}
+
+.mbn-btn-view {
+    background-color: #1a2d4b;
+}
+
+/* View Details Section */
+.mbn-details-container {
+    padding: 15px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mbn-details-photo {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+}
+
+.mbn-details-container p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.mbn-details-container strong {
+    color: #4CAF50;
+}
