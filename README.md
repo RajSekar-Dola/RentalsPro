@@ -50,6 +50,9 @@ To set up the development environment for RentalsPro, follow these steps:
 4. **Rent Products**: Users can book rentals directly from product pages.
 5. **Manage Bookings**: Users have access to manage their past and active rentals.
 
+## Admin Login Credentials
+- **Admin Name**: Raj Sekar
+- **Password**: 0065
 ## Features
 
 - **Multi-user Support**: Separate roles for customers, Managers, and administrators, each with unique permissions.
