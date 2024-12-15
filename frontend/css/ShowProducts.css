@@ -1,13 +1,12 @@
 .product-list {
+    margin: 20px;
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
-    justify-content: space-around;
+    justify-content:space-around;
     align-items: flex-start;
-    padding: 20px;
     max-height: calc(100vh - 40px);
     overflow-y: auto;
-    box-sizing: border-box;
+    flex: 0 1 300px;
 }
 
 .product-list::-webkit-scrollbar {
@@ -22,19 +21,4 @@
 
 .product-list::-webkit-scrollbar-track {
     background-color: #f1f1f1;
-}
-
-.item-card {
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    flex: 0 1 300px;
-    max-width:100%;
-    box-sizing: border-box;
-
-}
-.item-card img{
-    border-radius:15%;
-    aspect-ratio:1;
 }

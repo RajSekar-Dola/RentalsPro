@@ -38,7 +38,7 @@ import "../css/ShowProducts.css";
 
 function ShowProducts({ products, frombookingdate, tobookingdate }) {
   return (
-    <div>
+ 
       <div className="product-list">
         {products.length > 0 ? (
           products.map((product) => (
@@ -66,10 +66,9 @@ function ShowProducts({ products, frombookingdate, tobookingdate }) {
             />
           ))
         ) : (
-          <div>No products available</div>
+          <div>Loading...</div>
         )}
       </div>
-    </div>
   );
 }
 

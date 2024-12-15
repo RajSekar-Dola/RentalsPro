@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // Assuming you're using react-router for navigation
 
-const NoAccessPage = () => {
+export const NoAccessPage = () => {
     return (
         <div className="no-access-page">
             <h1>Access Denied</h1>
@@ -14,4 +14,3 @@ const NoAccessPage = () => {
     );
 };
 
-export default NoAccessPage;

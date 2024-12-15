@@ -1,0 +1,144 @@
+.how-it-works {
+  padding: 2rem 0;
+  text-align: center;
+  margin: 0;
+  background: linear-gradient(to top, #142d4c, black);
+}
+
+.how-it-works h2 {
+  font-size: 2rem;
+}
+
+.steps {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin-top: -10px;
+}
+
+.step:nth-child(odd) {
+  margin-top: 0;
+  /* Align odd elements at the top */
+}
+
+.step:nth-child(even) {
+  margin-top: 10rem;
+  /* Push even elements down to create the zigzag effect */
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  padding: 1rem;
+  background: linear-gradient(90deg, #3669c8 0%, #466094 50%, #f6f8fb 100%);
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  border: none;
+  text-align: center;
+  opacity: 0;
+  /* Hidden initially */
+  transform: translateY(50px);
+  /* Positioned off-screen for animation */
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  box-shadow: 10px 0px 15px rgba(173, 216, 230, 0.5)
+}
+
+.step:nth-child(1) {
+  transition-delay: 0s;
+  /* First step starts immediately */
+}
+
+.step:nth-child(2) {
+  transition-delay: 0.5s;
+  /* Second step starts after 2 seconds */
+}
+
+.step:nth-child(3) {
+  transition-delay: 1.3s;
+  /* Third step starts after 4 seconds */
+}
+
+.step:nth-child(4) {
+  transition-delay: 1.7s;
+  /* Fourth step starts after 6 seconds */
+}
+
+.step.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+  /* Reset position for animation */
+}
+
+.step-icon {
+  color: black;
+  font-size: 2rem;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  line-height: 50px;
+  margin-bottom: 1rem;
+}
+
+.step h3 {
+  margin: 1rem 0;
+  font-size: 1.2rem;
+  color: #010a18;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.step p {
+  font-size: 0.9rem;
+  color: rgb(2, 8, 73);
+  font-family: "Poiret One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #09061b;
+  text-transform: uppercase;
+}
+
+.third-step .step-icon {
+  background-color: #002D72;
+  border-radius: 50%;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step:hover {
+  transform: translateY(0) rotate(5deg); /* Tilt effect */
+  transition: transform 0.3s ease-out; /* Smooth transition */
+}
+
+.step.fade-in:hover {
+  transform: rotate(5deg); /* Ensure tilt works even after fade-in */
+  transition: transform 0.3s ease-out;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.step:hover {
+  animation: bounce 0.5s ease-in-out; /* Apply bounce animation */
+}
+

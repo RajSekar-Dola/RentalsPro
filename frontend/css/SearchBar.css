@@ -1,10 +1,9 @@
 .input-wrapper {
-    background-color: #ffffff; /* White background */
     width: 50%;
     border-radius: 10px; /* Rounded corners */
     height: 2.5rem; /* Fixed height */
     padding: 0 15px; /* Padding inside the wrapper */
-    box-shadow: 0px 4px 8px #0000001a; /* Subtle shadow */
+    /* Subtle shadow */
     display: flex;
     align-items: center; /* Center items vertically */
     border: 1px solid #ddd; /* Light border for better definition */

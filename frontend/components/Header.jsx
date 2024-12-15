@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { RiAccountPinCircleFill } from "react-icons/ri";
 import "../css/Header.css";
-
+import { NavLink } from "react-router-dom";
+import { RiAccountPinCircleFill } from "react-icons/ri";
+import {useSelector } from 'react-redux';
 export default function Header() {
   const [islogin, setislogin] = useState(false);
-  const location = useLocation(); // Use this hook to access the current path
-
+  const role = useSelector((state) => state.role);
   useEffect(() => {
     const checkLoginStatus = () => {
       const usernameCookie = document.cookie
@@ -18,10 +17,19 @@ export default function Header() {
     };
     checkLoginStatus();
   }, []);
-
-  // Check if the current route starts with '/productbooking' and prevent header rendering
-  if (location.pathname.startsWith("/productbooking")) {
-    return null; // Return null to prevent rendering the header
+  const findpath=()=>{
+    if(role=='Admin')
+    {
+       return "/Adminpage";
+    }
+    else if(role=='Manager')
+    {
+    return "/managerpage";
+    }
+    else
+    {
+   return "/accountProfile";
+    }
   }
 
   return (
@@ -31,16 +39,12 @@ export default function Header() {
           <h1>RENTALS PRO</h1>
         </div>
         <div id="iconloginregister">
-          { !islogin ? (
-            <div id="login_register_button" style={{ position: "relative", right: 0 }}>
-              <NavLink to="/login">Login</NavLink>/
-              <NavLink to="/Signup">Register</NavLink>
-            </div>
-          ) : (
-            <NavLink to="/accountProfile">
-              <RiAccountPinCircleFill size={50} />
-            </NavLink>
-          )}
+          {!islogin ? (<div id="login_register_button" style={{ position: "relative", right: 0 }}>
+            <NavLink to="/login">Login</NavLink>/
+            <NavLink to="/Signup">Register</NavLink>
+          </div>) :
+            (<NavLink to={findpath()}><RiAccountPinCircleFill size={50} /></NavLink>)
+          }
         </div>
       </div>
       <nav className="navbar">
@@ -56,7 +60,7 @@ export default function Header() {
               <li><NavLink to="/category/drones">Drones</NavLink></li>
               <li><NavLink to="/category/speakers">Speakers</NavLink></li>
               <li><NavLink to="/category/fishingrods">Fishing Rods</NavLink></li>
-              <li><NavLink to="/category/cycles">Cycle</NavLink></li>
+              <li><NavLink to="/category/cycles">cycle</NavLink></li>
             </ul>
           </li>
           <li><NavLink to="/faq">FAQs</NavLink></li>

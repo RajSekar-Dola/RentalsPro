@@ -65,5 +65,6 @@ To set up the development environment for RentalsPro, follow these steps:
 ## Credits
 
 - **Contributors**: - This project was created and maintained by [RajSekar-Dola] (https://github.com/RajSekar-Dola).
+
 - **Third-Party Libraries**: Some of the libraries used include [React](https://reactjs.org/), [Express](https://expressjs.com/), and [MongoDB](https://www.mongodb.com/).
 

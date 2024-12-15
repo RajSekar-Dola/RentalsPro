@@ -49,7 +49,7 @@ const DateTimeFilter = ({setfromdatetime,settodatetime}) => {
   return (
     <div className="date-time-filter">
       <div className="datetime-picker">
-        <label htmlFor="fromDate">From Date and Time:</label>
+        <label htmlFor="fromDate">FROM DATE:</label>
         <input
           type="datetime-local"
           id="fromDate"
@@ -59,7 +59,7 @@ const DateTimeFilter = ({setfromdatetime,settodatetime}) => {
         />
       </div>
       <div className="datetime-picker">
-        <label htmlFor="toDate">To Date and Time:</label>
+        <label htmlFor="toDate">TO DATE:</label>
         <input
           type="datetime-local"
           id="toDate"

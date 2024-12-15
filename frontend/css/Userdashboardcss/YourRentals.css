@@ -4,12 +4,12 @@
   flex-wrap: wrap; /* Allows items to wrap to the next line */
   padding: 20px;
   gap: 20px;
-  justify-content: center; /* Centers items in the container */
+  justify-content: center; 
 }
 
 /* Rental card styling */
-.your-rentals-page .rental-card {
-  background-color: #2c2c2c; /* Card background */
+.your-rentals-page .profile-rental-card {
+  background: linear-gradient(to top, #142d4c, black); /* Card background */
   border-radius: 15px;
   padding: 20px;
   display: flex;
@@ -20,27 +20,28 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   width: 100%; /* Full width by default */
-  max-width: calc(50% - 20px); /* Two cards per row with gap space */
+  /* Two cards per row with gap space */
   box-sizing: border-box; /* Prevents content from overflowing */
   overflow: hidden; /* Ensures the card doesn't exceed boundary */
 }
 
 /* Card hover effect */
-.your-rentals-page .rental-card:hover {
+.your-rentals-page .profile-rental-card:hover {
   transform: scale(1.05);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.8);
 }
 
 /* Responsive styles for single column on smaller screens */
 @media (max-width: 768px) {
-  .your-rentals-page .rental-card {
+  .your-rentals-page .profile-rental-card {
     max-width: 100%; /* Full width for single column on smaller screens */
   }
 }
 
 /* Image styling */
-.your-rentals-page .rental-card img {
+.your-rentals-page .profile-rental-card img {
   width: 200px;  /* Fixed width for image */
+  height: 200px;
   border-radius: 10px;
   margin-left: 20px;  /* Space between image and content */
   max-height: 100%; /* Ensures image height stays proportional */
@@ -48,7 +49,7 @@
 }
 
 /* Content section (text) */
-.your-rentals-page .rental-card .card-content {
+.your-rentals-page .profile-rental-card .profile-card-content {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -57,7 +58,7 @@
 }
 
 /* Card description styling */
-.your-rentals-page .rental-card p {
+.your-rentals-page .profile-rental-card p {
   font-size: 16px;
   margin-bottom: 8px;
   color: #bfbfbf; /* Description color */
@@ -65,7 +66,7 @@
 }
 
 /* Price styling */
-.your-rentals-page .rental-card p strong {
+.your-rentals-page .profile-rental-card p strong {
   color: #e74c3c; /* Price highlight color */
 }
 

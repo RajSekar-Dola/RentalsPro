@@ -36,11 +36,11 @@ const ProductPage = () => {
   return (
     <div className="product-page">
       <div className="content">
-        <h1>{product.productName}</h1>
-        <p>Location: {product.locationName}</p>
-        <p>Available from: {new Date(product.fromDateTime).toLocaleString()}</p>
-        <p>Available to: {new Date(product.toDateTime).toLocaleString()}</p>
-        <p>Price: Rs.{product.price} / hour</p>
+        <h3>{product.productName}</h3>
+        <p><strong>Location:</strong> {product.locationName}</p>
+        <p><strong>Available from:</strong> {new Date(product.fromDateTime).toLocaleString()}</p>
+        <p><strong>Available to:</strong> {new Date(product.toDateTime).toLocaleString()}</p>
+        <p><strong>Price:</strong> Rs.{product.price} / hour</p>
         <button onClick={handleBookNow} className="book-button">
           Book Now
         </button>

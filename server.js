@@ -180,7 +180,7 @@ app.post('/RentForm', async (req, res) => {
       uploadDate:new Date(),
       bookingdates:[],
       bookingids:[],
-      expired:false,
+      expired:true,
     });
 
     const savedProduct = await newProduct.save();
@@ -424,13 +424,13 @@ app.post('/admindashboard/createmanager',async(req,res)=>{
     const existingbranch= await Manager.findOne({branch});
     if(existingbranch)
     {
-      return res.status(409).json({ errormessage: 'Manager for branch already exists !'});
+      return res.status(404).json({ errormessage: 'Manager for branch already exists !'});
     }
     if (existingEmail) {
-      return res.status(409).json({ errormessage: 'Email already exists' });
+      return res.status(404).json({ errormessage: 'Email already exists' });
     }
     if (existingUser) {
-      return res.status(409).json({ errormessage: 'Username already exists' });
+      return res.status(404).json({ errormessage: 'Username already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -603,7 +603,7 @@ app.get("/grabRentals", async (req, res) => {
           const obj = { rentedProducts: products };
           res.json(obj);
         } else {
-          res.json({ message: "No rented products found" });
+          res.status(404).json({ message: "No rented products found" });
         }
       } else {
         res.status(404).json({ message: "User not found" });
@@ -719,10 +719,14 @@ app.post('/manager/bookingnotifications/results', async (req, res) => {
 });
 
 app.post('/manager/bookingnotifications/updatelevel',async(req,res)=>{
-  const {bid,level}=req.body;
+  const {bid,level,id}=req.body;
   try{
     console.log(bid);
     const booking = await Booking.findByIdAndUpdate(bid,{level:level},{new:true});
+    if(level==3)
+    {
+      const removednotification=await Manager.findByIdAndUpdate(id,{ $pull: { bookingnotifications: { _id: bid } } },{new:true} );
+    }
     if(booking)
     {
       res.status(200).json({result:true});
@@ -737,6 +741,7 @@ app.post('/manager/bookingnotifications/updatelevel',async(req,res)=>{
     res.status(400).json({result:false});
   }
 })
+
 
 app.get('/manager/uploadnotifications',async(req,res)=>{
   try {
@@ -786,48 +791,6 @@ app.post('/manager/uploadnotifications/markAsSeen',async(req,res)=>{
   }
 })
 
-app.get('/manager/products/:product_id',async(req,res)=>{
-  const {product_id}=req.params;
-  console.log(product_id);
-  try{
-    const reqproduct=await Product.findById(product_id);
-    if(!reqproduct)
-    {    console.log(reqproduct);
-      return res.status(404).json({error :'product not found !'});
-    }
-    return res.status(200).json(reqproduct);
-    
-  }catch(error)
-  {
-    res.status(500).json({error:"server error !"});
-  }
-})
-
-app.get('/manager/notifications', async (req, res) => {
-  try {
-    const userid = req.cookies.user_id; // Extract user ID from cookies
-    if (!userid) return res.status(400).json({ message: "No user cookie found" });
-
-    const exist_user = await Manager.findById(userid); // Fetch user details
-    if (!exist_user) return res.status(404).json({ message: "User not found" });
-
-    const notifications = exist_user.notifications; // Get notifications
-    const unseenCount = notifications.filter(notification => !notification.seen).length; // Count unseen notifications
-    const bookingnotifications = exist_user.bookingnotifications;
-    const unseenBooking = bookingnotifications.filter(notification => !notification.seen).length;
-
-    // Respond with notifications, booking IDs, and unseen count
-    res.json({
-      unseenCount: unseenCount,
-      unseenBooking:unseenBooking,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-//Counting unseen notifications
 app.get('/manager/notifications/countUnseen',async(req,res)=>{
   try {
     const userid = req.cookies.user_id;
@@ -870,6 +833,22 @@ app.post('/manager/notifications/markallAsSeen', async (req, res) => {
   }
 });
 
+app.get('/manager/products/:product_id',async(req,res)=>{
+  const {product_id}=req.params;
+  console.log(product_id);
+  try{
+    const reqproduct=await Product.findById(product_id);
+    if(!reqproduct)
+    {    console.log(reqproduct);
+      return res.status(404).json({error :'product not found !'});
+    }
+    return res.status(200).json(reqproduct);
+    
+  }catch(error)
+  {
+    res.status(500).json({error:"server error !"});
+  }
+})
 
 app.get("/api/dashboard/daily-bookings", async (req, res) => {
   try {
@@ -1667,6 +1646,8 @@ app.get("/grabCustomernameProductId", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
 
 const PORT =3000;
 app.listen(PORT, () => {

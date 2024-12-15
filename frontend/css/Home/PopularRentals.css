@@ -1,0 +1,128 @@
+.popular-rentals {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #142d4c;
+  height: auto;
+  overflow-x: hidden;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+
+.popular-rentals {
+  padding: 2rem 0;
+  text-align: center;
+  font-family: "Patua One", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.popular-rentals h2 {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.rental-cards {
+  display: flex;
+  justify-content: center;
+ 
+  gap: 1rem;
+ 
+}
+
+.rental-card {
+  display: inline-block;
+  width: 220px;
+  margin: 1rem;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  color: black;
+  text-transform: uppercase;
+}
+
+.rental-card:hover {
+  cursor: pointer;
+}
+
+.rental-card img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+ 
+  object-fit: contain;
+ 
+  border-radius: 50%;
+  border: 0.0001px black solid;
+}
+
+.rental-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.rental-card p {
+  font-size: 1rem;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rental-card {
+  opacity: 0;
+ 
+  transform: translateY(50px);
+ 
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.rental-card.fade-in {
+  opacity: 1;
+ 
+  transform: translateY(0);
+ 
+ 
+}
+
+.popularimage {
+  aspect-ratio: 1;
+}
+
+.rental-card:nth-child(1) {
+  transition-delay: 0s;
+  
+}
+
+.rental-card:nth-child(2) {
+  transition-delay: 0.5s;
+ 
+}
+.rental-card:nth-child(3) {
+  transition-delay: 1s;
+ 
+}
+
+.rental-card:nth-child(4) {
+  transition-delay: 1.5s;
+ 
+}
+
+.rental-card :hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.8);
+}

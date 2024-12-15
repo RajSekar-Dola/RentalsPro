@@ -42,6 +42,7 @@ import AccountNotifications from '../frontend/components/Userdashboard/AccountsN
 import '../frontend/css/App.css';
 import FAQPage from '../frontend/components/FAQPage.jsx'
 import About from '../frontend/components/About.jsx';
+import { useState } from 'react';
 
 const allowedCategories = ['bikes', 'cars', 'cameras', 'drones','speakers','fishingrods','cycles'];
 
@@ -59,6 +60,11 @@ const CategoryWrapper = () => {
 
 
 function App() {
+
+  const [usernotificationcount,setusernotificationcount]=useState(0);
+  const updateusernotificationcount=(x)=>{
+    setusernotificationcount(x);
+  }
   const router = createBrowserRouter([
     {
       path: '/',
@@ -93,6 +99,14 @@ function App() {
          <ProductbookingPage/>
       ),
     },
+      {
+    path: '/faq',
+    element: <FAQPage/>,
+  },
+  {
+    path:'/about',
+    element:<About/>
+  },
   ]}
   ,
   {
@@ -223,17 +237,9 @@ function App() {
       },
       {
         path:"/accountProfile/notifications",
-        element:(<AccountNotifications/>)
+        element:(<AccountNotifications setusernotificationcount={setusernotificationcount}/>)
       }
     ]
-  },
-  {
-    path: '/faq',
-    element: <FAQPage/>,
-  },
-  {
-    path:'/about',
-    element:<About/>
   },
   {
     path:'*',

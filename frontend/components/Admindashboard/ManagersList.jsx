@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../../css/Admindashboardcss/users.css';
+import '../../css/Admindashboardcss/ManagersForm.css';
 
 const Managers = () => {
   const [formData, setFormData] = useState({
@@ -42,7 +42,8 @@ const Managers = () => {
       setManagers(data.managers);
       setCount(data.registercount);
     } catch (error) {
-      setError('Failed to fetch Managers');
+      setMessage('Failed to fetch Managers');
+      setError(true);
       console.error(error);
     }
   };
@@ -78,7 +79,8 @@ const Managers = () => {
         }, 1000);
       }
     } catch (error) {
-      setError('Failed to delete manager');
+      setMessage('Failed to delete manager')
+      setError(true);
       console.error(error);
     }
   };
@@ -132,10 +134,10 @@ const Managers = () => {
 
       if (!response.ok) {
         const errorResponse = await response.json();
-        setMessage(errorResponse.error || "An error occurred.");
+        setMessage(errorResponse.errormessage || "An error occurred.");
         setError(true);
       } else {
-        setMessage("Form submitted successfully!");
+        setMessage("Manager added successfully!");
         setError(false);
         setFormData({
           username: '',
@@ -144,6 +146,9 @@ const Managers = () => {
           branch: ''
         });
         fetchManagers(); // Fetch updated managers after submission
+        setTimeout(()=>{
+          setMessage('');
+        },2000)
       }
     } catch (error) {
       console.error("Error during submission:", error);
@@ -259,7 +264,8 @@ const Managers = () => {
 
           <button type='submit' className="save-button">SUBMIT</button>
 
-          <div id="message" className={`message ${error ? 'error-message' : 'success-message'}`}>
+          {/* {error && <p className="error-message">{message}</p>} */}
+          <div className={`${error ? 'error-message' : 'success-message'}`}>
             {message}
           </div>
         </form>

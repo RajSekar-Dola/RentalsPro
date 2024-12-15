@@ -11,8 +11,9 @@ const SearchBar = ({setsearchinput}) => {
 
 
     return (
-        <div className='input-wrapper'>
+        <div style={{width:"75%",fontSize:"1.5rem"}}>
             <input
+                style={{backgroundColor:"white"}}
                 placeholder='Type to Search...'
                 value={input}
                 onChange={(e) => handleChange(e.target.value)} // Directly use event value

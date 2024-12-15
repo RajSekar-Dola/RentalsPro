@@ -138,9 +138,9 @@ const ManagerBookingNotifications = () => {
                                 <td>{item.ownername}</td>
                                 <td>{item.buyername}</td>
                                 <td className="mbn-actions">
-                                    <button disabled={item.booking.level !== 0} className="mbn-btn mbn-btn-x" onClick={()=>updatelevelfunction(bids[index],index,1)}>X</button>
-                                    <button disabled={item.booking.level !== 1} className="mbn-btn mbn-btn-y" onClick={()=>updatelevelfunction(bids[index],index,2)}>Y</button>
-                                    <button disabled={item.booking.level !== 2} className="mbn-btn mbn-btn-z" onClick={()=>updatelevelfunction(bids[index],index,3)}>Z</button>
+                                    <button disabled={item.booking.level !== 0} className="mbn-btn mbn-btn-x" onClick={()=>updatelevelfunction(bids[index],index,1)}>OWNER SUBMITTED</button>
+                                    <button disabled={item.booking.level !== 1} className="mbn-btn mbn-btn-y" onClick={()=>updatelevelfunction(bids[index],index,2)}>BUYER RECEIVED</button>
+                                    <button disabled={item.booking.level !== 2} className="mbn-btn mbn-btn-z" onClick={()=>updatelevelfunction(bids[index],index,3)}>BUYER RETURNED</button>
                                     <button
                                         className="mbn-btn mbn-btn-view"
                                         onClick={() => toggleRowDetails(index)}

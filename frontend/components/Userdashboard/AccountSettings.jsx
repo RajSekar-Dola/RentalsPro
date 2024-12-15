@@ -59,7 +59,7 @@ const AccountSettings = () => {
 
     // Perform validations
     if (!validateUsername(formData.username)) {
-      setError("Invalid username. It should be at least 5 lowercase letters.");
+      setError("Username: at least 5 characters, lowercase letters/digits, starts with a lowercase letter.!");
       return;
     }
     if (!validateEmail(formData.email)) {

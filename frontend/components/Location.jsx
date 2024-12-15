@@ -18,8 +18,9 @@ function Location({setlocation}) {
   return (
     <div id='locationinput'>
         <div >
-          select a location
-            <select id='locationName' name='locationName' value={input} onChange={(e)=>{handleLocation(e.target.value)}}>
+          <p style={{fontWeight:600,fontSize:"14px",marginBottom:"12px"}}>SELECT LOCATION</p>
+          
+            <select id='locationName' name='locationName' value={input} onChange={(e)=>{handleLocation(e.target.value)}} style={{marginBottom:"-11px"}} >
                     <option value="">Select a location</option>
                     {Locations.map((location, index) => (
                         <option key={index} value={location}>{location}</option>

@@ -51,12 +51,12 @@ useEffect(()=>{
 
   return (
     <div className="category-page">
-      <h1>{category.charAt(0).toUpperCase() + category.slice(1)}</h1>
+      {/* <h1 className="categoryhead">{category.charAt(0).toUpperCase() + category.slice(1)}</h1> */}
 
       <div id="central">
       <div id="left">
-      <h2>FILTER</h2>
       <div id="filter">
+        <SearchBar setsearchinput={setsearchinput} />
         <Location setlocation={setlocation}/>
         <DateTimeFilter setfromdatetime={setfromdatetime} settodatetime={settodatetime}/>
         <PriceFilter setminprice={setminprice} setmaxprice={setmaxprice}/>
@@ -64,7 +64,7 @@ useEffect(()=>{
       </div>
 
       <div id="right">
-      <SearchBar setsearchinput={setsearchinput} />
+
       <ul>
         <ShowProducts products={items} frombookingdate={fromdatetime} tobookingdate={todatetime}/>
       </ul>

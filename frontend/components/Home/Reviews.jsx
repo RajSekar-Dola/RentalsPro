@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import "../../css/Home/Testimonal.css";
+import { useOnScreen } from './UseOnScreen'; // Import the custom hook
+import "../../css/Home/reviews.css";
 
-export const Testimonal = ({ refreshKey }) => {
+export const Reviews = ({ refreshKey }) => {
   const [reviews, setReviews] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  
+  // Fetch reviews from the server
   const fetchReviews = async () => {
     try {
       const response = await fetch("http://localhost:3000/home/getreviews");
@@ -33,11 +36,10 @@ export const Testimonal = ({ refreshKey }) => {
       console.error("Error fetching reviews:", err);
     }
   };
-  // Fetch reviews from the server
+
   useEffect(() => {
     fetchReviews();
   }, [refreshKey]);
-  
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
@@ -64,36 +66,42 @@ export const Testimonal = ({ refreshKey }) => {
     return "⭐".repeat(rating); // Display stars based on rating
   };
 
+  const isVisible = useOnScreen({ id: "reviews-section" }); // Apply hook for reviews section
+
   if (reviews.length === 0) {
     return <p className="testimonial-loading">Loading reviews...</p>;
   }
 
   return (
     <>
-    <h2>What Our Users Say</h2>
+      
+      <section
+        className={`testimonial-testimonials fade-in`} // Apply fade-in class when in view
+        id="reviews-section"
+      ><h2>What Our Users Say</h2>
+        <div className="testimonial-slider">
+          {reviews.map((review, index) => (
+            <div
+              className={`testimonial-card ${getPositionClass(index)}`}
+              key={index}
+            >
+              <p>"{review.text}"</p>
+              <div className="testimonial-stars">{renderStars(review.rating)}</div>
+              <h4>- {review.username}</h4>
+            </div>
+          ))}
+        </div>
+        <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+        <button className="testimonial-nav-button testimonial-left" onClick={handlePrev}>
+          &#8592;
+        </button>
+        <button className="testimonial-nav-button testimonial-right" onClick={handleNext}>
+          &#8594;
+        </button>
+      </div>
+      </section>
 
-    <section className="testimonial-testimonials">
-      <div className="testimonial-slider">
-        {reviews.map((review, index) => (
-          <div
-            className={`testimonial-card ${getPositionClass(index)}`}
-            key={index}
-          >
-            <p>"{review.text}"</p>
-            <h4>- {review.username}</h4>
-            <div className="testimonial-stars">{renderStars(review.rating)}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-    <div style={{display:"flex",flexDirection:"row",justifyContent:"center",alignItems:"center",backgroundColor:"#f5f5f5"}}>
-    <button className="testimonial-nav-button testimonial-left" onClick={handlePrev}>
-        &#8592;
-      </button>
-      <button className="testimonial-nav-button testimonial-right" onClick={handleNext}>
-        &#8594;
-      </button>
-      </div>
+
     </>
   );
 };

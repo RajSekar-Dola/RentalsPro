@@ -1,4 +1,4 @@
-/* Reset default margins and ensure full height */
+
 html,
 body {
     margin: 0;
@@ -6,19 +6,19 @@ body {
     height: 100%;
     width: 100%;
     font-family: 'Arial', sans-serif;
-    /* Modern font for a clean look */
+   
     overflow-x: hidden;
-    /* Prevent horizontal scroll */
+   
 }
 
-/* Ensure the container takes up full height */
+
 .home-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    /* Full viewport height */
+   
     background: #f0f0f0;
-    /* Light background for sections beyond the hero */
+   
 }
 
 .hero {
@@ -27,27 +27,27 @@ body {
     align-items: center;
     position: relative;
     width: 100vw;
-    /* Full viewport width */
+   
     height: 100vh;
-    /* Full viewport height */
-    background-image: url('../HomeImage.webp');
-    /* Hero background image */
+   
+    background-image: url('../assets/HomeImage.webp');
+   
     background-size: cover;
-    /* Ensure the image covers the hero section */
+   
     background-position: center;
-    /* Start with the center of the image */
+   
     background-repeat: no-repeat;
-    /* Prevent repetition */
+   
     box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
-    /* Add depth with an inset shadow */
+   
     overflow: hidden;
     clip-path: inset(15% 0 0 0);
-    /* Crop the top 15% */
-    margin-top: -6.9%;
+   
+    margin-top: -7.2%;
 }
 
 
-/* Add an overlay to improve text visibility */
+
 .hero::before {
     content: '';
     position: absolute;
@@ -56,73 +56,73 @@ body {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.6);
-    /* Dark semi-transparent overlay */
+   
     z-index: 0;
-    /* Place overlay below the text */
+   
 }
 
-/* Hero content styling */
+
 .hero-content {
     position: relative;
-    /* Position content above overlay */
+   
     z-index: 1;
-    /* Ensure it's on top */
+   
     text-align: center;
     color: white;
-    /* White text for visibility */
+   
     max-width: 600px;
-    /* Restrict content width for readability */
+   
     padding: 1rem;
     animation: fadeSlideIn 1.5s ease-in-out;
-    /* Animation effect */
+   
 }
 
 .hero h2 {
     font-size: 3rem;
-    /* Large, bold heading */
+   
     margin-bottom: 1rem;
     font-weight: bold;
     text-transform: uppercase;
-    /* Stylish uppercase heading */
+   
     letter-spacing: 2px;
-    /* Add spacing for elegance */
+   
 }
 
 .hero p {
     font-size: 1.5rem;
-    /* Readable paragraph font size */
+   
     margin-bottom: 2rem;
     line-height: 1.6;
-    /* Improve readability */
+   
 }
 
-/* Keyframes for content animation */
+
 @keyframes fadeSlideIn {
     from {
         opacity: 0;
-        /* Start fully transparent */
+       
         transform: translateY(20px);
-        /* Slide up from below */
+       
     }
 
     to {
         opacity: 1;
-        /* Fully visible */
+       
         transform: translateY(0);
-        /* End at the original position */
+       
     }
 }
 
-/* Ensure responsiveness */
+
 @media (max-width: 768px) {
     .hero h2 {
         font-size: 2.5rem;
-        /* Adjust heading size */
+       
     }
 
     .hero p {
         font-size: 1.2rem;
-        /* Adjust paragraph size */
+       
     }
 }
 
@@ -137,199 +137,4 @@ body {
     font-family: "Patua One", serif;
     font-weight: 400;
     font-style: normal;
-}
-
-
-
-/* How It Works Section - No boxes around steps */
-.how-it-works {
-    padding: 2rem 0;
-    text-align: center;
-    background-color: #F0F4F8;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    margin: 2rem 0;
-}
-
-.how-it-works h2 {
-    margin-bottom: 2rem;
-    font-size: 2rem;
-}
-
-.step {
-    display: inline-block;
-    width: auto;
-    /* Adjusted width to avoid box appearance */
-    padding: 1rem;
-    background-color: transparent;
-    /* No background color */
-    border: none;
-    /* Removed border */
-    margin: 1rem;
-    text-align: center;
-}
-
-.step-icon {
-    background-color: #002D72;
-    color: white;
-    font-size: 2rem;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: inline-block;
-    line-height: 50px;
-    margin-bottom: 1rem;
-}
-
-.step h3 {
-    margin: 1rem 0;
-    font-size: 1.2rem;
-}
-
-.step p {
-    font-size: 1rem;
-}
-
-/* Modify the third step to have a similar round shape */
-.third-step .step-icon {
-    background-color: #002D72;
-    /* Same color for the third step */
-    border-radius: 50%;
-    /* Changed to round */
-}
-
-/* Popular Rentals Section */
-.popular-rentals {
-    padding: 2rem 0;
-    text-align: center;
-    background-color: #F0F4F8;
-    margin-top: 2rem;
-    /* Added gap between sections */
-}
-
-.popular-rentals h2 {
-    margin-bottom: 2rem;
-    font-size: 2rem;
-}
-
-.rental-cards {
-    display: flex;
-    justify-content: center;
-    /* Center the rental cards in a row */
-    gap: 1rem;
-    /* Optional: Add space between cards */
-}
-
-.rental-card {
-    display: inline-block;
-    width: 220px;
-    margin: 1rem;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-.rental-card img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    border: 1px solid #ddd;
-    /* Thin border around the image */
-    object-fit: contain;
-    /* Maintain aspect ratio */
-}
-
-.rental-card h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-}
-
-.rental-card p {
-    font-size: 1rem;
-}
-
-/* Testimonials Section */
-.testimonials {
-    background-color: #F0F4F8;
-    padding: 2rem;
-    text-align: center;
-    margin-top: 2rem;
-    /* Added gap between sections */
-}
-
-.testimonials h2 {
-    margin-bottom: 2rem;
-    font-size: 2rem;
-}
-
-.testimonial-card {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 1rem;
-    margin: 1rem;
-    display: inline-block;
-    /* Arranges cards horizontally */
-    max-width: 600px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.testimonial-card p {
-    font-size: 1rem;
-    margin: 0 0 0.5rem;
-}
-
-.testimonial-card h4 {
-    font-size: 1.1rem;
-    color: #002D72;
-}
-
-
-/* Contact Us Section */
-.contact-us {
-    padding: 2rem;
-    text-align: center;
-    background-color: #F0F4F8;
-    margin-top: 2rem;
-    /* Added gap between sections */
-}
-
-.contact-us h2 {
-    margin-bottom: 1rem;
-    font-size: 2rem;
-}
-
-.contact-us form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.contact-us input,
-.contact-us textarea {
-    width: 100%;
-    max-width: 500px;
-    padding: 0.8rem;
-    margin: 0.5rem 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1rem;
-}
-
-.contact-us button {
-    background-color: #002D72;
-    color: white;
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-}
-
-.contact-us button:hover {
-    background-color: #FF6347;
 }

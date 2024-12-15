@@ -109,7 +109,8 @@
     /* backdrop-filter: blur(1px); */
 }
 #leftimage, .signup-login-container {
-height: auto;
+min-height: 550px;
+height:auto;
 }
 .signup-login-container:hover {
     transform: translateY(-4px); /* Reduced lift on hover */
@@ -211,16 +212,16 @@ height: auto;
 }
 
 /* Messages */
-.message {
+.message-login {
     margin-top: 10px; /* Reduced space above messages */
     text-align: center;
-    font-size: 11px; /* Slightly smaller message text */
+    font-size: 14px; /* Slightly smaller message text */
+    color: var(--text-color);
     font-weight: 500;
     min-height: 20px; /* Reserve space for messages */
     visibility: hidden; /* Hide the message by default */
     transition: visibility 0s linear 0.3s, opacity 0.3s ease;
     opacity: 0;
-    background-color: none;
 }
 
 .message.visible {
@@ -229,11 +230,11 @@ height: auto;
     transition-delay: 0s;
 }
 
-.error-message {
+.error-message-login {
     color: var(--error-color);
 }
 
-.success-message {
+.success-message-login {
     color: var(--success-color);
 }
 

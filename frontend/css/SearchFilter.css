@@ -13,29 +13,10 @@
     padding: 0 20px;
     box-sizing: border-box;
     gap: 20px; /* Space between the select and search bar */
+    border-radius: 15%;
 }
 
-/* Location Select Styling */
-.location {
-    display: flex;
-    align-items: center;
-    margin-right: 10px; /* Space between select and search bar */
-}
 
-.location select {
-    height: 40px; /* Match the height of the search bar */
-    padding: 0 15px; /* Padding inside the select */
-    border: 1px solid #ced4da; /* Light border color */
-    border-radius: 5px; /* Rounded corners */
-    font-size: 16px; /* Increase font size */
-    background-color: #fff; /* White background */
-    cursor: pointer; /* Pointer cursor on hover */
-}
-
-.location select:hover {
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
-    border-color: royalblue; /* Border color change on hover */
-}
 
 /* Search Bar Styling */
 .search-bar {
@@ -48,39 +29,4 @@
     font-size: 16px; /* Increase font size */
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     background-color: #fff; /* White background */
-}
-
-/* Product List Styling */
-.product-list {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Exactly 4 items per row */
-    gap: 20px;
-    padding: 20px;
-    margin-top: 70px; /* Ensure space below the fixed search bar */
-    max-height: calc(100vh - 70px); /* Adjust height to prevent overflow */
-    overflow-y: auto;
-    box-sizing: border-box;
-}
-
-/* Item Card Styling */
-.item-card {
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    box-sizing: border-box;
-}
-
-/* Scrollbar Styling */
-.product-list::-webkit-scrollbar {
-    width: 8px;
-}
-
-.product-list::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 10px;
-}
-
-.product-list::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
 }

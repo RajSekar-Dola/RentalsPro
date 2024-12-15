@@ -1,4 +1,63 @@
-/* Set a white background for the entire page */
+/* .container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .summary, .checkout {
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  .summary{
+    display:flex;
+    flex-direction:column;
+    justify-content: space-evenly;
+  }
+  .summary img{
+    width:80%;
+    max-width: 300px;
+    min-height:250px;
+    border-radius: 8px;
+    transition:transform 0.3s ease;
+  }
+  .checkout {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    margin: 16px;
+    width: 250px;
+    height: 300px;
+    text-align:left;
+    border-top-right-radius: 50px;
+    border-bottom-left-radius: 50px;
+    position: sticky;
+    top:0;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .payment-button {
+    background: #ffcc00;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s ease;
+  }
+  
+  .payment-button:hover {
+    background: #ff9900;
+  }
+   */
+   /* Set a white background for the entire page */
 .container {
   background-image: linear-gradient(90deg, #0a0d12 0%, #1e2f43 20%, #0a0d12 95%);
   background-color: white;
@@ -60,9 +119,9 @@
 }
 
 .summary img {
-  max-width: 525px;
-  max-height: 525px;
-  object-fit: cover;
+  height:300px ;
+  width:300px ;
+  object-fit:fill;
   margin-top: 20px;
   margin-right: 50px; /* Increased space between image and text */
 }
@@ -83,12 +142,6 @@
   margin: 10px 0;
 }
 
-.summary .rental-note {
-  color: red;
-  font-weight: bold;
-  font-size: 18px;
-  margin-top: 20px;
-}
 
 /* Styling for the right box (Price Details) */
 .right-box {

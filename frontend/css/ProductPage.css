@@ -26,12 +26,19 @@
   }
   
   .product-page .content {
-    display: flex;
-    flex-direction: column; /* Arrange content vertically */
-    font-size: 1.2rem; /* Increased font size for better readability */
-    line-height: 1.6; /* Increased line spacing for better readability */
+    display: block;
+    flex-direction: column; 
   }
-  
+  .product-page p{
+    font-size: 18px;
+    margin: 10px 0; 
+  }
+  .product-page h3 {
+    font-size: 32px; /* Much larger font size for product name */
+    font-weight: bold;
+    margin-left: 45px;
+    margin-bottom: 15px; /* Added space below the product name */
+  }
   .product-page .images {
     display: flex;
     justify-content: center; /* Center carousel horizontally */

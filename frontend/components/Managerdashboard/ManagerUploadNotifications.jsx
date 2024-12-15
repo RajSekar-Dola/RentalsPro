@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Carousel from '../Carousel.jsx';
 import '../../css/Admindashboardcss/ManagerNotifications.css';
+
 const ManagerUploadNotifications = () => {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -102,6 +103,7 @@ const ManagerUploadNotifications = () => {
                             </p>
                             {selectedNotificationId === notification._id && selectedProduct && ( // Only show details for the selected notification
                                 <div className="product-details-modal">
+                                    <div style={{display:"flex",flexDirection:"row",justifyContent:"center",alignContent:"center"}}>
                                     <div>
                                     <h3>Product Details</h3>
                                     <p>Category: {selectedProduct.productType}</p>
@@ -110,14 +112,14 @@ const ManagerUploadNotifications = () => {
                                     <p>From: {new Date(selectedProduct.fromDateTime).toLocaleString()}</p>
                                     <p>To: {new Date(selectedProduct.toDateTime).toLocaleString()}</p>
                                     <p>Upload Date: {new Date(selectedProduct.uploadDate).toLocaleString()}</p>
-                                    <div>
-                                        <Carousel images={selectedProduct.photo}/>
+                                    </div>
+                                    <Carousel images={selectedProduct.photo}  imageClassName="carousel-image"  />
                                     </div>
                                     <div>
-                                        <button onClick={() => markAsSeen(notification._id, selectedProduct._id, false)}>Approve</button>
-                                        <button onClick={() => markAsSeen(notification._id, selectedProduct._id, true)}>Reject</button>
+                                        <button className="approve-button" onClick={() => markAsSeen(notification._id, selectedProduct._id, false)}>Approve</button>
+                                        <button className="reject-button" onClick={() => markAsSeen(notification._id, selectedProduct._id, true)}>Reject</button>
                                     </div>
-                                    </div>
+                                    
                                 </div>
                             )}
                         </li>

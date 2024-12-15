@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import "../css/RentForm.css";
 import { useNavigate } from 'react-router-dom';
+import backgroundImage from '../assets/f2.jpg'; // Add your background image path here
+
 const RentForm = () => {
     const [formData, setFormData] = useState({
         productType: '', productName: '', locationName: '', fromDate: '', toDate: '', price: ''
@@ -51,10 +53,12 @@ const RentForm = () => {
             setMinToDate('');
         }
     }, [formData.fromDate]);
+
     const roundUpToNextHalfHour = (date) => {
         const ms = 1000 * 60 * 30; // 30 minutes in milliseconds
         return new Date(Math.ceil(date.getTime() / ms) * ms);
     };
+
     const formatDateTimeLocal = (date) => {
         const pad = (num) => String(num).padStart(2, '0');
         const year = date.getFullYear();
@@ -129,6 +133,7 @@ const RentForm = () => {
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setmessage("");
@@ -139,9 +144,6 @@ const RentForm = () => {
             navigate('/login');
             return;
         }
-        e.preventDefault();
-        setmessage("");
-        setError(false);
         if (!validateDates(formData.fromDate, formData.toDate)) {
             return;
         }
@@ -174,14 +176,11 @@ const RentForm = () => {
                 }),
                 credentials: 'include',
             });
-            console.log(response);
             if (!response.ok) {
                 const errorResponse = await response.json();
-                console.log(errorResponse.errormessage);
                 setError(true);
                 setmessage(errorResponse.errormessage || "An error occurred.");
             } else {
-                console.log("Form submitted:", formData);
                 setmessage("Form submitted successfully!");
                 setFormData({
                     productType: '',
@@ -207,7 +206,6 @@ const RentForm = () => {
                 }, 1000);
             }
         } catch (error) {
-            console.log("Error during submission:", error);
             setError(true);
             setmessage("An error occurred during submission. Please try again.");
         }
@@ -223,93 +221,99 @@ const RentForm = () => {
     };
 
     return (
-        <div>
-            <div class="background-container">
-                <img src="frontend\BgImage.jpg" alt="Background" class="background-image" />
+        <div className="rent-form-container">
+            <div className="rent-form-wrapper rent-form-image" style={{ backgroundImage: `url(${backgroundImage})` }}>
+                <form id='productForm' style={{ display: 'flex', flexDirection: "column" }} onSubmit={handleSubmit}>
+                    <h2 className="rent-form-heading">Rent Form</h2>
+                    <label htmlFor='productType'>SELECT PRODUCT TYPE:</label>
+                    <select id='productType' name='productType' value={formData.productType} onChange={handleChange} required>
+                        <option value="">Select a product</option>
+                        <option value="cars">CAR</option>
+                        <option value="bikes">BIKE</option>
+                        <option value="cameras">CAMERA</option>
+                        <option value="drones">DRONE</option>
+                        <option value="fishingrods">FISHING ROD</option>
+                        <option value="speakers">SPEAKER</option>
+                        <option value="cycles">CYCLE</option>
+                    </select>
+
+                    <label htmlFor="ProductName">ProductName</label>
+                    <input
+                        type="text"
+                        id="productName"
+                        name="productName"
+                        value={formData.productName}
+                        onChange={handleChange}
+                        required
+                        autoComplete='on'
+                    />
+
+                    <label htmlFor='locationName'>SELECT LOCATION:</label>
+                    <select id='locationName' name='locationName' value={formData.locationName} onChange={handleChange} required>
+                        <option value="">Select a location</option>
+                        {locations.map((location, index) => (
+                            <option key={index} value={location}>{location}</option>
+                        ))}
+                    </select>
+
+                    <label htmlFor='fromDate'>RENT FROM:</label>
+                    <input
+                        type='datetime-local'
+                        id='fromDate'
+                        name='fromDate'
+                        value={formData.fromDate}
+                        onChange={handleChange}
+                        required
+                        min={minFromDate}
+                        step="1800" // 30 minutes
+                    />
+
+                    <label htmlFor='toDate'>RENT UPTO:</label>
+                    <input
+                        type='datetime-local'
+                        id='toDate'
+                        name='toDate'
+                        value={formData.toDate}
+                        onChange={handleChange}
+                        required
+                        min={minToDate}
+                        step="1800" // 30 minutes
+                    />
+
+                    <label htmlFor="price">PRICE:</label>
+                    <input
+                        type="number"
+                        id="price"
+                        name="price"
+                        value={formData.price}
+                        onChange={handleChange}
+                        required
+                        min="1"
+                        step="1"
+                    />
+                    {currentMaxPrice && (
+                        <span style={{ color: 'GREEN', fontSize: '0.9em' }}>
+                            Maximum price for {formData.productType}: ₹{currentMaxPrice}
+                        </span>
+                    )}
+                    {/* Show error message if price exceeds max */}
+                    {Error && message && (
+                        <div style={{ color: 'red', fontSize: '0.9em', marginTop: '4px' }}>
+                            {message}
+                        </div>
+                    )}
+
+                    <label htmlFor='photo'>UPLOAD PHOTO OF PRODUCT</label>
+                    <input ref={fileInputRef} id='photo' accept='image/*' type='file' multiple onChange={handleImageChange} required />
+
+                    <button type='submit'>SUBMIT</button>
+
+                    <br />
+                    <div id="message" className={`message ${Error ? 'error-message' : 'success-message'}`}>
+                        {message}
+                    </div>
+                </form>
             </div>
-            <form id='productForm' style={{ display: 'flex', flexDirection: "column", border: "2px green groove" }} onSubmit={handleSubmit}>
-                <label htmlFor='productType'>SELECT PRODUCT TYPE:</label>
-                <select id='productType' name='productType' value={formData.productType} onChange={handleChange} required>
-                    <option value="">Select a product</option>
-                    <option value="cars">CAR</option>
-                    <option value="bikes">BIKE</option>
-                    <option value="cameras">CAMERA</option>
-                    <option value="drones">DRONE</option>
-                    <option value="fishingrods">FISHING ROD</option>
-                    <option value="speakers">SPEAKER</option>
-                    <option value="cycles">CYCLE</option>
-                </select>
-
-                <label htmlFor="ProductName">ProductName</label>
-                <input
-                    type="text"
-                    id="productName"
-                    name="productName"
-                    value={formData.productName}
-                    onChange={handleChange}
-                    required
-                    autoComplete='on'
-                />
-
-                <label htmlFor='locationName'>SELECT LOCATION:</label>
-                <select id='locationName' name='locationName' value={formData.locationName} onChange={handleChange} required>
-                    <option value="">Select a location</option>
-                    {locations.map((location, index) => (
-                        <option key={index} value={location}>{location}</option>
-                    ))}
-                </select>
-
-                <label htmlFor='fromDate'>RENT FROM:</label>
-                <input
-                    type='datetime-local'
-                    id='fromDate'
-                    name='fromDate'
-                    value={formData.fromDate}
-                    onChange={handleChange}
-                    required
-                    min={minFromDate}
-                    step="1800" // 30 minutes
-                />
-
-                <label htmlFor='toDate'>RENT UPTO:</label>
-                <input
-                    type='datetime-local'
-                    id='toDate'
-                    name='toDate'
-                    value={formData.toDate}
-                    onChange={handleChange}
-                    required
-                    min={minToDate}
-                    step="1800" // 30 minutes
-                />
-
-                <label htmlFor='price'>PRICE:</label>
-                <input
-                    type='number'
-                    id='price'
-                    name='price'
-                    value={formData.price}
-                    onChange={handleChange}
-                    required
-                    min="1"
-                    step="1"
-                />
-                {currentMaxPrice && (
-                    <span style={{ color: 'gray', fontSize: '0.9em' }}>
-                        Maximum price for {formData.productType}: ₹{currentMaxPrice}
-                    </span>
-                )}
-
-                <label htmlFor='photo'>UPLOAD PHOTO OF PRODUCT</label>
-                <input ref={fileInputRef} id='photo' accept='image/*' type='file' multiple onChange={handleImageChange} required />
-
-                <button type='submit'>SUBMIT</button>
-
-                <br />
-                <div id="message" className={`message ${Error ? 'error-message' : 'success-message'}`}>
-                    {message}
-                </div>
-            </form>
         </div>
     );
 };

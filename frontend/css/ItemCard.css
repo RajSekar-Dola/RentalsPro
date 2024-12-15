@@ -1,133 +1,88 @@
-/* .item-card {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-    margin: 16px;
-    max-width: 200px;
-    text-align: center;
-    opacity:0;
-    transition: opacity 0.5s ease-in-out;
-    border-top-right-radius: 50px;
-    border-bottom-left-radius: 50px;
-    cursor:pointer;
-  }
-  .item-card.visible{
-    opacity:1;
-  }
-
-  
-  .item-card img {
-    max-width:80%;
-    border-radius: 8px;
-    transition:transform 0.3s ease;
-  }
-  
-  .item-card img:hover{
-    transform: scale(1.3);
-  }
-
-  .item-card div {
-    margin: 8px 0;
-  }
-  
-  .item-card .price {
-    font-size: 1.2em;
-    color: #333;
-  }
-  
-  .item-card .location {
-    font-size: 0.9em;
-    color: #777;
-  }
-  
-  .item-card .date-range {
-    font-size: 0.8em;
-    color: #555;
-  }
-
-  button{
-    background-color:yellow;
-    border-radius: 20%;
-    font-size: 20px;
-  }
-
-  #price_book{
-    display:flex;
-    justify-content: space-evenly;
-  }
-   */
-
-
-   .item-card {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-    margin: 16px;
-    max-width: 200px;
-    text-align: center;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out, transform 0.3s ease;
-    border-top-right-radius: 50px;
-    border-bottom-left-radius: 50px;
-    cursor: pointer;
-}
-
-.item-card.visible {
-    opacity: 1;
-    transform: scale(1.01);
+.item-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width:355px;
+  height:250px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin:10px;
 }
 
 .item-card img {
-    max-width: 80%;
-    border-radius: 8px;
-    transition: transform 0.3s ease-in-out, opacity 0.5s;
+  width: 100%;
+  height: 100%;
+  display: block;
+  aspect-ratio:1;
+  transition: transform 1.5s;
 }
 
-.item-card img:hover {
-    transform: scale(1.3);
+/* Price Book Details Section (Hidden Element) */
+.itemcard-pricebookdetails {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #0d1b2a;/* Dark background */
+  color: white;
+  padding: 10px;
+  text-align: center;
+  transition: transform 0.3s ease-in-out; /* Smooth slide effect */
+  transform: translateY(50%); /* Partially visible (only name) */
 }
 
-.item-card div {
-    margin: 8px 0;
+/* Slide-up effect on hover */
+.item-card:hover .itemcard-pricebookdetails {
+  transform: translateY(0); /* Fully visible */
+  z-index: 2;
 }
 
-.item-card .price {
-    font-size: 1.2em;
-    color: #333;
+/* Product Name (Always Visible Initially) */
+.itemcard-product-name {
+  font-size: 18px;
+  font-weight: bold;
 }
 
-.item-card .location {
-    font-size: 0.9em;
-    color: #777;
+/* Location Text (Hidden Initially) */
+.itemcard-product-location {
+  font-size: 15px;
+  margin-bottom: 3px;
+  font-weight: bold;
 }
 
-.item-card .date-range {
-    font-size: 0.8em;
-    color: #555;
-}
 
-button {
-    background-color: var(--yellow);
-    border-radius: 20%;
-    font-size: 16px;
-    padding: 8px 12px;
-    border: none;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-}
-
-button:hover {
-    background-color: var(--orange);
-}
-
+/* Price and Book Button */
 #price_book {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.itemcard-product-price {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.itemcard-product-book-button {
+  padding: 8px 16px;
+  background-color: #e63946;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.itemcard-product-book-button:hover {
+  background-color: #d62828;
+}
+.item-card:hover img{
+  transform: scale(1.15);
 }

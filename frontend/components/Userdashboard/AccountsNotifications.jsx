@@ -10,7 +10,7 @@ const AccountNotifications = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [selectedBuyer, setSelectedBuyer] = useState(null);
     const [selectedNotificationId, setSelectedNotificationId] = useState(null);
-    const [unseencount, setUnseencount] = useState(0);
+    const [unseencount, setUnseencount] = useState();
     const [products, setProducts] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
 
@@ -60,8 +60,6 @@ const AccountNotifications = () => {
 
             const data = await response.json();
             setProducts(data.products);
-
-            // Calculate total amount
             const total = data.products.reduce((sum, product) => {
                 const booking = product.reqbooking;
                 return sum + (booking.price * 10 / 11);
@@ -82,14 +80,12 @@ const AccountNotifications = () => {
             });
 
             if (!response.ok) throw new Error("Failed to mark notification as seen");
-
-            fetchUnseenNotifications();
         } catch (error) {
             setError(error.message);
         }
     };
 
-    const handleNotificationClick = (notificationId, index) => {
+    const handleNotificationClick = async(notificationId, index) => {
         if (selectedNotificationId === notificationId) {
             setSelectedNotificationId(null);
         } else {
@@ -99,7 +95,8 @@ const AccountNotifications = () => {
                 setSelectedBooking(data.reqbooking);
                 setSelectedProduct(data.reqproduct);
                 setSelectedBuyer(data.reqbuyer);
-                markAsSeen(notificationId);
+                await markAsSeen(notificationId);
+                await fetchUnseenNotifications();                
             }
         }
     };
@@ -140,14 +137,14 @@ const AccountNotifications = () => {
                                             />
                                             <div
                                                 className={`mbn-user-bookingstatus ${selectedBooking.level === 0
-                                                    ? 'booked'
-                                                    : selectedBooking.level === 1
-                                                        ? 'ready'
-                                                        : selectedBooking.level === 2
-                                                            ? 'using'
-                                                            : selectedBooking.level === 3
-                                                                ? 'completed'
-                                                                : 'unknown'
+                                                        ? 'booked'
+                                                        : selectedBooking.level === 1
+                                                            ? 'ready'
+                                                            : selectedBooking.level === 2
+                                                                ? 'using'
+                                                                : selectedBooking.level === 3
+                                                                    ? 'completed'
+                                                                    : 'unknown'
                                                     }`}
                                             >
                                                 {(() => {

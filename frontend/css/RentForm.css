@@ -1,146 +1,233 @@
-/*  */
+/* Rent Form Stylesheet with Advanced Transitions and Animations */
 
-#productForm {
-    width: 350px; /* Adjusted for a neat layout */
-    margin: 50px auto; /* Centered with vertical spacing */
-    padding: 20px;
-    border: none; /* Removed border for a cleaner look */
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
-    backdrop-filter: blur(10px); /* Frosted glass effect */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Deeper shadow for more contrast */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transformation */
-    animation: fadeIn 0.5s; /* Fade-in effect */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+@keyframes fieldWobble {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.rent-form-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    transition: all 0.5s ease;
+    perspective: 1000px; /* 3D perspective for deeper animations */
+}
+
+.rent-form-image {
+    flex: 1;
+    background-size: cover; /* Cover entire container */
+    background-position: center center; /* Center both horizontally and vertically */
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image covers full area */
+    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    filter: grayscale(20%);
+    position: relative; /* For additional positioning control */
+}
+
+.rent-form-image:hover {
+    transform: rotateY(10deg) scale(1.03);
+    filter: grayscale(0%) brightness(1.1);
+}
+
+.rent-form-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    transition: all 0.5s ease;
+    animation: pulse 5s infinite; /* Subtle pulsing effect */
+}
+
+#productForm {
+    width: 380px;
+    padding: 30px;
+    border-radius: 15px;
+    /* background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px); */
+    background-color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    transform-style: preserve-3d;
+    transition: all 0.4s ease;
 }
 
 #productForm:hover {
-    transform: translateY(-5px); /* Lift effect on hover */
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
+    transform: rotateX(2deg) translateZ(20px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
 #productForm label {
-    margin-top: 10px;
-    margin-bottom: 5px;
+    display: block;
+    margin: 10px 0 5px;
     font-size: 16px;
-    font-weight: 600; /* Increased weight for better visibility */
-    color: #333;
-    transition: color 0.3s; /* Smooth color transition */
+    font-weight: 600;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+    transform-origin: left center;
 }
 
 #productForm label:hover {
-    color: #4CAF50; /* Change color on hover */
+    transform: scale(1.05) translateX(5px);
+    color: #4CAF50;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-#productForm select {
-    padding: 10px; /* Comfortable padding */
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f0f0f0; /* Light background */
-    font-size: 14px;
-    transition: border-color 0.3s, background-color 0.3s; /* Smooth transitions */
-}
-
-#productForm select:focus {
-    border-color: #4CAF50; /* Highlight border on focus */
-    background-color: #e0ffe0; /* Light green background on focus */
-}
-
+#productForm select,
 #productForm input[type="date"],
 #productForm input[type="number"],
-#productForm input[type="file"] {
-    padding: 10px; /* Comfortable padding */
+#productForm input[type="file"],
+#productForm input[type="text"] {
+    width: 100%;
+    padding: 12px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f0f0f0; /* Light background */
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background-color: rgba(240, 240, 240, 0.7);
     font-size: 14px;
-    transition: border-color 0.3s, background-color 0.3s; /* Smooth transitions */
-    max-width: 100%; /* Ensures max width does not exceed parent container */
-    box-sizing: border-box; /* Includes padding and border in the element's total width */
+    transition: all 0.3s ease;
+    outline: none;
+    position: relative;
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
+#productForm select:focus,
 #productForm input[type="date"]:focus,
 #productForm input[type="number"]:focus,
-#productForm input[type="file"]:focus {
-    border-color: #4CAF50; /* Highlight border on focus */
-    background-color: #e0ffe0; /* Light green background on focus */
+#productForm input[type="file"]:focus,
+#productForm input[type="text"]:focus {
+    border-color: #4CAF50;
+    background-color: rgba(224, 255, 224, 0.5);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.2);
+    transform: scale(1.015);
+}
+
+#productForm select:invalid,
+#productForm input:invalid {
+    animation: fieldWobble 0.5s ease;
+    border-color: red;
 }
 
 #productForm button[type="submit"] {
-    width: 100%; /* Full width for the button */
-    padding: 12px;
-    background-color: #4CAF50; /* Green background */
+    width: 100%;
+    padding: 15px;
+    background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s, transform 0.3s; /* Transition for button */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Button shadow */
+    font-weight: bold;
+    transition: all 0.4s ease;
+    transform-origin: center;
 }
 
 #productForm button[type="submit"]:hover {
-    background-color: #45a049; /* Darker green on hover */
-    transform: translateY(-2px); /* Slight lift effect */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Shadow on hover */
+    background-color: #45a049;
+    transform: scale(1.05) rotate(2deg);
+    letter-spacing: 1px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-@media (max-width: 500px) {
-    #productForm {
-        width: 90%;
-        padding: 15px;
-    }
-    #productForm label {
-        font-size: 14px;
-    }
-    #productForm select,
-    #productForm input[type="date"],
-    #productForm input[type="number"],
-    #productForm input[type="file"] {
-        font-size: 12px;
-        padding: 8px; /* Adjusted for smaller screens */
-        max-width: calc(100% - 16px); /* Adjusts width accounting for padding */
-    }
-    #productForm button[type="submit"] {
-        font-size: 14px;
-    }
+#productForm button[type="submit"]:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
 }
 
 .message {
-    margin-top: 10px;
+    margin-top: 15px;
     font-size: 14px;
-    transition: opacity 0.3s; /* Smooth opacity transition */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
 }
 
 .error-message {
-    color: red;
+    color: #ff4545;
+    animation: fieldWobble 0.5s ease;
 }
 
 .success-message {
-    color: green;
+    color: #4CAF50;
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.message.fade-out {
-    opacity: 0;
-    transition: opacity 0.5s ease-out; /* Fade-out effect */
+/* Responsive Design */
+@media (max-width: 768px) {
+    .rent-form-container {
+        flex-direction: column;
+    }
+
+    .rent-form-image {
+        height: 30vh;
+    }
+
+    .rent-form-wrapper {
+        height: 70vh;
+    }
+
+    #productForm {
+        width: 90%;
+        margin: 0 auto;
+        animation: slideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
 }
 
-.background-container {
-    position: relative; /* For layering content over the image */
-    width: 100%; /* Full width */
-    height: 100vh; /* Full viewport height */
-    overflow: hidden; /* Ensures no overflow issues with large images */
+/* Additional Subtle Animations */
+@keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
 }
 
-.background-image {
-    width: 100%; /* Stretches the image to the full width */
-    height: 100vh; /* Stretches the image to the full viewport height */
-    object-fit: cover; /* Ensures the image covers the container while maintaining aspect ratio */
-    object-position: center; /* Centers the image */
+/* Apply floating animation to the entire form container */
+.rent-form-container {
+    animation: floating 4s ease-in-out infinite;
+}
+
+#productForm input[type="datetime-local"] {
+    cursor: pointer;
+}
+
+.rent-form-heading {
+    text-align: center;
+    margin-bottom: 5px;
+    color: #2c3e50;
+    font-size: 28px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(45deg, #4CAF50, #2196F3);
+    transition: all 0.3s ease;
+}
+
+.rent-form-heading:hover {
+    transform: scale(1.05);
+    letter-spacing: 3px;
 }

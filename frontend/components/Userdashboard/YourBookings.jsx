@@ -61,7 +61,7 @@ const YourBookings = () => {
         <div className="rentals-container">
           {bookings.length > 0 ? (
             bookings.map((booking, index) => (
-              <div key={index} className="rental-card">
+              <div key={index} className="profile-rental-card">
                 {booking.photo && booking.photo.length > 0 && (
                   <div>
                     <img
@@ -99,7 +99,7 @@ const YourBookings = () => {
 
                   </div>
                 )}
-                <div className="card-content">
+                <div className="profile-card-content">
                 <p><strong>Type:</strong>{booking.productType}</p>
                 <p><strong>Name:</strong>{booking.productName}</p>
                   <p><strong>Location:</strong> {booking.locationName}</p>

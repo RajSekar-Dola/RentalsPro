@@ -1,0 +1,103 @@
+.testimonial-testimonials {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+  padding: 20px;
+  opacity: 0; /* Hidden initially */
+  transform: translateY(20px); /* Positioned slightly off-screen */
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  background: linear-gradient(to bottom, #142d4c, black );
+}
+
+.testimonial-testimonials.fade-in {
+  opacity: 1; /* Fully visible */
+  transform: translateY(0); /* Reset position */
+}
+
+.testimonial-slider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.testimonial-card {
+  position: absolute;
+  transition: transform 0.8s ease, opacity 0.8s ease, border 0.3s ease;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+  padding: 5px;
+  border: 2px solid #ffffff; /* White border */
+  border-radius: 10px;
+  background: #102a44; /* Navy blue background */
+  color: #ffffff; /* White text */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 250px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.testimonial-card.testimonial-center {
+  transform: translateX(0) translateY(0) scale(1); /* Centered and larger */
+  z-index: 3;
+  background: #5c89c8; /* Light blue for the active card */
+  color: #ffffff; /* White text */
+}
+
+.testimonial-card.testimonial-left {
+  transform: translateX(-120%) translateY(20%) scale(0.8); /* Positioned left */
+  z-index: 2;
+}
+
+.testimonial-card.testimonial-right {
+  transform: translateX(120%) translateY(20%) scale(0.8); /* Positioned right */
+  z-index: 2;
+}
+
+.testimonial-card.testimonial-hidden {
+  transform: translateY(50%) scale(0.5); /* Smaller and hidden */
+  z-index: 1;
+  opacity: 0;
+}
+
+.testimonial-nav-button {
+  border: none;
+  font-size: 2rem;
+  color: white; /* Navy blue arrows */
+  cursor: pointer;
+  background-color: black;
+}
+
+.testimonial-nav-button.testimonial-left {
+  left: 20px;
+}
+
+.testimonial-nav-button.testimonial-right {
+  right: 20px;
+
+}
+
+.testimonial-nav-button:focus {
+  outline: none;
+}
+
+.testimonial-stars {
+  font-size: 14px; /* Smaller for subtle emphasis */
+  font-weight: 500; /* Medium weight for visibility */
+  color: #ffffff; /* White stars for reviews */
+}
+
+.testimonial-loading {
+  font-size: 16px;
+  color: #102a44; /* Navy blue text for loading message */
+  text-align: center;
+  padding: 20px;
+}

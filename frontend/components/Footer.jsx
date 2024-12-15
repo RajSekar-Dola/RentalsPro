@@ -14,15 +14,13 @@ function Footer() {
           <ul>
             <li><NavLink to="/">Home</NavLink></li>
             <li><NavLink to="/about">About</NavLink></li>
-            <li><NavLink to="/services">Services</NavLink></li>
-            <li><NavLink to="/vehicles">Vehicles</NavLink></li>
-            <li><NavLink to="/contact">Contact</NavLink></li>
+            <li><NavLink to="/faq">FAQ's</NavLink></li>
           </ul>
         </div>
         <div className="footer-contact">
           <p>&copy; 2024 RentalsPro. All rights reserved.</p>
-          <p>Email: support@rentalspro.com</p>
-          <p>Phone: +1 234 567 890</p>
+          <p>Email: rentalspro001@gmail.com</p>
+          <p>Phone: +91 234 567 890</p>
         </div>
         <div className="footer-social">
           <p>Follow us on:</p> {/* Keep the "Follow us on" text */}
