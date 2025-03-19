@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import "../css/RentForm.css";
 import { useNavigate } from 'react-router-dom';
-import backgroundImage from '../assets/f2.jpg'; // Add your background image path here
 
 const RentForm = () => {
     const [formData, setFormData] = useState({
@@ -222,7 +221,7 @@ const RentForm = () => {
 
     return (
         <div className="rent-form-container">
-            <div className="rent-form-wrapper rent-form-image" style={{ backgroundImage: `url(${backgroundImage})` }}>
+            <div className="rent-form-wrapper rent-form-image">
                 <form id='productForm' style={{ display: 'flex', flexDirection: "column" }} onSubmit={handleSubmit}>
                     <h2 className="rent-form-heading">Rent Form</h2>
                     <label htmlFor='productType'>SELECT PRODUCT TYPE:</label>

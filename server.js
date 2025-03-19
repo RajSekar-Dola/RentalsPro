@@ -12,27 +12,117 @@ import { Manager } from './backend/models/ManagerSchema.js';
 import {Location} from './backend/models/Location.js';
 import { Admin } from './backend/models/Admin.js';
 import {Review} from './backend/models/ReviewSchema.js';
+
+import adminRoutes from './backend/controllers/adminRoutes.js';
+import managerRoutes from './backend/controllers/managerRoutes.js';
+import userRoutes from './backend/controllers/userRoutes.js';
 import nodemailer from "nodemailer";
+import path from 'path';
+import morgan from 'morgan';
+import helmet from 'helmet';
+
+import { createStream } from 'rotating-file-stream';
+
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const url='mongodb://localhost:27017/Rentals';
 const app = express();
+
+// CORS configuration
+app.use(cors({
+    origin: 'http://localhost:5173', // Your frontend URL
+    credentials: true, // Required for cookies
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+}));
+
+// Increase payload size limit for image uploads
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// application middleware & built -in middleware
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+// app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true,
 }));
-
+app.use(helmet());
 connecttomongodb(url)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => {
     console.error('Failed to connect to MongoDB', err);
   });
 
+  // error-handling middleware
+
+app.get('/error-test', (req, res, next) => {
+    try{
+  throw new Error("Forced error for testing");
+    }catch(err){
+    next(err);}
+});
+
+app.get('/xx', (req, res) => {
+  try{ res.send('Hello World!')}
+  catch(err){next(err)} 
+ });
+
+app.use((err, req, res, next) => {
+  const statusCode = err.status || 500;
+  res.status(statusCode).json({
+      in:"error-handling-middleware",
+      success: false,
+      message: err.message || 'Internal Server Error'
+  });
+});
+
+
+// third-party middleware
+
+const loginLogStream =createStream((time, index) => {
+    if (!time) return "login.log";
+    const date = new Date(time);
+    return `login-${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}-${date.getHours()}.log`;
+}, {
+    interval: '1h', // Rotate every hour
+    path: path.join(__dirname, 'log')
+});
+
+app.use((req, res, next) => {
+  req.username = req.cookies?.user_id || "Guest";  // Fetch user from cookie
+  req.role = req.cookies?.role || "Guest"; 
+  next();
+});
+
+// third -party middleware
+morgan.token("username", (req) => req.username || "Unknown");
+morgan.token("role", (req) => req.role || "Unknown");
+
+// router -level middleware
+
+const adminMiddleware = async (req, res, next) => {
+    console.log(`Admin entered ${req.originalUrl} !`);
+  next();
+}
+
+const managerMiddleware = async (req, res, next) => {
+  console.log(`Manager entered ${req.originalUrl} !`);
+next();
+}
+
+app.use('/admindashboard',adminMiddleware,adminRoutes);
+app.use('/manager',managerMiddleware, managerRoutes);
+app.use('/user', userRoutes);
+
 app.get('/locations', async (req, res) => {
   try {
     const locations = await Location.find({});
-    res.json({ locations: locations[0].locations }); // Assuming there's only one document
+    res.json({ locations: locations[0].locations });
   } catch (error) {
     console.error('Error fetching locations:', error);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -76,7 +166,7 @@ app.post('/signup', async (req, res) => {
 });
 
 
-app.post('/login', async (req, res) => {
+app.post('/login', async (req, res,next) => {
   const { username, password, role } = req.body;
 
   if (!username || !password) {
@@ -123,6 +213,12 @@ app.post('/login', async (req, res) => {
       user_id = existingUser._id.toString();
     }
 
+     // Attach user details for Morgan middleware (used in logs)
+     req.user_id = user_id;
+     req.username = username;
+     req.role = role;
+
+
     // Set cookie for user (either Manager or User)
     res.cookie('user_id', user_id, {
       httpOnly: false,
@@ -138,7 +234,10 @@ app.post('/login', async (req, res) => {
       path: '/'
     });
 
+     morgan(':date[iso] | User: :username | Role: :role | IP: :remote-addr | Status: :status | :method :url - :response-time ms', 
+      { stream: loginLogStream })(req, res, () => {});
     res.status(200).json({ successmessage: `${role} Login successfully `});
+
   } catch (error) {
     console.error('Error occurred while logging in:', error);
     res.status(500).json({ errormessage: 'Error while user logging in!' });
@@ -202,8 +301,8 @@ app.post('/products', async (req, res) => {
     const query={};
     if(productType) query.productType=productType;
     if(locationName) query.locationName=locationName;
-    if(fromDateTime) query.fromDateTime={ $gte: new Date(fromDateTime) };
-    if(toDateTime) query.toDateTime= { $lte: new Date(toDateTime) };
+    if(fromDateTime) query.fromDateTime={ $lte: new Date(fromDateTime) };
+    if(toDateTime) query.toDateTime= { $gte: new Date(toDateTime) };
     if(price) query.price={$lte : price};
     query.expired=false;
     const products = await Product.find(query);
@@ -369,122 +468,122 @@ app.post('/api/addBranch', async (req, res) => {
   }
 });
 
-app.get('/admindashboard/registeredusers',async(req,res)=>{
-  try{
-    const users=await User.find({expired:false});
-    const usercount = await User.countDocuments({expired:false});
-    if(!users)
-    {
-      return res.status(200).json({error :'Users not found !'});
-    }
-    return res.status(200).json({registercount:usercount,users:users,});
+// app.get('/admindashboard/registeredusers',async(req,res)=>{
+//   try{
+//     const users=await User.find({expired:false});
+//     const usercount = await User.countDocuments({expired:false});
+//     if(!users)
+//     {
+//       return res.status(200).json({error :'Users not found !'});
+//     }
+//     return res.status(200).json({registercount:usercount,users:users,});
     
-  }catch(error)
-  {
-    res.status(500).json({error:"server error !"});
-  }
-})
+//   }catch(error)
+//   {
+//     res.status(500).json({error:"server error !"});
+//   }
+// })
 
-app.post('/admindashboard/deleteusers', async (req, res) => {
-  const { user_id, forceDelete } = req.body;
+// app.post('/admindashboard/deleteusers', async (req, res) => {
+//   const { user_id, forceDelete } = req.body;
 
-  try {
-    // Check if user has bookings
-    const bookings = await Booking.findOne({ buyerid: user_id });
-    if (bookings && !forceDelete) {
-      // If bookings exist and forceDelete is false, return an alert
-      return res.status(200).json({ alert: true, });
-    }
+//   try {
+//     // Check if user has bookings
+//     const bookings = await Booking.findOne({ buyerid: user_id });
+//     if (bookings && !forceDelete) {
+//       // If bookings exist and forceDelete is false, return an alert
+//       return res.status(200).json({ alert: true, });
+//     }
 
-    // If forceDelete is true or there are no bookings, proceed with deletion
-    await Product.updateMany({ userid: user_id }, { $set: { expired: true } }, { new: true });
-    const deletedUser = await User.findOneAndUpdate({_id:user_id},{$set:{expired :true}},{new:true});
+//     // If forceDelete is true or there are no bookings, proceed with deletion
+//     await Product.updateMany({ userid: user_id }, { $set: { expired: true } }, { new: true });
+//     const deletedUser = await User.findOneAndUpdate({_id:user_id},{$set:{expired :true}},{new:true});
 
-    if (!deletedUser) {
-      return res.status(200).json({ message: 'User not found in database!' });
-    }
+//     if (!deletedUser) {
+//       return res.status(200).json({ message: 'User not found in database!' });
+//     }
 
-    return res.status(200).json({ message: 'User and their bookings/products deleted successfully!' });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error!' });
-  }
-});
+//     return res.status(200).json({ message: 'User and their bookings/products deleted successfully!' });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: 'Server error!' });
+//   }
+// });
 
-app.post('/admindashboard/createmanager',async(req,res)=>{
-  console.log(req.body);
-  const { username, email,password ,branch} = req.body;
-  if (!username || !email || !branch || !password) {
-    return res.status(409).json({ errormessage: 'All fields are required' });
-  }
+// app.post('/admindashboard/createmanager',async(req,res)=>{
+//   console.log(req.body);
+//   const { username, email,password ,branch} = req.body;
+//   if (!username || !email || !branch || !password) {
+//     return res.status(409).json({ errormessage: 'All fields are required' });
+//   }
 
-  try {
-    const existingUser = await Manager.findOne({ username });
-    const existingEmail = await Manager.findOne({ email });
-    const existingbranch= await Manager.findOne({branch});
-    if(existingbranch)
-    {
-      return res.status(404).json({ errormessage: 'Manager for branch already exists !'});
-    }
-    if (existingEmail) {
-      return res.status(404).json({ errormessage: 'Email already exists' });
-    }
-    if (existingUser) {
-      return res.status(404).json({ errormessage: 'Username already exists' });
-    }
+//   try {
+//     const existingUser = await Manager.findOne({ username });
+//     const existingEmail = await Manager.findOne({ email });
+//     const existingbranch= await Manager.findOne({branch});
+//     if(existingbranch)
+//     {
+//       return res.status(404).json({ errormessage: 'Manager for branch already exists !'});
+//     }
+//     if (existingEmail) {
+//       return res.status(404).json({ errormessage: 'Email already exists' });
+//     }
+//     if (existingUser) {
+//       return res.status(404).json({ errormessage: 'Username already exists' });
+//     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+//     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newManager = new Manager({
-      username,
-      email,
-      password: hashedPassword,
-      branch:branch,
-      notifications:[],
-    });
+//     const newManager = new Manager({
+//       username,
+//       email,
+//       password: hashedPassword,
+//       branch:branch,
+//       notifications:[],
+//     });
 
-    await newManager.save();
-    res.status(201).json({ errormessage: 'Manager created successfully !' });
-  } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).json({ errormessage: 'Error creating Manager' });
-  }
+//     await newManager.save();
+//     res.status(201).json({ errormessage: 'Manager created successfully !' });
+//   } catch (error) {
+//     console.error('Error registering user:', error);
+//     res.status(500).json({ errormessage: 'Error creating Manager' });
+//   }
 
-})
+// })
 
-app.get('/admindashboard/registeredmanagers', async (req, res) => {
-  try {
-    const users = await Manager.find({});
-    const usercount = await Manager.countDocuments({});
-    if (users.length === 0) {
-      return res.status(200).json({ error: 'No managers found!' });
-    }
-    return res.status(200).json({ registercount: usercount, managers: users });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Server error!' });
-  }
-});
+// app.get('/admindashboard/registeredmanagers', async (req, res) => {
+//   try {
+//     const users = await Manager.find({});
+//     const usercount = await Manager.countDocuments({});
+//     if (users.length === 0) {
+//       return res.status(200).json({ error: 'No managers found!' });
+//     }
+//     return res.status(200).json({ registercount: usercount, managers: users });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: 'Server error!' });
+//   }
+// });
 
-app.post('/admindashboard/deletemanagers',async(req,res)=>{
+// app.post('/admindashboard/deletemanagers',async(req,res)=>{
 
-  const { manager_id, forceDelete } = req.body;
+//   const { manager_id, forceDelete } = req.body;
 
-  try {
-    if (!forceDelete) {
-      return res.status(200).json({ alert: true, });
-    }
-    const deletedUser = await Manager.findByIdAndDelete(manager_id);
-    if (!deletedUser) {
-      return res.status(404).json({ message: 'Manager not found in database!' });
-    }
-    return res.status(200).json({ message: 'Manager deleted successfully!' });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error!' });
-  }
+//   try {
+//     if (!forceDelete) {
+//       return res.status(200).json({ alert: true, });
+//     }
+//     const deletedUser = await Manager.findByIdAndDelete(manager_id);
+//     if (!deletedUser) {
+//       return res.status(404).json({ message: 'Manager not found in database!' });
+//     }
+//     return res.status(200).json({ message: 'Manager deleted successfully!' });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: 'Server error!' });
+//   }
 
-})
+// })
 
 app.get("/grabBookings", async (req, res) => {
   try {
@@ -568,7 +667,7 @@ app.post("/settings", async (req, res) => {
   }
 });
 
-app.get("/grabDetails", async (req, res) => {
+app.get("/grabDetails", async (req, res,next) => {
   try {
     if (req.cookies.user_id) {
       const userid = req.cookies.user_id;
@@ -586,6 +685,7 @@ app.get("/grabDetails", async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
+ 
 });
 
 app.get("/grabRentals", async (req, res) => {
@@ -603,7 +703,7 @@ app.get("/grabRentals", async (req, res) => {
           const obj = { rentedProducts: products };
           res.json(obj);
         } else {
-          res.status(404).json({ message: "No rented products found" });
+          res.status(200).json({ message: "No rented products found" });
         }
       } else {
         res.status(404).json({ message: "User not found" });
@@ -642,213 +742,6 @@ app.post('/signOut', async (req, res) => {
     res.status(500).json({ message: 'Error signing out' });
   }
 });
-
-
-///Manager Page related ........
-
-// Route: Fetch booking notifications
-app.post('/manager/fetchBookingnotifications', async (req, res) => {
-  const { managerid } = req.body;
-
-  if (!managerid) {
-      return res.status(400).json({ message: "Manager ID is required" });
-  }
-
-  try {
-      const manager = await Manager.findById(managerid);
-
-      if (!manager) {
-          return res.status(404).json({ message: "Manager not found" });
-      }
-
-      const notifications = manager.bookingnotifications || [];
-      res.status(200).json({notifications: notifications });
-  } catch (error) {
-      console.error("Error fetching booking notifications:", error);
-      res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Route: Fetch detailed results for bookings
-app.post('/manager/bookingnotifications/results', async (req, res) => {
-  const { bids } = req.body;
-  if (!bids || !Array.isArray(bids) || bids.length === 0) {
-      return res.status(400).json({ message: "Invalid or empty bids array" });
-  }
-
-  try {
-      const results = await Promise.all(
-          bids.map(async (id) => {
-              try {
-                  const booking = await Booking.findById(id);
-                  if (!booking) {
-                      throw new Error(`Booking not found for ID: ${id}`);
-                  }
-
-                  const buyer = await User.findById(booking.buyerid);
-                  const product = await Product.findById(booking.product_id);
-                  const owner = await User.findById(product.userid);
-
-                  return {
-                      ownerid: owner?._id,
-                      ownername: owner?.username,
-                      owneremail: owner?.email,
-                      buyerid: buyer?._id,
-                      buyername: buyer?.username,
-                      buyeremail: buyer?.email,
-                      productid: product?._id,
-                      productname: product?.productName,
-                      productphoto: product?.photo[0],
-                      booking,
-                  };
-              } catch (error) {
-                  console.error("Error fetching booking details:", error);
-                  return null; // Return null for failed items
-              }
-          })
-      );
-
-      // Filter out null entries in the results array
-      const filteredResults = results.filter((result) => result !== null);
-      res.status(200).json({ results: filteredResults });
-  } catch (error) {
-    console.log(error);
-      console.error("Error fetching booking results:", error);
-      res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-app.post('/manager/bookingnotifications/updatelevel',async(req,res)=>{
-  const {bid,level,id}=req.body;
-  try{
-    console.log(bid);
-    const booking = await Booking.findByIdAndUpdate(bid,{level:level},{new:true});
-    if(level==3)
-    {
-      const removednotification=await Manager.findByIdAndUpdate(id,{ $pull: { bookingnotifications: { _id: bid } } },{new:true} );
-    }
-    if(booking)
-    {
-      res.status(200).json({result:true});
-    }
-    else
-    { 
-      res.status(400).json({result:false});
-    }
-  }
-  catch(e)
-  {
-    res.status(400).json({result:false});
-  }
-})
-
-
-app.get('/manager/uploadnotifications',async(req,res)=>{
-  try {
-    const managerid = req.cookies.user_id;
-    if (managerid) {
-      const exist_manager = await Manager.findById(managerid);
-      const notifications=exist_manager.notifications;
-      const productids=notifications.map(x=>x.message);
-      if (exist_manager) {
-        res.json({notifications:notifications,productids:productids});
-      } else {
-        res.status(404).json({ message: "manager not found" });
-      }
-    } else {
-      res.status(400).json({ message: "No manager cookie found" });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-})
-
-app.post('/manager/uploadnotifications/markAsSeen',async(req,res)=>{
-  try{
-      const managerid = req.cookies.user_id;
-      const {notificationid,productid,rejected}=req.body;
-      if(rejected)
-        { 
-          const x=await Product.findByIdAndDelete(productid);
-          console.log(x);
-        }
-        else{
-          const y=await Product.findByIdAndUpdate(productid,{$set:{expired:false}},{new:true});
-        }
-      const removednotification=await Manager.findByIdAndUpdate(managerid,{ $pull: { notifications: { _id: notificationid } } },{new:true} );
-      if(!removednotification)
-      {
-        return res.status(400).json({message:"notification not removed .error occured !"});
-      }
-      else{
-        return res.status(200).json({message:"notification removed successfully!"});
-      }
-  }
-  catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-})
-
-app.get('/manager/notifications/countUnseen',async(req,res)=>{
-  try {
-    const userid = req.cookies.user_id;
-    if (userid) {
-      const exist_user = await Manager.findById(userid);
-      const notifications=exist_user.notifications;
-      if (exist_user) {
-        res.json({notifications:notifications});
-      } else {
-        res.status(404).json({ message: "booking not found" });
-      }
-    } else {
-      res.status(400).json({ message: "No user cookie found" });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-})
-
-app.post('/manager/notifications/markallAsSeen', async (req, res) => {
-  try {
-    const userid = req.cookies.user_id;
-
-    // Update all notifications with seen: false to seen: true
-    const updatedUser = await Manager.findOneAndUpdate(
-      { _id: userid, "notifications.seen": false }, // Match notifications with seen: false
-      { $set: { "notifications.$[].seen": true } }, // Update all notifications' seen field
-      { new: true } // Return the updated user
-    );
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found or no unseen notifications" });
-    }
-
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-app.get('/manager/products/:product_id',async(req,res)=>{
-  const {product_id}=req.params;
-  console.log(product_id);
-  try{
-    const reqproduct=await Product.findById(product_id);
-    if(!reqproduct)
-    {    console.log(reqproduct);
-      return res.status(404).json({error :'product not found !'});
-    }
-    return res.status(200).json(reqproduct);
-    
-  }catch(error)
-  {
-    res.status(500).json({error:"server error !"});
-  }
-})
 
 app.get("/api/dashboard/daily-bookings", async (req, res) => {
   try {
@@ -1012,79 +905,6 @@ app.get("/api/dashboard/categories", async (req, res) => {
   }
 });
 
-app.post('/admindashboard/createmanager', async (req, res) => {
-  console.log(req.body);
-  const { username, email, password, branch } = req.body;
-  if (!username || !email || !branch || !password) {
-    return res.status(409).json({ errormessage: 'All fields are required' });
-  }
-
-  try {
-    const existingUser = await Manager.findOne({ username });
-    const existingEmail = await Manager.findOne({ email });
-    const existingbranch = await Manager.findOne({ branch });
-    if (existingbranch) {
-      return res.status(409).json({ errormessage: 'Manager for branch already exists !' });
-    }
-    if (existingEmail) {
-      return res.status(409).json({ errormessage: 'Email already exists' });
-    }
-    if (existingUser) {
-      return res.status(409).json({ errormessage: 'Username already exists' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newManager = new Manager({
-      username,
-      email,
-      password: hashedPassword,
-      branch: branch,
-      notifications: [],
-    });
-
-    await newManager.save();
-    res.status(201).json({ errormessage: 'Manager created successfully !' });
-  } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).json({ errormessage: 'Error creating Manager' });
-  }
-
-})
-
-app.get('/admindashboard/registeredmanagers', async (req, res) => {
-  try {
-    const users = await Manager.find({});
-    const usercount = await Manager.countDocuments({});
-    if (users.length === 0) {
-      return res.status(200).json({ error: 'No managers found!' });
-    }
-    return res.status(200).json({ registercount: usercount, managers: users });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Server error!' });
-  }
-});
-
-app.post('/admindashboard/deletemanagers', async (req, res) => {
-
-  const { manager_id, forceDelete } = req.body;
-
-  try {
-    if (!forceDelete) {
-      return res.status(200).json({ alert: true, });
-    }
-    const deletedUser = await Manager.findByIdAndDelete(manager_id);
-    if (!deletedUser) {
-      return res.status(404).json({ message: 'Manager not found in database!' });
-    }
-    return res.status(200).json({ message: 'Manager deleted successfully!' });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error!' });
-  }
-
-})
 
 app.get('/locations', async (req, res) => {
   try {
@@ -1444,97 +1264,97 @@ app.get("/api/dashboard/categories-cat", async (req, res) => {
 
 
 ///userbooking notification
-app.get('/user/notifications',async(req,res)=>{
-  try {
-    const userid = req.cookies.user_id;
-    if (userid) {
-      const exist_user = await User.findById(userid);
-      const notifications=exist_user.notifications;
-      const bookingids=notifications.map(x=>x.message);
-      if (exist_user) {
-        res.json({notifications:notifications,bookingids:bookingids});
-      } else {
-        res.status(404).json({ message: "booking not found" });
-      }
-    } else {
-      res.status(400).json({ message: "No user cookie found" });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-})
+// app.get('/user/notifications',async(req,res)=>{
+//   try {
+//     const userid = req.cookies.user_id;
+//     if (userid) {
+//       const exist_user = await User.findById(userid);
+//       const notifications=exist_user.notifications;
+//       const bookingids=notifications.map(x=>x.message);
+//       if (exist_user) {
+//         res.json({notifications:notifications,bookingids:bookingids});
+//       } else {
+//         res.status(404).json({ message: "booking not found" });
+//       }
+//     } else {
+//       res.status(400).json({ message: "No user cookie found" });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// })
 
-app.get('/user/notifications/:bookingid',async(req,res)=>{
-  const {bookingid}=req.params;
-  console.log(bookingid);
-  try{
-    const reqbooking=await Booking.findById(bookingid);
-    const reqproduct=await Product.findById(reqbooking.product_id);
-    const reqbuyer=await User.findById(reqbooking.buyerid);
-    if(!reqbooking)
-    {    console.log(reqbooking);
-      return res.status(404).json({error :'booking not found !'});
-    }
-    return res.status(200).json({reqbooking:reqbooking,reqproduct:reqproduct,reqbuyer:reqbuyer});
+// app.get('/user/notifications/:bookingid',async(req,res)=>{
+//   const {bookingid}=req.params;
+//   console.log(bookingid);
+//   try{
+//     const reqbooking=await Booking.findById(bookingid);
+//     const reqproduct=await Product.findById(reqbooking.product_id);
+//     const reqbuyer=await User.findById(reqbooking.buyerid);
+//     if(!reqbooking)
+//     {    console.log(reqbooking);
+//       return res.status(404).json({error :'booking not found !'});
+//     }
+//     return res.status(200).json({reqbooking:reqbooking,reqproduct:reqproduct,reqbuyer:reqbuyer});
     
-  }catch(error)
-  {
-    res.status(500).json({error:"server error !"});
-  }
-})
+//   }catch(error)
+//   {
+//     res.status(500).json({error:"server error !"});
+//   }
+// })
 
-app.post('/user/notifications/markAsSeen', async (req, res) => {
-  try {
-    const userid = req.cookies.user_id;
-    const { notificationid } = req.body;
+// app.post('/user/notifications/markAsSeen', async (req, res) => {
+//   try {
+//     const userid = req.cookies.user_id;
+//     const { notificationid } = req.body;
 
-    // Update the notification's seen field to true only if it is currently false
-    const updatedNotification = await User.findOneAndUpdate(
-      { _id: userid, "notifications._id": notificationid, "notifications.seen": false },
-      { $set: { "notifications.$.seen": true } },
-      { new: true }
-    );
+//     // Update the notification's seen field to true only if it is currently false
+//     const updatedNotification = await User.findOneAndUpdate(
+//       { _id: userid, "notifications._id": notificationid, "notifications.seen": false },
+//       { $set: { "notifications.$.seen": true } },
+//       { new: true }
+//     );
 
-    // if (!updatedNotification) {
-    //   return res.status(400).json({ message: "Notification was not updated. It may already be marked as seen or not found." });
-    // } else {
-    //   return res.status(200).json({ message: "Notification marked as seen successfully!" });
-    // }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
+//     // if (!updatedNotification) {
+//     //   return res.status(400).json({ message: "Notification was not updated. It may already be marked as seen or not found." });
+//     // } else {
+//     //   return res.status(200).json({ message: "Notification marked as seen successfully!" });
+//     // }
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// });
 
 
-app.post('/user/notifications/products', async (req, res) => {
-  const { bookingids } = req.body;  // Extract bookingids from the request body
-  try {
-    const products = [];
+// app.post('/user/notifications/products', async (req, res) => {
+//   const { bookingids } = req.body;  // Extract bookingids from the request body
+//   try {
+//     const products = [];
 
-    for (const bookingid of bookingids) {
-      const reqbooking = await Booking.findById(bookingid);
-      if (!reqbooking) continue;
+//     for (const bookingid of bookingids) {
+//       const reqbooking = await Booking.findById(bookingid);
+//       if (!reqbooking) continue;
 
-      const reqproduct = await Product.findById(reqbooking.product_id);
-      if (!reqproduct) continue;
+//       const reqproduct = await Product.findById(reqbooking.product_id);
+//       if (!reqproduct) continue;
 
-      const reqbuyer = await User.findById(reqbooking.buyerid);
-      if (!reqbuyer) continue;
+//       const reqbuyer = await User.findById(reqbooking.buyerid);
+//       if (!reqbuyer) continue;
 
-      products.push({ reqbooking, reqproduct, reqbuyer });
-    }
-    if (products.length === 0) {
-      return res.status(404).json({ error: 'No bookings found!' });
-    }
+//       products.push({ reqbooking, reqproduct, reqbuyer });
+//     }
+//     if (products.length === 0) {
+//       return res.status(404).json({ error: 'No bookings found!' });
+//     }
 
-    return res.status(200).json({ products });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error!' });
-  }
-});
+//     return res.status(200).json({ products });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Server error!' });
+//   }
+// });
 
 
 app.post("/home/postreview",async(req,res)=>{

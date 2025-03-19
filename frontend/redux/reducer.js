@@ -1,28 +1,3 @@
-// // reducer.js
-
-// const initialState = {
-//     role: sessionStorage.getItem('role') || 'user'
-//   };
-  
-//   export const authReducer = (state = initialState, action) => {
-//     switch (action.type) {
-//       case 'SET_USER_ROLE':
-//         sessionStorage.setItem('role', action.payload);
-//         return {
-//           ...state,
-//           role: action.payload,
-//         };
-//       case 'LOGOUT_USER':
-//         sessionStorage.removeItem('role');
-//         return {
-//           ...state,
-//           role: 'user',
-//         };
-//       default:
-//         return state;
-//     }
-//   };
-  // reducer.js
 import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // Default storage (localStorage)
 

@@ -1,7 +1,6 @@
-/* Notifications container styling */
 .notifications-container {
-    background-color: #1e1e2f; /* Dark background */
-    color: #e0e0e0; /* Light text color */
+    background-color: #1e1e2f;
+    color: #e0e0e0;
     padding: 20px;
     border-radius: 8px;
     max-width: 800px;
@@ -12,14 +11,14 @@
 .notifications-container h2 {
     font-size: 2rem;
     text-align: center;
-    color: #ff6b6b; /* Accent color */
+    color: #ff6b6b;
     margin-bottom: 20px;
     letter-spacing: 1.2px;
 }
 
-/* Notification list styling */
+
 .notification-item {
-    background-color: #292945; /* Slightly lighter dark background */
+    background-color: #292945;
     padding: 15px 20px;
     border-radius: 6px;
     margin-bottom: 15px;
@@ -27,40 +26,57 @@
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.3s ease, background-color 0.3s ease;
-} 
+}
 
 .notification-item:hover {
     background-color: #333355;
-    transform: translateY(-5px); /* Lift effect */
+    transform: translateY(-5px);
 }
 
 .notification-item p {
     margin: 0;
     font-weight: 500;
-    color: #a3ffd6; /* Light green color */
+    color: #a3ffd6;
     font-size: 1.1rem;
     transition: color 0.3s;
 }
 
+.notification-item p:hover {
+    color: #ffffff;
+}
 
 
-/* Product details modal */
-.product-details-modal-button {
+.product-details-modal {
+
     background-color: #1e1e2f;
     color: #e0e0e0;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Shadow for modal */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     margin-top: 15px;
     animation: fadeIn 0.5s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
 }
 
-/* Buttons */
-.product-details-modal-button {
+.product-details-modal h3 {
+    font-size: 1.5rem;
+    color: #ff6b6b;
+    margin-bottom: 10px;
+}
+
+.product-details-modal p {
+    margin: 5px 0;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+
+.product-details-modal .carousel-container {
+    width: 400px;
+    height: 400px;
+}
+
+
+.product-details-modal button {
     padding: 10px 15px;
     margin: 10px 5px 0 0;
     font-weight: bold;
@@ -70,35 +86,25 @@
     transition: background-color 0.3s, transform 0.3s;
 }
 
-/* Approve Button */
-.approve-button {
-    background-color: #28a745; /* Green for Approve */
+.product-details-modal button:first-child {
+    background-color: #28a745;
     color: #ffffff;
 }
 
-.approve-button:hover {
-    transform: scale(1.05); /* Slight zoom effect on hover */
-}
-
-.approve-button:active {
-    transform: scale(0.95); /* Slight press-d   own effect on click */
-}
-
-/* Reject Button */
-.reject-button {
-    background-color: #dc3545; /* Red for Reject */
+.product-details-modal button:last-child {
+    background-color: #dc3545;
     color: #ffffff;
 }
 
-.reject-button:hover {
-    transform: scale(1.05); /* Slight zoom effect on hover */
+.product-details-modal button:hover {
+    transform: scale(1.05);
 }
 
-.reject-button:active {
-    transform: scale(0.95); /* Slight press-down effect on click */
+.product-details-modal button:active {
+    transform: scale(0.95);
 }
 
-/* Animations */
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -110,7 +116,7 @@
     }
 }
 
-/* Error message styling */
+
 .error-message {
     color: #ff6b6b;
     font-weight: bold;
@@ -120,12 +126,14 @@
     border-radius: 8px;
     margin: 20px 0;
 }
-
-/* Carousel images */
-.carousel-image {
-    width: 100%; /* Adjust the width */
-    height: auto; /* Maintain aspect ratio */
-    max-height: 400px; /* Set a max height to ensure it fits the layout */
-    object-fit: cover; /* Ensure the image covers the container proportionally */
-    border-radius: 8px; /* Optional: round the corners */
+.ccc{
+    width: 350px;
+    height: 350px;
+}
+.ccc img{
+    width:300px;
+    height: 300px;
+}
+.ccc button{
+    color: black;
 }

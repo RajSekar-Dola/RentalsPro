@@ -8,7 +8,7 @@ export const useOnScreen = (options = {}) => {
       ([entry]) => {
         setIsIntersecting(entry.isIntersecting);
       },
-      { threshold: 0.4, ...options }
+      { threshold: 0.5, ...options }
     );
 
     const element = document.getElementById(options.id || 'default');

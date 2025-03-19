@@ -218,7 +218,7 @@ const SignupForm = () => {
           value={password} 
           onChange={(e) => setPassword(e.target.value)} 
           required 
-        />
+        /> 
 
         <label htmlFor="confirmpassword" className="form-label">Confirm Password</label>
         <input 
