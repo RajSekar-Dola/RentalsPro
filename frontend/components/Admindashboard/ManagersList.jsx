@@ -214,7 +214,7 @@ const Managers = () => {
 
       <div className="account-settings-page">
         <h2>Create New Manager</h2>
-        <form id='ManagerForm' onSubmit={handleSubmit}>
+        <form id='ManagerForm' onSubmit={handleSubmit} data-testid="manager-form">
           <div className="settings-field">
             <label htmlFor='username'>USERNAME:</label>
             <input

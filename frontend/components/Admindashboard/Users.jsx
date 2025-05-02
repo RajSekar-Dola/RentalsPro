@@ -30,7 +30,6 @@ const Users = () => {
       setCount(data.registercount);
     } catch (error) {
       setError('Failed to fetch users');
-      console.error(error);
     }
   };
 

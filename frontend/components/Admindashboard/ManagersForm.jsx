@@ -74,7 +74,7 @@ const ManagerForm = () => {
 
     return (
         <div>
-            <form id='ManagerForm' style={{ display: 'flex', flexDirection: "column" }} onSubmit={handleSubmit}>
+            <form id='ManagerForm' style={{ display: 'flex', flexDirection: "column" }} onSubmit={handleSubmit} data-testid="manager-form">
                 <label htmlFor='username'>USERNAME:</label>
                 <input
                     type='text'

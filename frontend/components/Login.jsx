@@ -81,7 +81,7 @@ const LoginForm = () => {
         <div className="signup-login-container login-animate">
           <div>
             <h2 className="signup-login-title">Sign In</h2>
-            <form id="signupForm" onSubmit={handleSubmit}>
+            <form id="signupForm" data-testid="login-form" onSubmit={handleSubmit}>
               <label htmlFor="username">Username</label>
               <input
                 type="text"

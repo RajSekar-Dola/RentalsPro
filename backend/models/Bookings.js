@@ -22,6 +22,6 @@ const BookingSchema = new mongoose.Schema({
     bookingDate:{type:Date ,required:true},
     level:{type:Number,required:true,default:0},
 });
-
+BookingSchema.index({ product_id: 1, fromDateTime: 1, toDateTime: 1 }, { unique: true });
 const Booking = mongoose.model("bookings", BookingSchema);
 export { Booking }

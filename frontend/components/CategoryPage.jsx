@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../css/CategoryPage.css";
@@ -55,11 +54,11 @@ useEffect(()=>{
 
       <div id="central">
       <div id="left">
-      <div id="filter">
+      <div id="filter" data-testid="filters-section">
         <SearchBar setsearchinput={setsearchinput} />
         <Location setlocation={setlocation}/>
-        <DateTimeFilter setfromdatetime={setfromdatetime} settodatetime={settodatetime}/>
-        <PriceFilter setminprice={setminprice} setmaxprice={setmaxprice}/>
+        <DateTimeFilter data-testid="datetime-filter" setfromdatetime={setfromdatetime} settodatetime={settodatetime}/>
+        <PriceFilter data-testid="price-filter" setminprice={setminprice} setmaxprice={setmaxprice}/>
       </div>
       </div>
 

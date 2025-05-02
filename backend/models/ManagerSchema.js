@@ -17,6 +17,7 @@ const ManagerSchema = new mongoose.Schema({
   branch:{
     type:String,
     required:true,
+    unique:true,
   },
   notifications:{
     type:[{

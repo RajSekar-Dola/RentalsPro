@@ -4,6 +4,8 @@ import { Product } from '../models/ProductSchema.js';
 import { Booking } from '../models/Bookings.js';
 import { Manager } from '../models/ManagerSchema.js';
 
+import client from '../../redisClient.js';
+
 const router = express.Router();
 
 // Route: Fetch booking notifications
@@ -117,30 +119,124 @@ router.get('/uploadnotifications', async (req, res) => {
     }
 })
 
+// router.post('/uploadnotifications/markAsSeen', async (req, res) => {
+//     try {
+//         const managerid = req.cookies.user_id;
+//         const { notificationid, productid, rejected } = req.body;
+//         if (rejected) {
+//             const x = await Product.findByIdAndDelete(productid);
+//             console.log(x);
+//         }
+//         else {
+//             const y = await Product.findByIdAndUpdate(productid, { $set: { expired: false } }, { new: true });
+//         }
+//         const removednotification = await Manager.findByIdAndUpdate(managerid, { $pull: { notifications: { _id: notificationid } } }, { new: true });
+//         if (!removednotification) {
+//             return res.status(400).json({ message: "notification not removed .error occured !" });
+//         }
+//         else {
+//             return res.status(200).json({ message: "notification removed successfully!" });
+//         }
+//     }
+//     catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: "Internal server error" });
+//     }
+// })
+
+
 router.post('/uploadnotifications/markAsSeen', async (req, res) => {
     try {
-        const managerid = req.cookies.user_id;
-        const { notificationid, productid, rejected } = req.body;
-        if (rejected) {
-            const x = await Product.findByIdAndDelete(productid);
-            console.log(x);
+      const managerid = req.cookies.user_id;
+      const { notificationid, productid, rejected } = req.body;
+  
+      if (rejected) {
+        await Product.findByIdAndDelete(productid);
+      } else {
+        const updatedProduct = await Product.findByIdAndUpdate(
+          productid,
+          { $set: { expired: false } },
+          { new: true }
+        );
+  
+        // 🔥 Invalidate entire product cache
+        const keys = await client.keys('*');
+        const deletePromises = keys.map(key => client.del(key));
+        await Promise.all(deletePromises);
+  
+        console.log('🧹 Redis cache cleared');
+  
+        // ✅ Update rental cache for owner
+        if (updatedProduct?.userid) {
+          const userKey = `user:${updatedProduct.userid}:rentals`;
+          const existing = await client.get(userKey);
+          if (existing) {
+            const ids = JSON.parse(existing);
+            if (!ids.includes(updatedProduct._id.toString())) {
+              ids.push(updatedProduct._id.toString());
+              await client.set(userKey, JSON.stringify(ids));
+              console.log(`🧠 Updated Redis rental cache for user ${updatedProduct.userid}`);
+            }
+          }
         }
-        else {
-            const y = await Product.findByIdAndUpdate(productid, { $set: { expired: false } }, { new: true });
-        }
-        const removednotification = await Manager.findByIdAndUpdate(managerid, { $pull: { notifications: { _id: notificationid } } }, { new: true });
-        if (!removednotification) {
-            return res.status(400).json({ message: "notification not removed .error occured !" });
-        }
-        else {
-            return res.status(200).json({ message: "notification removed successfully!" });
-        }
+      }
+  
+      const removednotification = await Manager.findByIdAndUpdate(
+        managerid,
+        { $pull: { notifications: { _id: notificationid } } },
+        { new: true }
+      );
+  
+      if (!removednotification) {
+        return res.status(400).json({ message: "notification not removed. error occurred!" });
+      } else {
+        return res.status(200).json({ message: "notification removed successfully!" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
     }
-    catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-})
+  });
+  
+
+// router.post('/uploadnotifications/markAsSeen', async (req, res) => {
+//     try {
+//       const managerid = req.cookies.user_id;
+//       const { notificationid, productid, rejected } = req.body;
+  
+//       if (rejected) {
+//         await Product.findByIdAndDelete(productid);
+//       } else {
+//         const updatedProduct = await Product.findByIdAndUpdate(
+//           productid,
+//           { $set: { expired: false } },
+//           { new: true }
+//         );
+  
+//         // 🔥 Invalidate entire product cache
+//         const keys = await client.keys('*');
+//         const deletePromises = keys.map(key => client.del(key));
+//         await Promise.all(deletePromises);
+  
+//         console.log('🧹 Redis cache cleared');
+//       }
+  
+//       const removednotification = await Manager.findByIdAndUpdate(
+//         managerid,
+//         { $pull: { notifications: { _id: notificationid } } },
+//         { new: true }
+//       );
+  
+//       if (!removednotification) {
+//         return res.status(400).json({ message: "notification not removed. error occurred!" });
+//       } else {
+//         return res.status(200).json({ message: "notification removed successfully!" });
+//       }
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: "Internal server error" });
+//     }
+//   });
 
 router.get('/notifications/countUnseen', async (req, res) => {
     try {

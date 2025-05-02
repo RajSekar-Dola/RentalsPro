@@ -8,6 +8,35 @@ export const Reviews = ({ refreshKey }) => {
 
   
   // Fetch reviews from the server
+  // const fetchReviews = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:3000/home/getreviews");
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch reviews");
+  //     }
+  //     const data = await response.json();
+
+  //     // Select top 5 reviews with highest rating, ensuring unique users
+  //     const uniqueReviews = [];
+  //     const usernames = new Set();
+
+  //     // Sort by rating in descending order
+  //     const sortedReviews = data.reviews.sort((a, b) => b.rating - a.rating);
+
+  //     for (const review of sortedReviews) {
+  //       if (!usernames.has(review.username)) {
+  //         uniqueReviews.push(review);
+  //         usernames.add(review.username);
+  //       }
+  //       if (uniqueReviews.length === 5) break; // Stop when we have 5 reviews
+  //     }
+
+  //     setReviews(uniqueReviews);
+  //   } catch (err) {
+  //     console.error("Error fetching reviews:", err);
+  //   }
+  // };
+
   const fetchReviews = async () => {
     try {
       const response = await fetch("http://localhost:3000/home/getreviews");
@@ -15,27 +44,12 @@ export const Reviews = ({ refreshKey }) => {
         throw new Error("Failed to fetch reviews");
       }
       const data = await response.json();
-
-      // Select top 5 reviews with highest rating, ensuring unique users
-      const uniqueReviews = [];
-      const usernames = new Set();
-
-      // Sort by rating in descending order
-      const sortedReviews = data.reviews.sort((a, b) => b.rating - a.rating);
-
-      for (const review of sortedReviews) {
-        if (!usernames.has(review.username)) {
-          uniqueReviews.push(review);
-          usernames.add(review.username);
-        }
-        if (uniqueReviews.length === 5) break; // Stop when we have 5 reviews
-      }
-
-      setReviews(uniqueReviews);
+      setReviews(data.reviews);
     } catch (err) {
       console.error("Error fetching reviews:", err);
     }
   };
+  
 
   useEffect(() => {
     fetchReviews();

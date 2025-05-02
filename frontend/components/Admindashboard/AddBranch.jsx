@@ -32,7 +32,7 @@ const AddLocation = () => {
   return (
     <div className="account-settings-page">
       <h2>Add Location</h2>
-      <form onSubmit={handleSubmit} id='ManagerForm'>
+      <form onSubmit={handleSubmit} id='ManagerForm' data-testid="location-form">
         <div className="settings-field">
           <label htmlFor="branch-B">Location Name:</label>
           <input

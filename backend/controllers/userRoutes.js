@@ -2,30 +2,67 @@ import express from 'express';
 import { User } from '../models/UserSchema.js';
 import {Product} from '../models/ProductSchema.js';
 import {Booking} from '../models/Bookings.js';
-
+import client from '../../redisClient.js';
 
 const router = express.Router();
 
-router.get('/notifications',async(req,res)=>{
-    try {
-      const userid = req.cookies.user_id;
-      if (userid) {
-        const exist_user = await User.findById(userid);
-        const notifications=exist_user.notifications;
-        const bookingids=notifications.map(x=>x.message);
-        if (exist_user) {
-          res.json({notifications:notifications,bookingids:bookingids});
-        } else {
-          res.status(404).json({ message: "booking not found" });
-        }
-      } else {
-        res.status(400).json({ message: "No user cookie found" });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+// router.get('/notifications',async(req,res)=>{
+//     try {
+//       const userid = req.cookies.user_id;
+//       if (userid) {
+//         const exist_user = await User.findById(userid);
+//         const notifications=exist_user.notifications;
+//         const bookingids=notifications.map(x=>x.message);
+//         if (exist_user) {
+//           res.json({notifications:notifications,bookingids:bookingids});
+//         } else {
+//           res.status(404).json({ message: "booking not found" });
+//         }
+//       } else {
+//         res.status(400).json({ message: "No user cookie found" });
+//       }
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: "Internal server error" });
+//     }
+//   })
+router.get('/notifications', async (req, res) => {
+  try {
+    const userid = req.cookies.user_id;
+    if (!userid) {
+      return res.status(400).json({ message: "No user cookie found" });
     }
-  })
+
+    const redisKey = `user:${userid}:notifications`;
+
+    // Check cache first
+    const cached = await client.get(redisKey);
+    if (cached) {
+      console.log("📦 Serving notifications from Redis cache");
+      const notifications = JSON.parse(cached);
+      const bookingids = notifications.map(x => x.message);
+      return res.json({ notifications, bookingids });
+    }
+
+    // If not cached, fetch from DB
+    const user = await User.findById(userid);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const notifications = user.notifications;
+    const bookingids = notifications.map(x => x.message);
+
+    // Cache the notifications for 5 minutes
+    await client.set(redisKey, JSON.stringify(notifications), { EX: 300 });
+
+    res.json({ notifications, bookingids });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
   
   router.get('/notifications/:bookingid',async(req,res)=>{
     const {bookingid}=req.params;

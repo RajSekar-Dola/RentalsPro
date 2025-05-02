@@ -26,7 +26,6 @@ router.get('/registeredusers',async(req,res)=>{
   
   router.post('/deleteusers', async (req, res) => {
     const { user_id, forceDelete } = req.body;
-  
     try {
       // Check if user has bookings
       const bookings = await Booking.findOne({ buyerid: user_id });

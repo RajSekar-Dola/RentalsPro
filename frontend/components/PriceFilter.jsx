@@ -25,6 +25,7 @@ const PriceFilter = ({setminprice,setmaxprice}) => {
       <div className="price-input">
         <label htmlFor="min-price">Min Price:</label>
         <input
+        data-testid="min-price-input"
           type="number"
           id="min-price"
           value={minPrice}
@@ -36,6 +37,7 @@ const PriceFilter = ({setminprice,setmaxprice}) => {
       <div className="price-input">
         <label htmlFor="max-price">Max Price:</label>
         <input
+        data-testid="max-price-input"
           type="number"
           id="max-price"
           value={maxPrice}

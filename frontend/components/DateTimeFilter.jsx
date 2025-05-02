@@ -47,7 +47,7 @@ const DateTimeFilter = ({setfromdatetime,settodatetime}) => {
   };
 
   return (
-    <div className="date-time-filter">
+    <div className="date-time-filter" data-testid="datetime-filter">
       <div className="datetime-picker">
         <label htmlFor="fromDate">FROM DATE:</label>
         <input

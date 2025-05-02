@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import "../css/RentForm.css";
 import { useNavigate } from 'react-router-dom';
 
+
 const RentForm = () => {
     const [formData, setFormData] = useState({
         productType: '', productName: '', locationName: '', fromDate: '', toDate: '', price: ''
@@ -100,7 +101,26 @@ const RentForm = () => {
     };
 
     const handleImageChange = (e) => {
-        setImages(Array.from(e.target.files)); // Store all selected files in the array
+        const maxFiles = 5; // Limit number of files
+        const maxFileSizeMB = 2; // Limit file size (in MB)
+        const files = Array.from(e.target.files);
+
+        // Check number of files
+        if (files.length > maxFiles) {
+            setError(true);
+            setmessage(`You can upload up to ${maxFiles} images.`);
+            return;
+        }
+5
+        // Check file sizes
+        const oversizedFiles = files.filter(file => file.size > maxFileSizeMB * 1024 * 1024);
+        if (oversizedFiles.length > 0) {
+            setError(true);
+            setmessage(`Each image must be smaller than ${maxFileSizeMB} MB.`);
+            return;
+        }
+
+        setImages(files);
         setmessage("");
         setError(false);
     };
@@ -221,9 +241,9 @@ const RentForm = () => {
 
     return (
         <div className="rent-form-container">
-            <div className="rent-form-wrapper rent-form-image">
+            <div className="rent-form-wrapper rent-form-image" >
                 <form id='productForm' style={{ display: 'flex', flexDirection: "column" }} onSubmit={handleSubmit}>
-                    <h2 className="rent-form-heading">Rent Form</h2>
+                    <h2 className="rent-form-heading">Lend Form</h2>
                     <label htmlFor='productType'>SELECT PRODUCT TYPE:</label>
                     <select id='productType' name='productType' value={formData.productType} onChange={handleChange} required>
                         <option value="">Select a product</option>
@@ -236,7 +256,7 @@ const RentForm = () => {
                         <option value="cycles">CYCLE</option>
                     </select>
 
-                    <label htmlFor="ProductName">ProductName</label>
+                    <label htmlFor="productName">ProductName</label>
                     <input
                         type="text"
                         id="productName"
@@ -308,9 +328,9 @@ const RentForm = () => {
                     <button type='submit'>SUBMIT</button>
 
                     <br />
-                    <div id="message" className={`message ${Error ? 'error-message' : 'success-message'}`}>
+                    {Error &&  (<div id="message" className={`message ${Error ? 'error-message' : 'success-message'}`}>
                         {message}
-                    </div>
+                    </div>)}
                 </form>
             </div>
         </div>
