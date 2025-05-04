@@ -11,7 +11,7 @@ const AdminCategory = () => {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const categoriesRes = await fetch('http://localhost:3000/api/dashboard/categories');
+                const categoriesRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/categories`);
                 if (!categoriesRes.ok) {
                     throw new Error('Network response was not ok');
                 }

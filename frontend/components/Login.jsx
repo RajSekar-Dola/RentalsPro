@@ -24,7 +24,7 @@ const LoginForm = () => {
     setError(false);
 
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://localhost:3000/login', true);
+    xhr.open('POST', `${import.meta.env.VITE_BACKEND_URL}/login`, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.withCredentials = true;
 

@@ -19,5 +19,32 @@ const ProductSchema= new mongoose.Schema({
     bookingIds:{type:[String]},
     expired:{type:Boolean,require:true,}
 });
-const Product = mongoose.model("Products",ProductSchema);
-export {Product}
+
+ProductSchema.index({
+  expired: 1,
+  productType: 1,
+  locationName: 1,
+  fromDateTime: 1,
+  toDateTime: 1,
+  price: 1,
+  uploadDate: -1
+});
+
+// Text search index for productName and locationName
+ProductSchema.index({
+  productName: "text",
+  locationName: "text"
+});
+
+// Optional: if most queries are on expired: false
+ProductSchema.index({
+  productType: 1,
+  locationName: 1,
+  fromDateTime: 1,
+  toDateTime: 1,
+  price: 1,
+  uploadDate: -1
+}, { partialFilterExpression: { expired: false } });
+
+const Product = mongoose.model("Products", ProductSchema);
+export { Product };

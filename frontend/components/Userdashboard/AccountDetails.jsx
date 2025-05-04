@@ -9,7 +9,7 @@ const AccountDetails = () => {
   useEffect(() => {
     const fetchAccountDetails = async () => {
       try {
-        const response = await fetch("http://localhost:3000/grabDetails", {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grabDetails`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"

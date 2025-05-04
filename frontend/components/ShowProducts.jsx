@@ -31,7 +31,7 @@ function ShowProducts({ products, frombookingdate, tobookingdate }) {
             />
           ))
         ) : (
-          <div>No products available</div>
+          <div>{products.length > 0 ?(`Loading ...`):(`Loading ...`)}</div>
         )}
       </div>
   );

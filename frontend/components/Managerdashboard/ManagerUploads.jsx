@@ -15,7 +15,7 @@ const ManagerUploads = () => {
   useEffect(() => {
     const fetchLocation = async () => {
       try {
-        const response = await fetch("http://localhost:3000/grabBranch", {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grabBranch`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
@@ -40,14 +40,14 @@ const ManagerUploads = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const dailyRes = await fetch('http://localhost:3000/api/dashboard/daily-uploads-cat', {
+        const dailyRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/daily-uploads-cat`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
           },
           credentials: "include"
         });
-        const monthlyRes = await fetch('http://localhost:3000/api/dashboard/monthly-uploads-cat', {
+        const monthlyRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/monthly-uploads-cat`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"

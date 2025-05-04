@@ -26,7 +26,7 @@ const AccountProfile = () => {
 
   const markAsSeen = async () => {
     try {
-      const response = await fetch('http://localhost:3000/user/notifications/markallAsSeen', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/notifications/markallAsSeen`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -41,7 +41,7 @@ const AccountProfile = () => {
 
   const fetchUnseenNotifications = async () => {
     try {
-      const response = await fetch('http://localhost:3000/user/notifications', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/notifications`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -66,7 +66,7 @@ const AccountProfile = () => {
 
   const handleSignOut = async () => {
     try {
-      const response = await fetch("http://localhost:3000/signOut", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/signOut`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

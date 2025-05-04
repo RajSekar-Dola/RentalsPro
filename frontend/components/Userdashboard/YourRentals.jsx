@@ -12,7 +12,7 @@ const YourRentals = () => {
   useEffect(() => {
     const fetchAccountDetails = async () => {
       try {
-        const response = await fetch("http://localhost:3000/grabRentals", {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grabRentals`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"

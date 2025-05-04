@@ -11,8 +11,8 @@ const AdminRevenue = () => {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const dailyRevenueRes = await fetch('http://localhost:3000/api/dashboard/daily-revenue');
-                const monthlyRevenueRes = await fetch('http://localhost:3000/api/dashboard/monthly-revenue');
+                const dailyRevenueRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/daily-revenue`);
+                const monthlyRevenueRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/monthly-revenue`);
 
                 if (!dailyRevenueRes.ok || !monthlyRevenueRes.ok) {
                     throw new Error('Network response was not ok');

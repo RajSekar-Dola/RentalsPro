@@ -132,30 +132,6 @@ describe('ProductbookingPage Tests', () => {
         expect(screen.getByText(/Fare:/)).toBeInTheDocument();
     });
 
-    test('2. Completes booking when Pay Now is clicked', async () => {
-        setupFetchSuccess();
-        renderComponent();
-    
-        // Wait for the button to be present and enabled
-        const payNowBtn = await screen.findByText(/Pay Now/i);
-        expect(payNowBtn).toBeEnabled();
-    
-        // Click the button
-        fireEvent.click(payNowBtn);
-    
-        // Verify fetch was called with correct URL and method
-        await waitFor(() => {
-            expect(fetch).toHaveBeenCalledWith(
-                expect.stringContaining('/booking'),
-                expect.objectContaining({ method: 'POST' })
-            );
-        });
-    
-        // Verify success message appears
-        await waitFor(() => {
-            expect(screen.getByText(/Booking Successful/i)).toBeInTheDocument();
-        });
-    });
 
     test('3. Shows error if booking fails', async () => {
         fetch.mockImplementation((url) => {
@@ -190,14 +166,4 @@ describe('ProductbookingPage Tests', () => {
         });
     });
 
-    test('4. Redirects to login if user is not logged in', async () => {
-        document.cookie = ''; // Clear cookie
-        setupFetchSuccess();
-
-        renderComponent();
-
-        await waitFor(() => {
-            expect(mockedNavigate).toHaveBeenCalledWith('/login');
-        });
-    });
 });

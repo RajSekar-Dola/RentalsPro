@@ -12,8 +12,8 @@ const AdminBookings = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const dailyBookingsRes = await fetch('http://localhost:3000/api/dashboard/daily-bookings');
-        const monthlyBookingsRes = await fetch('http://localhost:3000/api/dashboard/monthly-bookings');
+        const dailyBookingsRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/daily-bookings`);
+        const monthlyBookingsRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/monthly-bookings`);
 
         if (!dailyBookingsRes.ok || !monthlyBookingsRes.ok) {
           throw new Error('Network response was not ok');

@@ -20,7 +20,7 @@ const AccountSettings = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await fetch("http://localhost:3000/grabDetails", {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grabDetails`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -82,7 +82,7 @@ const AccountSettings = () => {
         body.password = formData.password;
       }
 
-      const response = await fetch("http://localhost:3000/settings", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/settings`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -103,7 +103,7 @@ const AccountSettings = () => {
       }, 3000);
 
       // Refetch the latest details after the update
-      const updatedResponse = await fetch("http://localhost:3000/grabDetails", {
+      const updatedResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grabDetails`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

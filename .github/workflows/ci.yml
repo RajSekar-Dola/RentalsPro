@@ -1,0 +1,52 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      # 1. Check out repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # 2. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # 3. Frontend build
+      - name: Install & Build Frontend
+        working-directory: ./frontend
+        run: |
+          npm install
+          npm install @babel/plugin-proposal-private-property-in-object --save-dev
+          export CI=false
+          npm run build
+
+      # 4. Backend setup
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: |
+          npm install --legacy-peer-deps
+          
+      # 5. Docker Build Test
+      - name: Test Docker Builds
+        env:
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          MONGODB_URL: mongodb://localhost:27017
+        run: |
+          docker build -f backend.Dockerfile -t test-backend .
+          docker build -f frontend.Dockerfile -t test-frontend .

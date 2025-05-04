@@ -10,7 +10,7 @@ function Location({setlocation}) {
     const[Locations,setLocations] = useState([]);
 
     useEffect(() => {
-      fetch('http://localhost:3000/locations')
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/locations`)
           .then((response) => response.json())
           .then((data) => setLocations(data.locations))
           .catch((error) => console.error('Error fetching locations:', error));

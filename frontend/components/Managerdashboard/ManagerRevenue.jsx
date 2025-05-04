@@ -14,7 +14,7 @@ const ManagerRevenue = () => {
     useEffect(() => {
         const fetchLocation = async () => {
             try {
-                const response = await fetch("http://localhost:3000/grabBranch", {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grabBranch`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json"
@@ -39,14 +39,14 @@ const ManagerRevenue = () => {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const dailyRevenueRes = await fetch('http://localhost:3000/api/dashboard/daily-revenue-cat', {
+                const dailyRevenueRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/daily-revenue-cat`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json"
                     },
                     credentials: "include"
                 });
-                const monthlyRevenueRes = await fetch('http://localhost:3000/api/dashboard/monthly-revenue-cat', {
+                const monthlyRevenueRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/monthly-revenue-cat`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json"

@@ -149,7 +149,7 @@ const ManagerUploadNotifications = () => {
 
     const fetchUnseenNotifications = async () => {
         try {
-            const response = await fetch('http://localhost:3000/manager/uploadnotifications', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/manager/uploadnotifications`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include', // Assuming you're using cookies for session handling
@@ -174,7 +174,7 @@ const ManagerUploadNotifications = () => {
 
     const fetchProductDetails = async (productId) => {
         try {
-            const response = await fetch(`http://localhost:3000/manager/products/${productId}`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/manager/products/${productId}`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -193,7 +193,7 @@ const ManagerUploadNotifications = () => {
 
     const markAsSeen = async (id, selectedProductId, isRejected) => {
         try {
-            const response = await fetch(`http://localhost:3000/manager/uploadnotifications/markAsSeen`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/manager/uploadnotifications/markAsSeen`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

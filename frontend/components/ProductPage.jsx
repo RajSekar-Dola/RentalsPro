@@ -10,7 +10,7 @@ const ProductPage = () => {
   const navigate = useNavigate();
    const fetchProduct = async (product_id) => {
     try {
-      const response = await fetch(`http://localhost:3000/product/${product_id}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/${product_id}`, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
       });

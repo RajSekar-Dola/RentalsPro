@@ -28,7 +28,7 @@ const RentForm = () => {
     const [minToDate, setMinToDate] = useState('');
 
     useEffect(() => {
-        fetch('http://localhost:3000/locations')
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/locations`)
             .then((response) => response.json())
             .then((data) => setLocations(data.locations))
             .catch((error) => console.error('Error fetching locations:', error));
@@ -186,7 +186,7 @@ const RentForm = () => {
         try {
             setmessage("");
             const base64Images = await Promise.all(images.map(image => convertToBase64(image))); // Convert images to base64
-            const response = await fetch('http://localhost:3000/RentForm', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/RentForm`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

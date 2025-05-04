@@ -5,7 +5,8 @@ import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import client from './redisClient.js';
-
+import dotenv from 'dotenv';
+dotenv.config();
 import swaggerUi from 'swagger-ui-express';
 import { specs } from './config/swagger.config.js';
 
@@ -34,10 +35,10 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const url='mongodb://localhost:27017/Rentals';
+const MONGODB_URL=process.env.MONGODB_URL || 'mongodb://localhost:27017/Rentals';
 const app = express();
-connecttomongodb(url)
-  .then(() => console.log('Connected to MongoDB'))
+connecttomongodb(MONGODB_URL)
+  .then(() => console.log('Connected to MongoDB Atlas !'))
   .catch(err => {
     console.error('Failed to connect to MongoDB', err);
   });
@@ -46,14 +47,15 @@ connecttomongodb(url)
 // Run only once for index syncing after modifications 
   // await User.syncIndexes();
   // await Booking.syncIndexes();
-  // await Manager.syncIndexes();
+  // await Manager.syncIndexesc();
   // await Admin.syncIndexes();
-
+//   await Product.syncIndexes();
 //middlewares
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: FRONTEND_URL,
   credentials: true,
 }));//cross-origin resource sharing
 
@@ -305,6 +307,14 @@ app.post('/RentForm', async (req, res) => {
     exist_user.rentals.push(savedProduct._id);
     await exist_user.save();
     const notifyupdate=await Manager.findOneAndUpdate({branch:savedProduct.locationName},{$push:{notifications:{message:savedProduct._id,seen:false}}},{new:true});
+    const redisKey = `products:${productType}`;
+let cached = await client.get(redisKey);
+
+if (cached) {
+  const productList = JSON.parse(cached);
+  productList.push(savedProduct); // assuming `savedProduct` is lean-compatible or transformed
+  await client.set(redisKey, JSON.stringify(productList), { EX: 3600 });
+}
 
     res.status(201).json({ errormessage: 'Uploaded successfully'});
   } catch (error) {
@@ -313,61 +323,194 @@ app.post('/RentForm', async (req, res) => {
   }
 });
 
-
+// correct one
 // app.post('/products', async (req, res) => {
 //   try {
-//     const {productType, locationName, fromDateTime, toDateTime, price}=await req.body;
-//     const query={};
-//     if(productType) query.productType=productType;
-//     if(locationName) query.locationName=locationName;
-//     if(fromDateTime) query.fromDateTime={ $lte: new Date(fromDateTime) };
-//     if(toDateTime) query.toDateTime= { $gte: new Date(toDateTime) };
-//     if(price) query.price={$lte : price};
-//     query.expired=false;
+//     const { productType, locationName, fromDateTime, toDateTime, price } = req.body;
+
+//     const query = { expired: false };
+//     if (productType) query.productType = productType;
+//     if (locationName) query.locationName = locationName;
+//     if (fromDateTime) query.fromDateTime = { $lte: new Date(fromDateTime) };
+//     if (toDateTime) query.toDateTime = { ...query.toDateTime, $gte: new Date(toDateTime) };
+//     if (price) query.price = { $lte: price };
+
+//     const cacheKey = JSON.stringify(query);
+
+//     // Check Redis for cached IDs
+//     const cachedIds = await client.get(cacheKey);
+//     if (cachedIds) {
+//       console.log('🧠 Cache hit! Fetching products by ID');
+//       const productIds = JSON.parse(cachedIds);
+//       const products = await Product.find({ _id: { $in: productIds } });
+//       return res.status(200).json(products);
+//     }
+
+//     // If not in cache, query DB
 //     const products = await Product.find(query);
+//     const productIds = products.map(p => p._id);
+
+//     // Cache IDs only
+//     await client.set(cacheKey, JSON.stringify(productIds), { EX: 3600 });
+//     console.log('💾 DB hit. Cached product IDs');
+
 //     res.status(200).json(products);
 //   } catch (error) {
 //     console.error('Error fetching products:', error);
-//     res.status(500).json({ errormessage: 'Failed to fetch products'});
+//     res.status(500).json({ errormessage: 'Failed to fetch products' });
 //   }
 // });
 
+app.get('/autocomplete', async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query || query.length < 2) {
+      return res.status(400).json({ error: 'Query must be at least 2 characters' });
+    }
 
+    const cacheKey = `autocomplete:${query.toLowerCase()}`;
+    
+    // Try to get from cache
+    const cachedResults = await client.get(cacheKey);
+    if (cachedResults) {
+      console.log('🧠 Autocomplete cache hit');
+      return res.json(JSON.parse(cachedResults));
+    }
+
+    // Query database
+    const suggestions = await Product.find({
+      productName: { $regex: `^${query}`, $options: 'i' },
+      expired: false
+    })
+    .select('productName _id')
+    .limit(10)
+    .sort({ uploadDate: -1 });
+
+    // Cache results for 15 minutes
+    await client.set(cacheKey, JSON.stringify(suggestions), { EX: 900 });
+    console.log('💾 Cached autocomplete results');
+
+    res.json(suggestions);
+  } catch (error) {
+    console.error('Autocomplete error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+// app.post('/products', async (req, res) => {
+//   try {
+//     const { productType, locationName, fromDateTime, toDateTime, price, searchQuery } = req.body;
+    
+//     // Build base query
+//     const query = { expired: false };
+//     if (productType) query.productType = productType;
+//     if (locationName) query.locationName = locationName;
+//     if (fromDateTime) query.fromDateTime = { $lte: new Date(fromDateTime) };
+//     if (toDateTime) query.toDateTime = { $gte: new Date(toDateTime) };
+//     if (price) query.price = { $lte: parseFloat(price) };
+    
+//     // Add text search if searchQuery exists
+//     if (searchQuery) {
+//       query.$text = { $search: searchQuery };  // 🔄 replaced regex with text search
+//     }
+    
+//     // const cacheKey = JSON.stringify(query);
+    
+//     // Check Redis cache
+//     // const cachedIds = await client.get(cacheKey);
+//     // if (cachedIds) {
+//     //   console.log('🧠 Cache hit! Fetching products by ID');
+//     //   const productIds = JSON.parse(cachedIds);
+      
+//     //   // Fixed: removed extra semicolon and moved allowDiskUse to correct position
+//     //   const products = await Product.find({ _id: { $in: productIds } })
+//     //     .sort({ uploadDate: -1 })
+//     //     .allowDiskUse(true);
+        
+//     //   return res.status(200).json(products);
+//     // }
+    
+//     // If not in cache, query DB
+//     console.log('💽 Cache miss! Querying database directly');
+    
+//     // Use aggregation pipeline with allowDiskUse for better performance with sorting
+//     const products = await Product.aggregate([
+//       { $match: query },
+//       { $sort: { uploadDate: -1 } },
+//       { $limit: 50 },
+//       { $project: { 
+//           productName: 1, 
+//           price: 1, 
+//           uploadDate: 1, 
+//           photo: 1, 
+//           locationName: 1,
+//           productType: 1,
+//           fromDateTime: 1,
+//           toDateTime: 1
+//         } 
+//       }
+//     ], { allowDiskUse: true });
+    
+//     if (products.length === 0) {
+//       return res.status(200).json([]);
+//     }
+    
+//     // const productIds = products.map(p => p._id);
+    
+//     // Cache results for 1 hour
+//     // await client.set(cacheKey, JSON.stringify(productIds), { EX: 3600 });
+//     // console.log('💾 DB hit. Cached product IDs');
+    
+//     res.status(200).json(products);
+//   } catch (error) {
+//     console.error('Error fetching products:', error);
+//     res.status(500).json({ errormessage: 'Failed to fetch products', details: error.message });
+//   }
+// });
 
 app.post('/products', async (req, res) => {
   try {
-    const { productType, locationName, fromDateTime, toDateTime, price } = req.body;
+    const { productType, locationName, fromDateTime, toDateTime, price, searchQuery } = req.body;
 
-    const query = { expired: false };
-    if (productType) query.productType = productType;
-    if (locationName) query.locationName = locationName;
-    if (fromDateTime) query.fromDateTime = { $lte: new Date(fromDateTime) };
-    if (toDateTime) query.toDateTime = { ...query.toDateTime, $gte: new Date(toDateTime) };
-    if (price) query.price = { $lte: price };
-
-    const cacheKey = JSON.stringify(query);
-
-    // Check Redis for cached IDs
-    const cachedIds = await client.get(cacheKey);
-    if (cachedIds) {
-      console.log('🧠 Cache hit! Fetching products by ID');
-      const productIds = JSON.parse(cachedIds);
-      const products = await Product.find({ _id: { $in: productIds } });
-      return res.status(200).json(products);
+    if (!productType) {
+      return res.status(400).json({ errormessage: 'productType is required.' });
     }
 
-    // If not in cache, query DB
-    const products = await Product.find(query);
-    const productIds = products.map(p => p._id);
+    const redisKey = `products:${productType}`;
+    let products = await client.get(redisKey);
 
-    // Cache IDs only
-    await client.set(cacheKey, JSON.stringify(productIds), { EX: 3600 });
-    console.log('💾 DB hit. Cached product IDs');
+    if (products) {
+      console.log(`🧠 Redis cache hit: ${redisKey}`);
+      products = JSON.parse(products);
+    } else 
+    {
+      console.log(`💽 Redis cache miss: ${redisKey}. Querying MongoDB...`);
 
-    res.status(200).json(products);
+      // Fetch and cache all valid products of this type
+      products = await Product.find({
+        expired: false,
+        productType,
+        toDateTime: { $gte: new Date() }
+      }).lean();
+
+      await client.set(redisKey, JSON.stringify(products), { EX: 3600 }); // Cache for 1 hour
+    }
+
+    // 🧠 In-memory filtering
+    const filtered = products.filter(p => {
+      if (locationName && p.locationName !== locationName) return false;
+      if (fromDateTime && new Date(p.fromDateTime) > new Date(fromDateTime)) return false;
+      if (toDateTime && new Date(p.toDateTime) < new Date(toDateTime)) return false;
+      if (price && p.price > parseFloat(price)) return false;
+      if (searchQuery && !p.productName.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      return true;
+    });
+
+    res.status(200).json(filtered);
   } catch (error) {
     console.error('Error fetching products:', error);
-    res.status(500).json({ errormessage: 'Failed to fetch products' });
+    res.status(500).json({ errormessage: 'Failed to fetch products', details: error.message });
   }
 });
 
@@ -401,7 +544,6 @@ app.post('/checkconflict', async (req, res) => {
       res.status(500).json({ message: 'Internal Server Error' });
   }
 });
-
 
 
 app.post('/product/:product_id',async(req,res)=>{
@@ -743,17 +885,18 @@ app.get("/grabBookings", async (req, res) => {
     }
 
     const cacheKey = `user_bookings_ids:${userId}`;
-    const cached = await client.get(cacheKey);
+    // const cached = await client.get(cacheKey);
 
     let bookingIds = [];
     let productIds = [];
 
-    if (cached) {
-      console.log('✅ Serving Booking IDs from Redis cache');
-      const parsed = JSON.parse(cached);
-      bookingIds = parsed.bookingIds;
-      productIds = parsed.productIds;
-    } else {
+    // if (cached) {
+    //   console.log('✅ Serving Booking IDs from Redis cache');
+    //   const parsed = JSON.parse(cached);
+    //   bookingIds = parsed.bookingIds;
+    //   productIds = parsed.productIds;
+    // } else
+     {
       console.log('💾 Fetching Booking/Product IDs from DB');
       const user = await User.findById(userId);
       if (!user) {
@@ -765,7 +908,7 @@ app.get("/grabBookings", async (req, res) => {
       productIds = bookings.map(b => b.product_id);
 
       // Save just the IDs to cache
-      await client.set(cacheKey, JSON.stringify({ bookingIds, productIds }), { EX: 3600 });
+      // await client.set(cacheKey, JSON.stringify({ bookingIds, productIds }), { EX: 3600 });
     }
 
     // Fetch full documents from DB using IDs
@@ -917,6 +1060,7 @@ app.get("/grabDetails", async (req, res,next) => {
 //   }
 // });
 
+
 app.get("/grabRentals", async (req, res) => {
   try {
     if (!req.cookies.user_id) {
@@ -926,16 +1070,17 @@ app.get("/grabRentals", async (req, res) => {
     const userid = req.cookies.user_id;
     const cacheKey = `user:${userid}:rentals`;
 
-    // Try to get rental product IDs from Redis
-    const cachedRentalIds = await client.get(cacheKey);
+    // // Try to get rental product IDs from Redis
+    // const cachedRentalIds = await client.get(cacheKey);
 
     let productIds;
 
-    if (cachedRentalIds) {
-      // Cache HIT
-      console.log("🔁 Rentals served from Redis");
-      productIds = JSON.parse(cachedRentalIds);
-    } else {
+    // if (cachedRentalIds) {
+    //   // Cache HIT
+    //   console.log("🔁 Rentals served from Redis");
+    //   productIds = JSON.parse(cachedRentalIds);
+    // } else
+     {
       // Cache MISS: fetch from DB
       const user = await User.findById(userid);
       if (!user) return res.status(404).json({ message: "User not found" });
@@ -943,7 +1088,7 @@ app.get("/grabRentals", async (req, res) => {
       productIds = user.rentals || [];
 
       // Save rental product IDs in Redis
-      await client.set(cacheKey, JSON.stringify(productIds), { EX: 3600 }); // cache for 1 hour
+      // await client.set(cacheKey, JSON.stringify(productIds), { EX: 3600 }); // cache for 1 hour
     }
 
     // Fetch the actual products from DB
@@ -1432,7 +1577,6 @@ app.get("/api/dashboard/categories", async (req, res) => {
     res.status(500).json({ message: "Error fetching categories" });
   }
 });
-
 
 app.get('/locations', async (req, res) => {
   try {
@@ -1952,11 +2096,11 @@ app.get("/home/getreviews", async (req, res) => {
   const cacheKey = "top_5_unique_reviews";
   try {
     const cached = await client.get(cacheKey);
-    if (cached) {
-      console.log("🧠 Serving top reviews from cache");
+    if (cached !== null && cached.length !==0) {
+      console.log("Serving top reviews from cache");
       return res.status(200).json({ reviews: JSON.parse(cached) });
     }
-
+    console.log("Fetching top reviews from database");
     const reviews = await Review.find().sort({ rating: -1 });
     const topReviews = [];
     const seenUsers = new Set();

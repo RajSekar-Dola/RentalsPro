@@ -1,6 +1,6 @@
 async function checkConflict(productId, fromDateTime, toDateTime) {
   try {
-      const response = await fetch('http://localhost:3000/checkconflict', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/checkconflict`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',

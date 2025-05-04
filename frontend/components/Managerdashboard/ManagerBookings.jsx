@@ -15,7 +15,7 @@ const ManagerBookings = () => {
   useEffect(() => {
     const fetchLocation = async () => {
       try {
-        const response = await fetch("http://localhost:3000/grabBranch", {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grabBranch`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
@@ -41,14 +41,14 @@ const ManagerBookings = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const dailyBookingsRes = await fetch('http://localhost:3000/api/dashboard/daily-bookings-cat', {
+        const dailyBookingsRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/daily-bookings-cat`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
           },
           credentials: "include"
         });
-        const monthlyBookingsRes = await fetch('http://localhost:3000/api/dashboard/monthly-bookings-cat', {
+        const monthlyBookingsRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/monthly-bookings-cat`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"

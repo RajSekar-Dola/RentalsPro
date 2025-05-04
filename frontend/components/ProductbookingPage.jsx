@@ -290,7 +290,7 @@ const ProductbookingPage = () => {
 
       const sendMailToOwner = async (to, subject, text) => {
         try {
-            const response = await fetch(`http://localhost:3000/send-email`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/send-email`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ to, subject, text }),
@@ -324,7 +324,7 @@ const ProductbookingPage = () => {
         const buyerId = getCookieValue("user_id");
         try {
             const response = await fetch(
-                `http://localhost:3000/grabCustomernameProductId?userid=${buyerId}&product_id=${product_id}`,
+                `${import.meta.env.VITE_BACKEND_URL}/grabCustomernameProductId?userid=${buyerId}&product_id=${product_id}`,
                 {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
@@ -405,7 +405,7 @@ const ProductbookingPage = () => {
         }
         else{
                 try{
-                    const response=await fetch(`http://localhost:3000/booking`,{
+                    const response=await fetch(`${import.meta.env.VITE_BACKEND_URL}/booking`,{
                         method:'POST',
                         headers:{'Content-Type':'application/json'},
                         body:JSON.stringify({
@@ -439,7 +439,7 @@ const ProductbookingPage = () => {
     useEffect(() => {
         const fetchreqproduct = async (product_id) => {
             try {
-                const response = await fetch(`http://localhost:3000/product/${product_id}`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/${product_id}`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },

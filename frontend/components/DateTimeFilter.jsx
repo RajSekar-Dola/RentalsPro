@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import moment from 'moment';
-import '../css/DateTimeFilter.css'; // Import the updated CSS file for better styling
-
+import '../css/DateTimeFIlter.css'; // Import the updated CSS file for better styling
 const DateTimeFilter = ({setfromdatetime,settodatetime}) => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');

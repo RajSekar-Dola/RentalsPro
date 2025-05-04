@@ -26,7 +26,7 @@ const AccountNotifications = () => {
 
     const fetchUnseenNotifications = async () => {
         try {
-            const response = await fetch('http://localhost:3000/user/notifications', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/notifications`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -50,7 +50,7 @@ const AccountNotifications = () => {
 
     const fetchProductDetails = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/user/notifications/products`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/notifications/products`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -72,7 +72,7 @@ const AccountNotifications = () => {
 
     const markAsSeen = async (id) => {
         try {
-            const response = await fetch('http://localhost:3000/user/notifications/markAsSeen', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/notifications/markAsSeen`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

@@ -1,3 +1,70 @@
+// import React, { useEffect, useState } from "react";
+// import { useParams } from "react-router-dom";
+// import "../css/CategoryPage.css";
+// import ShowProducts from "./ShowProducts";
+// import SearchBar from "./SearchBar";
+// import Location from "./Location";
+// import DateTimeFilter from "./DateTimeFilter.jsx";
+// import PriceFilter from "./PriceFilter.jsx";
+
+// export default function Category() {
+//   const { category } = useParams();
+//   const [items, setItems] = useState([]);
+//   const [searchinput, setsearchinput] = useState("");
+//   const [location, setlocation] = useState("");
+//   const [fromdatetime, setfromdatetime] = useState();
+//   const [todatetime, settodatetime] = useState();
+//   const [minprice, setminprice] = useState(0);
+//   const [maxprice, setmaxprice] = useState();
+
+//   useEffect(() => {
+//     const fetchFilteredItems = async () => {
+//       try {
+//         const response = await fetch('http://localhost:3000/products', {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({
+//             productType: category,
+//             productName: searchinput,
+//             locationName: location,
+//             fromDateTime: fromdatetime,
+//             toDateTime: todatetime,
+//             price: maxprice,
+//           }),
+//         });
+
+//         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+//         const data = await response.json();
+//         setItems(data);
+//       } catch (error) {
+//         console.log("Fetch error:", error);
+//       }
+//     };
+
+//     fetchFilteredItems();
+//   }, [category, searchinput, location, fromdatetime, todatetime, maxprice]);
+
+//   return (
+//     <div className="category-page">
+//       <div id="central">
+//         <div id="left">
+//           <div id="filter" data-testid="filters-section">
+//             <SearchBar setsearchinput={setsearchinput} />
+//             <Location setlocation={setlocation} />
+//             <DateTimeFilter setfromdatetime={setfromdatetime} settodatetime={settodatetime} />
+//             <PriceFilter setminprice={setminprice} setmaxprice={setmaxprice} />
+//           </div>
+//         </div>
+//         <div id="right">
+//           <ul>
+//             <ShowProducts products={items} frombookingdate={fromdatetime} tobookingdate={todatetime} />
+//           </ul>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../css/CategoryPage.css";
@@ -20,7 +87,7 @@ export default function Category() {
   useEffect(() => {
     const fetchoriginalitems = async () => {
       try {
-        const response = await fetch('http://localhost:3000/products', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/products`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({productType:category}),

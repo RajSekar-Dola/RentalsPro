@@ -14,7 +14,7 @@ const ManagerCategory = () => {
     useEffect(() => {
         const fetchLocation = async () => {
             try {
-                const response = await fetch("http://localhost:3000/grabBranch", {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grabBranch`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json"
@@ -39,7 +39,7 @@ const ManagerCategory = () => {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const categoriesRes = await fetch('http://localhost:3000/api/dashboard/categories-cat', {
+                const categoriesRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/categories-cat`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json"

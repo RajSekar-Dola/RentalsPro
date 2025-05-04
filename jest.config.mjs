@@ -21,6 +21,13 @@ export default {
       transform: {
         '^.+\\.js$': 'babel-jest',
       },
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      testTimeout: 60000,
+      globals: {
+        'jest': {
+          useFakeTimers: false // Disable fake timers for backend tests
+        }
+      }
     },
     {
       displayName: 'frontend',

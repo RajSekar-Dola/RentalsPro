@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useOnScreen } from './UseOnScreen'; // Import the custom hook
-import "../../css/Home/reviews.css";
+import "../../css/Home/Reviews.css";
 
 export const Reviews = ({ refreshKey }) => {
   const [reviews, setReviews] = useState([]);
@@ -39,7 +39,7 @@ export const Reviews = ({ refreshKey }) => {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch("http://localhost:3000/home/getreviews");
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/home/getreviews`);
       if (!response.ok) {
         throw new Error("Failed to fetch reviews");
       }

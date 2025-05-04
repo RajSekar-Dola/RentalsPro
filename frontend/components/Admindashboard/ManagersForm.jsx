@@ -44,7 +44,7 @@ const ManagerForm = () => {
 
 
         try {
-            const response = await fetch('http://localhost:3000/admindashboard/createmanager', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}`/admindashboard/createmanager``, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),

@@ -11,8 +11,8 @@ const AdminUploads = () => {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      const dailyRes = await fetch('http://localhost:3000/api/dashboard/daily-uploads');
-      const monthlyRes = await fetch('http://localhost:3000/api/dashboard/monthly-uploads');
+      const dailyRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/daily-uploads`);
+      const monthlyRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard/monthly-uploads`);
 
       if(!dailyRes.ok || !monthlyRes.ok){
         throw new Error('Network response was not ok');

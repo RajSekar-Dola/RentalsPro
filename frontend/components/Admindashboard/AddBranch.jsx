@@ -7,7 +7,7 @@ const AddLocation = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3000/api/addBranch', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/addBranch`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

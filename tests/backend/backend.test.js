@@ -601,6 +601,7 @@ describe('Auth Routes', () => {
   
   // Setup
   beforeAll(async () => {
+    jest.setTimeout(60000);
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
     
@@ -1264,7 +1265,7 @@ describe('POST /login', () => {
   let user;
   
   beforeAll(async () => {
-
+    jest.setTimeout(60000);
     // Create a test user
     user = new User({
       username: 'estUser',

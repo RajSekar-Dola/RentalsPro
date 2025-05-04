@@ -8,7 +8,7 @@ const WelcomeAdmin = () => {
   useEffect(() => {
       const fetchAdmin = async () => {
           try {
-              const response = await fetch("http://localhost:3000/grabAdmin", {
+              const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grabAdmin`, {
                   method: "GET",
                   headers: {
                       "Content-Type": "application/json"

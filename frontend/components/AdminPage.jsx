@@ -16,7 +16,7 @@ const AdminPage = () => {
 
   const handleSignOut = async () => {
     try {
-      const response = await fetch("http://localhost:3000/signOut", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/signOut`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

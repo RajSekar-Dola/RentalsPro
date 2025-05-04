@@ -7,7 +7,7 @@ const ManagerDefault = () => {
     useEffect(() => {
         const fetchManager = async () => {
             try {
-                const response = await fetch("http://localhost:3000/grabManager", {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grabManager`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json"

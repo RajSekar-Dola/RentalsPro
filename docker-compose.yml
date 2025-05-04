@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./src:/app/src
+      - ./index.html:/app/index.html
+      - ./vite.config.js:/app/vite.config.js
+      - node_modules:/app/node_modules
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://backend:3000
+    platform: linux/amd64
+
+  backend:
+    build: 
+      context: .
+      dockerfile: backend.Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REDIS_HOST=redis-14946.c212.ap-south-1-1.ec2.redns.redis-cloud.com
+      - REDIS_PORT=14946
+      - REDIS_USER=default
+      - REDIS_PASS=s2iHOP4nRstkaq5DL5R5x89itI4lR1Vu
+      - MONGODB_URL=mongodb+srv://rushikesward:gPaTJnf8B7rA7iP8@cluster0.xvvn8ot.mongodb.net/Rentals?retryWrites=true&w=majority&appName=Cluster0
+    volumes:
+      - ./server.js:/app/server.js
+      - ./redisClient.js:/app/redisClient.js
+      - ./solrClient.js:/app/solrClient.js
+      - ./backend:/app/backend
+      - ./config:/app/config
+      - ./tests:/app/tests
+      - node_modules:/app/node_modules
+      - ./log:/app/log
+    platform: linux/amd64
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mongodb_data:
+  redis_data:
+  node_modules:
+
+
+
+  

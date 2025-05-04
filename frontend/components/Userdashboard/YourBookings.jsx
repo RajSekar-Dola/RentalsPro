@@ -11,7 +11,7 @@ const YourBookings = () => {
   useEffect(() => {
     const fetchAccountDetails = async () => {
       try {
-        const response = await fetch("http://localhost:3000/grabBookings", {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grabBookings`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
