@@ -10,7 +10,7 @@ import NotFound from '../frontend/components/NotFoundPage.jsx';
 import ProductPage from '../frontend/components/ProductPage.jsx';
 
 
-import Managers from "../frontend/components/Admindashboard/Managerslist.jsx"
+import Managers from "../frontend/components/Admindashboard/ManagersList.jsx"
 import ManagerDefault from '../frontend/components/Managerdashboard/ManagerDefault.jsx';
 
 import ManagerPage from "../frontend/components/ManagerPage.jsx"
