@@ -52,12 +52,27 @@ connecttomongodb(MONGODB_URL)
 //   await Product.syncIndexes();
 //middlewares
 
+
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const allowedOrigins = [
+  FRONTEND_URL,
+  'https://rentalspro-react.onrender.com', // EC2 public IP
+  'http://localhost:5173',     // Local development
+];
 
 app.use(cors({
-  origin: FRONTEND_URL,
-  credentials: true,
-}));//cross-origin resource sharing
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl requests, etc)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
 
 //custom application level middleware
 app.use((req, res, next) => {
