@@ -12,12 +12,12 @@ import { specs } from './config/swagger.config.js';
 
 import { connecttomongodb } from './backend/models/connect.js';
 import { User } from './backend/models/UserSchema.js';
-import {Product} from './backend/models/ProductSchema.js';
-import {Booking} from './backend/models/Bookings.js';
+import { Product } from './backend/models/ProductSchema.js';
+import { Booking } from './backend/models/Bookings.js';
 import { Manager } from './backend/models/ManagerSchema.js';
-import {Location} from './backend/models/Location.js';
+import { Location } from './backend/models/Location.js';
 import { Admin } from './backend/models/Admin.js';
-import {Review} from './backend/models/ReviewSchema.js';
+import { Review } from './backend/models/ReviewSchema.js';
 
 import adminRoutes from './backend/controllers/adminRoutes.js';
 import managerRoutes from './backend/controllers/managerRoutes.js';
@@ -35,7 +35,7 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const MONGODB_URL=process.env.MONGODB_URL || 'mongodb://localhost:27017/Rentals';
+const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://localhost:27017/Rentals';
 const app = express();
 connecttomongodb(MONGODB_URL)
   .then(() => console.log('Connected to MongoDB Atlas !'))
@@ -45,32 +45,23 @@ connecttomongodb(MONGODB_URL)
 
 
 // Run only once for index syncing after modifications 
-  // await User.syncIndexes();
-  // await Booking.syncIndexes();
-  // await Manager.syncIndexesc();
-  // await Admin.syncIndexes();
+// await User.syncIndexes();
+// await Booking.syncIndexes();
+// await Manager.syncIndexesc();
+// await Admin.syncIndexes();
 //   await Product.syncIndexes();
 //middlewares
 
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
-const allowedOrigins = [
-  FRONTEND_URL,
-  'https://rentalspro-react.onrender.com', // EC2 public IP
-  'http://localhost:5173',     // Local development
-];
-
 app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl requests, etc)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
+  origin: 'https://rentalspro-react.onrender.com',  // your frontend URL
+  credentials: true
+}));
+
+// Also handle preflight
+app.options('*', cors({
+  origin: 'https://rentalspro-react.onrender.com',
   credentials: true
 }));
 
@@ -80,12 +71,12 @@ app.use((req, res, next) => {
   next(); // Moves to the next middleware
 });
 // built-in middleware
-app.use(express.json({limit:'50mb'})); 
-app.use(express.urlencoded({limit:'50mb', extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 //third -party middleware
 app.use(cookieParser());
-app.use(bodyParser.json({limit:'50mb'}));
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(helmet());
 
 
@@ -94,13 +85,13 @@ app.use(helmet());
 morgan.token("username", (req) => req.username || "Unknown");
 morgan.token("role", (req) => req.role || "Unknown");
 
-const loginLogStream =createStream((time, index) => {
-    if (!time) return "login.log";
-    const date = new Date(time);
-    return `login-${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}-${date.getHours()}.log`;
+const loginLogStream = createStream((time, index) => {
+  if (!time) return "login.log";
+  const date = new Date(time);
+  return `login-${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}-${date.getHours()}.log`;
 }, {
-    interval: '1d', // Rotate every hour
-    path: path.join(__dirname, 'log')
+  interval: '1d', // Rotate every hour
+  path: path.join(__dirname, 'log')
 });
 
 
@@ -109,31 +100,32 @@ const loginLogStream =createStream((time, index) => {
 //intentionally throws an error
 
 app.get('/error-test', (req, res, next) => {
-    try{
-  throw new Error("Forced error for testing ! ");
-    }catch(err){
-    next(err);}
+  try {
+    throw new Error("Forced error for testing ! ");
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.get('/xx', (req, res) => {
-  try{ res.send('Hello World!')}
-  catch(err){next(err)} 
- });
+  try { res.send('Hello World!') }
+  catch (err) { next(err) }
+});
 
 // error-handling middleware
 app.use((err, req, res, next) => {
   const statusCode = err.status || 500;
   res.status(statusCode).json({
-      in:"error-handling-middleware",
-      success: false,
-      message: err.message || 'Internal Server Error'
+    in: "error-handling-middleware",
+    success: false,
+    message: err.message || 'Internal Server Error'
   });
 });
 
 
 app.use((req, res, next) => {
   req.username = req.cookies?.user_id || "Guest";  // Fetch user from cookie
-  req.role = req.cookies?.role || "Guest"; 
+  req.role = req.cookies?.role || "Guest";
   next();
 });
 
@@ -141,17 +133,17 @@ app.use((req, res, next) => {
 // router -level middleware
 
 const adminMiddleware = async (req, res, next) => {
-    console.log(`\nAdmin entered ${req.originalUrl} !`);
+  console.log(`\nAdmin entered ${req.originalUrl} !`);
   next();
 }
 
 const managerMiddleware = async (req, res, next) => {
   console.log(`\nManager entered ${req.originalUrl} !`);
-next();
+  next();
 }
 
-app.use('/admindashboard',adminMiddleware,adminRoutes);
-app.use('/manager',managerMiddleware, managerRoutes);
+app.use('/admindashboard', adminMiddleware, adminRoutes);
+app.use('/manager', managerMiddleware, managerRoutes);
 app.use('/user', userRoutes);
 
 app.get('/locations', async (req, res) => {
@@ -166,7 +158,7 @@ app.get('/locations', async (req, res) => {
 
 //Signup
 app.post('/signup', async (req, res) => {
-  const { username, email, dateofbirth,password } = req.body;
+  const { username, email, dateofbirth, password } = req.body;
   if (!username || !email || !dateofbirth || !password) {
     return res.status(409).json({ errormessage: 'All fields are required' });
   }
@@ -189,7 +181,7 @@ app.post('/signup', async (req, res) => {
       email,
       dateofbirth,
       password: hashedPassword,
-      expired:false,
+      expired: false,
     });
 
     await newUser.save();
@@ -201,7 +193,7 @@ app.post('/signup', async (req, res) => {
 });
 
 
-app.post('/login', async (req, res,next) => {
+app.post('/login', async (req, res, next) => {
   const { username, password, role } = req.body;
 
   if (!username || !password) {
@@ -227,10 +219,9 @@ app.post('/login', async (req, res,next) => {
       if (!existingUser) {
         return res.status(401).json({ errormessage: 'Username not found!' });
       }
-      if(role=='User' && existingUser.expired)
-        {
-          return res.status(401).json({errormessage: "Account not found !"})
-        }
+      if (role == 'User' && existingUser.expired) {
+        return res.status(401).json({ errormessage: "Account not found !" })
+      }
       const checkpassword = await bcrypt.compare(password, existingUser.password);
       if (!checkpassword) {
         return res.status(401).json({ errormessage: 'Password is incorrect!' });
@@ -248,31 +239,31 @@ app.post('/login', async (req, res,next) => {
       user_id = existingUser._id.toString();
     }
 
-     // Attach user details for Morgan middleware (used in logs)
-     req.user_id = user_id;
-     req.username = username;
-     req.role = role;
+    // Attach user details for Morgan middleware (used in logs)
+    req.user_id = user_id;
+    req.username = username;
+    req.role = role;
 
 
     // Set cookie for user (either Manager or User)
     res.cookie('user_id', user_id, {
-      httpOnly: false,
-      secure: false,
-      sameSite: 'lax',
-      path: '/'
+      httpOnly: true,
+      secure: true,             // required for cross-site cookies on HTTPS
+      sameSite: 'None',         // must be 'None' to allow cross-site cookies
+      path: '/',
     });
 
     res.cookie('role', role, {
-      httpOnly: false,
-      secure: false,
-      sameSite: 'lax',
-      path: '/'
+      httpOnly: true,
+      secure: true,             // required for cross-site cookies on HTTPS
+      sameSite: 'None',         // must be 'None' to allow cross-site cookies
+      path: '/',
     });
 
-     morgan(':date[iso] | User: :username | Role: :role | IP: :remote-addr | Status: :status | :method :url - :response-time ms', 
-      { stream: loginLogStream })(req, res, () => {});
+    morgan(':date[iso] | User: :username | Role: :role | IP: :remote-addr | Status: :status | :method :url - :response-time ms',
+      { stream: loginLogStream })(req, res, () => { });
 
-    res.status(200).json({ successmessage: `${role} Login successfully `});
+    res.status(200).json({ successmessage: `${role} Login successfully ` });
 
   } catch (error) {
     console.error('Error occurred while logging in:', error);
@@ -282,19 +273,19 @@ app.post('/login', async (req, res,next) => {
 
 //RentForm
 app.post('/RentForm', async (req, res) => {
-  const {      productType,
+  const { productType,
     productName,
     locationName,
     fromDate,
     toDate,
     price,
-    image,} = req.body;
-  if (!productType||!productName||!locationName||!fromDate||!toDate||!price||!image) {
+    image, } = req.body;
+  if (!productType || !productName || !locationName || !fromDate || !toDate || !price || !image) {
     return res.status(409).json({ errormessage: 'All fields are required' });
   }
 
   try {
-    const cookieuserid=req.cookies.user_id;
+    const cookieuserid = req.cookies.user_id;
     if (!cookieuserid) {
       return res.status(401).json({ errormessage: 'Unauthorized: No userid cookie found' });
     }
@@ -302,7 +293,7 @@ app.post('/RentForm', async (req, res) => {
     const exist_user = await User.findOne({ _id: cookieuserid });
     if (!exist_user) {
       return res.status(404).json({ errormessage: 'User not found' });
-  }
+    }
     const newProduct = new Product({
       userid: cookieuserid, // Use 'username' to match schema
       productType,
@@ -312,26 +303,26 @@ app.post('/RentForm', async (req, res) => {
       toDateTime: new Date(toDate),     // Convert to Date object
       price,
       photo: image, // Use 'photo' to match schema
-      uploadDate:new Date(),
-      bookingdates:[],
-      bookingids:[],
-      expired:true,
+      uploadDate: new Date(),
+      bookingdates: [],
+      bookingids: [],
+      expired: true,
     });
 
     const savedProduct = await newProduct.save();
     exist_user.rentals.push(savedProduct._id);
     await exist_user.save();
-    const notifyupdate=await Manager.findOneAndUpdate({branch:savedProduct.locationName},{$push:{notifications:{message:savedProduct._id,seen:false}}},{new:true});
+    const notifyupdate = await Manager.findOneAndUpdate({ branch: savedProduct.locationName }, { $push: { notifications: { message: savedProduct._id, seen: false } } }, { new: true });
     const redisKey = `products:${productType}`;
-let cached = await client.get(redisKey);
+    let cached = await client.get(redisKey);
 
-if (cached) {
-  const productList = JSON.parse(cached);
-  productList.push(savedProduct); // assuming `savedProduct` is lean-compatible or transformed
-  await client.set(redisKey, JSON.stringify(productList), { EX: 3600 });
-}
+    if (cached) {
+      const productList = JSON.parse(cached);
+      productList.push(savedProduct); // assuming `savedProduct` is lean-compatible or transformed
+      await client.set(redisKey, JSON.stringify(productList), { EX: 3600 });
+    }
 
-    res.status(201).json({ errormessage: 'Uploaded successfully'});
+    res.status(201).json({ errormessage: 'Uploaded successfully' });
   } catch (error) {
     console.error('Error occured :', error);
     res.status(500).json({ errormessage: 'Upload failed' });
@@ -384,7 +375,7 @@ app.get('/autocomplete', async (req, res) => {
     }
 
     const cacheKey = `autocomplete:${query.toLowerCase()}`;
-    
+
     // Try to get from cache
     const cachedResults = await client.get(cacheKey);
     if (cachedResults) {
@@ -397,9 +388,9 @@ app.get('/autocomplete', async (req, res) => {
       productName: { $regex: `^${query}`, $options: 'i' },
       expired: false
     })
-    .select('productName _id')
-    .limit(10)
-    .sort({ uploadDate: -1 });
+      .select('productName _id')
+      .limit(10)
+      .sort({ uploadDate: -1 });
 
     // Cache results for 15 minutes
     await client.set(cacheKey, JSON.stringify(suggestions), { EX: 900 });
@@ -416,7 +407,7 @@ app.get('/autocomplete', async (req, res) => {
 // app.post('/products', async (req, res) => {
 //   try {
 //     const { productType, locationName, fromDateTime, toDateTime, price, searchQuery } = req.body;
-    
+
 //     // Build base query
 //     const query = { expired: false };
 //     if (productType) query.productType = productType;
@@ -424,31 +415,31 @@ app.get('/autocomplete', async (req, res) => {
 //     if (fromDateTime) query.fromDateTime = { $lte: new Date(fromDateTime) };
 //     if (toDateTime) query.toDateTime = { $gte: new Date(toDateTime) };
 //     if (price) query.price = { $lte: parseFloat(price) };
-    
+
 //     // Add text search if searchQuery exists
 //     if (searchQuery) {
 //       query.$text = { $search: searchQuery };  // 🔄 replaced regex with text search
 //     }
-    
+
 //     // const cacheKey = JSON.stringify(query);
-    
+
 //     // Check Redis cache
 //     // const cachedIds = await client.get(cacheKey);
 //     // if (cachedIds) {
 //     //   console.log('🧠 Cache hit! Fetching products by ID');
 //     //   const productIds = JSON.parse(cachedIds);
-      
+
 //     //   // Fixed: removed extra semicolon and moved allowDiskUse to correct position
 //     //   const products = await Product.find({ _id: { $in: productIds } })
 //     //     .sort({ uploadDate: -1 })
 //     //     .allowDiskUse(true);
-        
+
 //     //   return res.status(200).json(products);
 //     // }
-    
+
 //     // If not in cache, query DB
 //     console.log('💽 Cache miss! Querying database directly');
-    
+
 //     // Use aggregation pipeline with allowDiskUse for better performance with sorting
 //     const products = await Product.aggregate([
 //       { $match: query },
@@ -466,17 +457,17 @@ app.get('/autocomplete', async (req, res) => {
 //         } 
 //       }
 //     ], { allowDiskUse: true });
-    
+
 //     if (products.length === 0) {
 //       return res.status(200).json([]);
 //     }
-    
+
 //     // const productIds = products.map(p => p._id);
-    
+
 //     // Cache results for 1 hour
 //     // await client.set(cacheKey, JSON.stringify(productIds), { EX: 3600 });
 //     // console.log('💾 DB hit. Cached product IDs');
-    
+
 //     res.status(200).json(products);
 //   } catch (error) {
 //     console.error('Error fetching products:', error);
@@ -498,8 +489,7 @@ app.post('/products', async (req, res) => {
     if (products) {
       console.log(`🧠 Redis cache hit: ${redisKey}`);
       products = JSON.parse(products);
-    } else 
-    {
+    } else {
       console.log(`💽 Redis cache miss: ${redisKey}. Querying MongoDB...`);
 
       // Fetch and cache all valid products of this type
@@ -532,49 +522,47 @@ app.post('/products', async (req, res) => {
 
 app.post('/checkconflict', async (req, res) => {
   try {
-      const { product_id, fromDateTime, toDateTime } = req.body;
-      const product = await Product.findById(product_id);
-      if (!product) {
-          return res.status(404).json({ message: 'Product not found' });
-      }
-      const from = new Date(fromDateTime);
-      const to = new Date(toDateTime);
-    
-      const conflict = await Booking.findOne({
-        product_id,
-        $or: [
-            { fromDateTime: { $lt: to }, toDateTime: { $gt: from } }
-        ],
+    const { product_id, fromDateTime, toDateTime } = req.body;
+    const product = await Product.findById(product_id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    const from = new Date(fromDateTime);
+    const to = new Date(toDateTime);
+
+    const conflict = await Booking.findOne({
+      product_id,
+      $or: [
+        { fromDateTime: { $lt: to }, toDateTime: { $gt: from } }
+      ],
     });
-      if (conflict) {
-        console.log("true");
-          return res.status(200).json({ conflict: true });
-      } else {
-        console.log("false");
-          return res.status(200).json({ conflict: false });
-      }
+    if (conflict) {
+      console.log("true");
+      return res.status(200).json({ conflict: true });
+    } else {
+      console.log("false");
+      return res.status(200).json({ conflict: false });
+    }
 
   } catch (error) {
-      console.error("Error checking conflicts:", error);
-      res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error checking conflicts:", error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
 
-app.post('/product/:product_id',async(req,res)=>{
-    const {product_id}=req.params;
-    try{
-      const reqproduct=await Product.findById(product_id);
-      if(!reqproduct)
-      {
-        return res.status(404).json({error :'product not found !'});
-      }
-      return res.status(200).json(reqproduct);
-      
-    }catch(error)
-    {
-      res.status(500).json({error:"server error !"});
+app.post('/product/:product_id', async (req, res) => {
+  const { product_id } = req.params;
+  try {
+    const reqproduct = await Product.findById(product_id);
+    if (!reqproduct) {
+      return res.status(404).json({ error: 'product not found !' });
     }
+    return res.status(200).json(reqproduct);
+
+  } catch (error) {
+    res.status(500).json({ error: "server error !" });
+  }
 })
 
 // app.post('/booking',async (req,res)=>{
@@ -783,7 +771,7 @@ app.post('/api/addBranch', async (req, res) => {
 //       return res.status(200).json({error :'Users not found !'});
 //     }
 //     return res.status(200).json({registercount:usercount,users:users,});
-    
+
 //   }catch(error)
 //   {
 //     res.status(500).json({error:"server error !"});
@@ -911,7 +899,7 @@ app.get("/grabBookings", async (req, res) => {
     //   bookingIds = parsed.bookingIds;
     //   productIds = parsed.productIds;
     // } else
-     {
+    {
       console.log('💾 Fetching Booking/Product IDs from DB');
       const user = await User.findById(userId);
       if (!user) {
@@ -948,17 +936,17 @@ app.get("/grabBookings", async (req, res) => {
 //   try {
 //     if (req.cookies.user_id) {
 //       const userid = req.cookies.user_id;
-  
+
 //       const exist_user = await User.findOne({ _id: userid });
-  
+
 //       if (exist_user) {
 //         const bookingIds = exist_user.bookings;
 //         const bookings = await Booking.find({ _id: { $in: bookingIds } });
-  
+
 //         if (bookings.length > 0) {
 //           const productIds = bookings.map(booking => booking.product_id);
 //           const products = await Product.find({ _id: { $in: productIds } });
-  
+
 //           res.json({
 //             BookingDetails: bookings,
 //             ProductDetails: products,
@@ -975,12 +963,12 @@ app.get("/grabBookings", async (req, res) => {
 //   } catch (err) {
 //     res.status(500).json({ message: "An error occurred", error: err.message });
 //   }
-  
+
 // });
 
 app.post("/settings", async (req, res) => {
   try {
-    const { editUsername,  email,password } = req.body;
+    const { editUsername, email, password } = req.body;
     const currentUserid = req.cookies.user_id;
     if (!currentUserid) {
       return res.status(401).json({ message: "Unauthorized: No user logged in" });
@@ -1014,7 +1002,7 @@ app.post("/settings", async (req, res) => {
         return res.status(500).json({ message: "Error hashing password" });
       }
     }
-    const x=await existingUser.save();
+    const x = await existingUser.save();
     if (x) {
       res.status(200).json({ message: "User details updated successfully" });
     } else {
@@ -1026,7 +1014,7 @@ app.post("/settings", async (req, res) => {
   }
 });
 
-app.get("/grabDetails", async (req, res,next) => {
+app.get("/grabDetails", async (req, res, next) => {
   try {
     if (req.cookies.user_id) {
       const userid = req.cookies.user_id;
@@ -1044,7 +1032,7 @@ app.get("/grabDetails", async (req, res,next) => {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
- 
+
 });
 
 // app.get("/grabRentals", async (req, res) => {
@@ -1095,7 +1083,7 @@ app.get("/grabRentals", async (req, res) => {
     //   console.log("🔁 Rentals served from Redis");
     //   productIds = JSON.parse(cachedRentalIds);
     // } else
-     {
+    {
       // Cache MISS: fetch from DB
       const user = await User.findById(userid);
       if (!user) return res.status(404).json({ message: "User not found" });
@@ -1349,7 +1337,7 @@ app.post('/signOut', async (req, res) => {
 //       return res.status(404).json({error :'product not found !'});
 //     }
 //     return res.status(200).json(reqproduct);
-    
+
 //   }catch(error)
 //   {
 //     res.status(500).json({error:"server error !"});
@@ -1718,7 +1706,7 @@ app.get("/api/dashboard/monthly-bookings-cat", async (req, res) => {
 
     const products = await Product.find({
       _id: { $in: productIds.map(id => new mongoose.Types.ObjectId(id)) },
-      locationName: branch 
+      locationName: branch
     });
 
     if (products.length === 0) {
@@ -1751,7 +1739,7 @@ app.get("/api/dashboard/monthly-bookings-cat", async (req, res) => {
 
     res.json(aggregatedBookings);
   } catch (err) {
-    console.error("Error fetching monthly bookings:", err); 
+    console.error("Error fetching monthly bookings:", err);
     res.status(500).json({ message: "Error fetching monthly bookings", error: err.message });
   }
 });
@@ -1768,7 +1756,7 @@ app.get("/api/dashboard/daily-revenue-cat", async (req, res) => {
 
     const bookings = await Booking.find({
       bookingDate: { $gte: lastWeekStart }
-    }).select("product_id"); 
+    }).select("product_id");
 
     const productIds = bookings.map(booking => booking.product_id);
 
@@ -1777,8 +1765,8 @@ app.get("/api/dashboard/daily-revenue-cat", async (req, res) => {
     }
 
     const products = await Product.find({
-      _id: { $in: productIds.map(id => new mongoose.Types.ObjectId(id)) }, 
-      locationName: branch 
+      _id: { $in: productIds.map(id => new mongoose.Types.ObjectId(id)) },
+      locationName: branch
     });
 
     if (products.length === 0) {
@@ -1791,7 +1779,7 @@ app.get("/api/dashboard/daily-revenue-cat", async (req, res) => {
       {
         $match: {
           product_id: { $in: filteredProductIds },
-          bookingDate: { $gte: lastWeekStart } 
+          bookingDate: { $gte: lastWeekStart }
         }
       },
       {
@@ -1824,18 +1812,18 @@ app.get("/api/dashboard/monthly-revenue-cat", async (req, res) => {
     }
 
     const bookings = await Booking.find({
-      bookingDate: { $gte: lastYearStart } 
+      bookingDate: { $gte: lastYearStart }
     }).select("product_id price bookingDate");
 
     const productIds = bookings.map(booking => booking.product_id);
 
     if (productIds.length === 0) {
-      return res.json([]); 
+      return res.json([]);
     }
 
     const products = await Product.find({
-      _id: { $in: productIds.map(id => new mongoose.Types.ObjectId(id)) }, 
-      locationName: branch 
+      _id: { $in: productIds.map(id => new mongoose.Types.ObjectId(id)) },
+      locationName: branch
     });
 
     if (products.length === 0) {
@@ -1847,14 +1835,14 @@ app.get("/api/dashboard/monthly-revenue-cat", async (req, res) => {
     const aggregatedRevenue = await Booking.aggregate([
       {
         $match: {
-          product_id: { $in: filteredProductIds }, 
-          bookingDate: { $gte: lastYearStart } 
+          product_id: { $in: filteredProductIds },
+          bookingDate: { $gte: lastYearStart }
         }
       },
       {
         $group: {
           _id: {
-            year: { $year: "$bookingDate" }, 
+            year: { $year: "$bookingDate" },
             month: { $month: "$bookingDate" }
           },
           totalRevenue: { $sum: "$price" }
@@ -1984,7 +1972,7 @@ app.get("/api/dashboard/categories-cat", async (req, res) => {
 //       return res.status(404).json({error :'booking not found !'});
 //     }
 //     return res.status(200).json({reqbooking:reqbooking,reqproduct:reqproduct,reqbuyer:reqbuyer});
-    
+
 //   }catch(error)
 //   {
 //     res.status(500).json({error:"server error !"});
@@ -2111,7 +2099,7 @@ app.get("/home/getreviews", async (req, res) => {
   const cacheKey = "top_5_unique_reviews";
   try {
     const cached = await client.get(cacheKey);
-    if (cached !== null && cached.length !==0) {
+    if (cached !== null && cached.length !== 0) {
       console.log("Serving top reviews from cache");
       return res.status(200).json({ reviews: JSON.parse(cached) });
     }
@@ -2231,7 +2219,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 
 
-const PORT =3000;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
