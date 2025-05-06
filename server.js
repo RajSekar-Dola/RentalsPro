@@ -51,19 +51,24 @@ connecttomongodb(MONGODB_URL)
 // await Admin.syncIndexes();
 //   await Product.syncIndexes();
 //middlewares
+app.set('trust proxy', 1); // or just `true`
 
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const allowedOrigins = [
+  'https://rentalspro-react.onrender.com'
+];
+
 app.use(cors({
-  origin: 'https://rentalspro-react.onrender.com',  // your frontend URL
-  credentials: true
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
 }));
 
-// Also handle preflight
-app.options('*', cors({
-  origin: 'https://rentalspro-react.onrender.com',
-  credentials: true
-}));
 
 //custom application level middleware
 app.use((req, res, next) => {
